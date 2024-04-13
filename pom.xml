@@ -14,8 +14,9 @@
     </properties>
 
     <modules>
-        <module>model</module>
+        <module>domain</module>
         <module>web-api</module>
+        <module>infra</module>
     </modules>
 
     <dependencies>

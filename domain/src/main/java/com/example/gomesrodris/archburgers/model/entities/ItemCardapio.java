@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.model.common;
+package com.example.gomesrodris.archburgers.model.entities;
 
 public record ItemCardapio(int id, Tipo tipo, String nome, String descricao) {
 

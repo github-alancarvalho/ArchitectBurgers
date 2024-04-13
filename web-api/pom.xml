@@ -30,7 +30,12 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>architect-burgers-model</artifactId>
+            <artifactId>architect-burgers-domain</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>architect-burgers-infra</artifactId>
             <version>${parent.version}</version>
         </dependency>
     </dependencies>

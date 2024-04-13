@@ -1,6 +1,6 @@
 package com.example.gomesrodris.archburgers.app.controllers;
 
-import com.example.gomesrodris.archburgers.model.common.ItemCardapio;
+import com.example.gomesrodris.archburgers.model.entities.ItemCardapio;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
