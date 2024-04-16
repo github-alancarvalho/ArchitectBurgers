@@ -1,6 +1,6 @@
-package com.example.gomesrodris.archburgers.app.controllers;
+package com.example.gomesrodris.archburgers.adapters.driver.controllers;
 
-import com.example.gomesrodris.archburgers.model.entities.ItemCardapio;
+import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,7 +14,7 @@ public class HelloController {
 
     @GetMapping("/serializationExample")
     public ItemCardapio serializeModelClassExample() {
-        return new ItemCardapio(21, ItemCardapio.Tipo.SANDUICHE, "Hamburger Vegetariano",
+        return new ItemCardapio(21, ItemCardapio.Tipo.LANCHE, "Hamburger Vegetariano",
                 "Hamburger de ervilha com queijo vegano");
     }
 }

@@ -20,12 +20,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>3.2.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>3.2.4</version>
         </dependency>
 
         <dependency>
@@ -46,7 +44,7 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.2.4</version>
+                <version>${deps.spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -61,6 +59,13 @@
                 <configuration>
                     <skip>false</skip>
                     <mainClass>com.example.gomesrodris.archburgers.ArchitectBurgersApiApplication</mainClass>
+
+                    <environmentVariables>
+                        <archburgers.datasource.driverClass>org.postgresql.Driver</archburgers.datasource.driverClass>
+                        <archburgers.datasource.dbUrl>jdbc:postgresql://localhost/archburgers?autoReconnect=true</archburgers.datasource.dbUrl>
+                        <archburgers.datasource.dbUser>live</archburgers.datasource.dbUser>
+                        <archburgers.datasource.dbPass>live</archburgers.datasource.dbPass>
+                    </environmentVariables>
                 </configuration>
             </plugin>
         </plugins>
