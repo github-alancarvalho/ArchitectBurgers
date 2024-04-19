@@ -10,11 +10,15 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DatabaseMigration {
+public class DatabaseMigration implements AutoCloseable {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseMigration.class);
+
+    private final ConnectionPool connectionPool;
+    private final boolean isPoolOwner;
 
     public static void main(String[] args) throws Exception {
         if (args.length != 4) {
@@ -22,20 +26,38 @@ public class DatabaseMigration {
             System.exit(1);
         }
 
-        new DatabaseMigration().runMigrations(args[0], args[1], args[2], args[3]);
+        try (var migration = new DatabaseMigration(args[0], args[1], args[2], args[3])) {
+            migration.runMigrations();
+        }
     }
 
-    public void runMigrations(String driverClass, String dbUrl, String dbUser, String dbPass) throws Exception {
+    @Autowired
+    public DatabaseMigration(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+        this.isPoolOwner = false;
+    }
+
+    public DatabaseMigration(String driverClass, String dbUrl, String dbUser, String dbPass) {
+        this.connectionPool = new ConnectionPool(driverClass, dbUrl, dbUser, dbPass);
+        this.isPoolOwner = true;
+    }
+
+    public void runMigrations() throws Exception {
         LOGGER.info("Starting Database migrations");
 
-        try (var connectionPool = new ConnectionPool(driverClass, dbUrl, dbUser, dbPass);
-             var connection = connectionPool.getConnection()) {
+        try (var connection = connectionPool.getConnection()) {
 
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-            Liquibase liquibase = new liquibase.Liquibase("liquibase/dbchangelog.yml", new ClassLoaderResourceAccessor(), database);
+            Liquibase liquibase = new liquibase.Liquibase("liquibase/dbchangelog.xml", new ClassLoaderResourceAccessor(), database);
             liquibase.update(new Contexts(), new LabelExpression());
         }
 
         LOGGER.info("Database migration complete");
+    }
+
+    @Override
+    public void close() {
+        if (isPoolOwner)
+            connectionPool.close();
     }
 }

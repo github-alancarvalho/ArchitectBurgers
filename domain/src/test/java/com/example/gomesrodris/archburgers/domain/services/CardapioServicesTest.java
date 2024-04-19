@@ -1,7 +1,10 @@
 package com.example.gomesrodris.archburgers.domain.services;
 
+import com.example.gomesrodris.archburgers.domain.DomainConstants;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
+import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
+import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,20 +30,24 @@ class CardapioServicesTest {
 
     @Test
     void listLanches() {
-        when(itemCardapioRepository.findByTipo(ItemCardapio.Tipo.LANCHE)).thenReturn(List.of(
-                new ItemCardapio(1, ItemCardapio.Tipo.LANCHE, "Hamburger Vegetariano",
-                        "Hamburger de ervilha com queijo prato"),
-                new ItemCardapio(2, ItemCardapio.Tipo.LANCHE, "Veggie Cheddar",
-                        "Hamburger do Futuro com cebolas caramelizadas e cheddar vegano")
+        when(itemCardapioRepository.findByTipo(TipoItemCardapio.LANCHE)).thenReturn(List.of(
+                new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
+                        "Hamburger de ervilha com queijo prato",
+                        Money.of(20.00, DomainConstants.CODIGO_MOEDA)),
+                new ItemCardapio(2, TipoItemCardapio.LANCHE, "Veggie Cheddar",
+                        "Hamburger do Futuro com cebolas caramelizadas e cheddar vegano",
+                        Money.of(25.00, DomainConstants.CODIGO_MOEDA))
         ));
 
         var result = cardapioServices.listLanches();
 
         assertThat(result).containsExactly(
-                new ItemCardapio(1, ItemCardapio.Tipo.LANCHE, "Hamburger Vegetariano",
-                        "Hamburger de ervilha com queijo prato"),
-                new ItemCardapio(2, ItemCardapio.Tipo.LANCHE, "Veggie Cheddar",
-                        "Hamburger do Futuro com cebolas caramelizadas e cheddar vegano")
+                new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
+                        "Hamburger de ervilha com queijo prato",
+                        Money.of(20.00, DomainConstants.CODIGO_MOEDA)),
+                new ItemCardapio(2, TipoItemCardapio.LANCHE, "Veggie Cheddar",
+                        "Hamburger do Futuro com cebolas caramelizadas e cheddar vegano",
+                        Money.of(25.00, DomainConstants.CODIGO_MOEDA))
         );
     }
 }
