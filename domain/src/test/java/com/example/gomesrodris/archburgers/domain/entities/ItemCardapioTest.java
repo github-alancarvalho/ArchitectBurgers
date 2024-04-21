@@ -1,12 +1,9 @@
 package com.example.gomesrodris.archburgers.domain.entities;
 
-import com.example.gomesrodris.archburgers.domain.DomainConstants;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
-import org.javamoney.moneta.Money;
+import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import javax.money.MonetaryAmount;
 
 import java.math.BigDecimal;
 
@@ -20,7 +17,7 @@ class ItemCardapioTest {
     void setUp() {
         itemCardapio = new ItemCardapio(21, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
                 "Hamburger de ervilha com queijo vegano",
-                Money.of(23.50, DomainConstants.CODIGO_MOEDA));
+                new ValorMonetario("23.50"));
     }
 
     @Test
@@ -29,6 +26,6 @@ class ItemCardapioTest {
         assertThat(itemCardapio.tipo()).isEqualTo(TipoItemCardapio.LANCHE);
         assertThat(itemCardapio.nome()).isEqualTo("Hamburger Vegetariano");
         assertThat(itemCardapio.descricao()).isEqualTo("Hamburger de ervilha com queijo vegano");
-        assertThat(itemCardapio.valor()).isEqualTo(Money.of(new BigDecimal("23.50"), DomainConstants.CODIGO_MOEDA));
+        assertThat(itemCardapio.valor()).isEqualTo(new ValorMonetario(new BigDecimal("23.50")));
     }
 }

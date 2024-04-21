@@ -1,10 +1,9 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
-import com.example.gomesrodris.archburgers.domain.DomainConstants;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
-import org.javamoney.moneta.Money;
+import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
                         TipoItemCardapio.getByAbreviacao(rs.getString(2)),
                         rs.getString(3),
                         rs.getString(4),
-                        Money.of(rs.getBigDecimal(5), DomainConstants.CODIGO_MOEDA)
+                        new ValorMonetario(rs.getBigDecimal(5))
                 ));
             }
 

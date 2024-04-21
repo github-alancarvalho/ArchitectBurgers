@@ -2,8 +2,8 @@ package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.utils.Valor;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
+import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
 import org.junit.jupiter.api.*;
 
@@ -47,9 +47,9 @@ class ItemCardapioRepositoryJdbcImplTest {
 
         assertThat(byTipo).containsExactly(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
-                        "Hamburger de ervilha com queijo prato", Valor.of("22.90")),
+                        "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90")),
                 new ItemCardapio(2, TipoItemCardapio.LANCHE, "Veggie Cheddar",
-                        "Hamburger do Futuro com cebolas caramelizadas e cheddar vegano", Valor.of("23.50"))
+                        "Hamburger do Futuro com cebolas caramelizadas e cheddar vegano", new ValorMonetario("23.50"))
         );
     }
 
@@ -61,9 +61,9 @@ class ItemCardapioRepositoryJdbcImplTest {
 
         assertThat(byTipo).containsExactly(
                 new ItemCardapio(5, TipoItemCardapio.BEBIDA, "Dollynho",
-                        "Guaraná Dollynho", Valor.of("5.00")),
+                        "Guaraná Dollynho", new ValorMonetario("5.00")),
                 new ItemCardapio(6, TipoItemCardapio.BEBIDA, "Chá gelado",
-                        "Chá gelado com limão, feito na casa", Valor.of("6.00"))
+                        "Chá gelado com limão, feito na casa", new ValorMonetario("6.00"))
         );
     }
 }
