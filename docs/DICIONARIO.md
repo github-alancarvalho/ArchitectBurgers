@@ -1,0 +1,36 @@
+Dicionario de linguagem ubíqua do dominio
+=========================================
+
+## Atores
+
+- Cliente: Consumidor final do estabelecimento, é quem realiza a compra das refeições. Podem ser:
+  - Cliente identificado: possui seus dados (CPF, Nome, Email) cadastrados no estabelecimento, e ao fazer uma compra permite recuperar os dados através do CPF
+  - Cliente não identificado: não possui cadastro no estabelecimento, ou não deseja utilizá-lo. Informa apenas seu Nome para uso durante o atendimento do pedido.
+- Chefe da cozinha: Responsável por verificar os pedidos que chegam, acompanhar seu preparo e garantir que sejam entregues com rapidez e qualidade
+- Equipe da cozinha: Responsável pelo preparo dos alimentos
+- Atendente: Interage com o cliente. É responsável por auxiliá-los a fazer o pedido no sistema e entregar o pedido após preparo.
+
+## Produtos
+
+- Itens do cardápio: Nome genérico para todos os produtos comercializados. Podem ser Lanches, Acompanhamentos, Bebidas ou Sobremesas
+- Combo: É uma combinação de Lanche + Acompanhamento + Bebida + Sobremesa, selecionados pelo Cliente ao fazer um pedido.
+Todos os itens do Combo são opcionais, é possível haver um Combo completo com os 4 itens ou por exemplo um Combo com apenas bebida.
+
+Um pedido é composto por um ou mais Combos, e cada combo é composto por um ou mais Itens.
+
+## Entidades principais
+
+- Cliente: Representação no sistema dos dados do "Cliente" descrito anteriormente
+- Item do Cardapio: Representação no sistema de cada item disponível para venda.
+- Carrinho de compras: Armazenamento temporário dos Combos selecionados pelo cliente. Ao fechar a compra o Carrinho dá origem a um novo Pedido.
+- Pagamento: Informação de pagamento realizado pelo cliente. Para cada meio de pagamento existem informações específicas a serem armazenadas nos dados de Pagamento
+
+
+- Pedido: É o registro de cada compra solicitada pelos clientes. Estas são suas informações principais:
+  - Itens que fazem parte do pedido (lista de Combos)
+  - Dados de Pagamento associados
+  - Acompanhamento de Status
+
+## Principais eventos do fluxo de pedido e entrega
+
+
