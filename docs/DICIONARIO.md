@@ -10,18 +10,11 @@ Dicionario de linguagem ubíqua do dominio
 - Equipe da cozinha: Responsável pelo preparo dos alimentos
 - Atendente: Interage com o cliente. É responsável por auxiliá-los a fazer o pedido no sistema e entregar o pedido após preparo.
 
-## Produtos
-
-- Itens do cardápio: Nome genérico para todos os produtos comercializados. Podem ser Lanches, Acompanhamentos, Bebidas ou Sobremesas
-- Combo: É uma combinação de Lanche + Acompanhamento + Bebida + Sobremesa, selecionados pelo Cliente ao fazer um pedido.
-Todos os itens do Combo são opcionais, é possível haver um Combo completo com os 4 itens ou por exemplo um Combo com apenas bebida.
-
-Um pedido é composto por um ou mais Combos, e cada combo é composto por um ou mais Itens.
 
 ## Entidades principais
 
-- Cliente: Representação no sistema dos dados do "Cliente" descrito anteriormente
-- Item do Cardapio: Representação no sistema de cada item disponível para venda.
+- Cliente: Representação dos dados do "Cliente" descrito anteriormente
+- Item do Cardapio: Representação de cada item disponível para venda. Podem ser dos tipos: Lanche, Acompanhamento, Bebida ou Sobremesa
 - Carrinho de compras: Armazenamento temporário dos Combos selecionados pelo cliente. Ao fechar a compra o Carrinho dá origem a um novo Pedido.
 - Pagamento: Informação de pagamento realizado pelo cliente. Para cada meio de pagamento existem informações específicas a serem armazenadas nos dados de Pagamento
 
@@ -33,4 +26,14 @@ Um pedido é composto por um ou mais Combos, e cada combo é composto por um ou 
 
 ## Principais eventos do fluxo de pedido e entrega
 
+- Identificação do cliente
 
+- Confirmação de compra
+
+- Pagamento
+
+- Validação do Pedido
+
+- Pedido pronto
+
+- Pedido finalizado
