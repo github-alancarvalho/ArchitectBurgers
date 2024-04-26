@@ -7,6 +7,8 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 public class ValorMonetario {
+    public static final ValorMonetario ZERO = new ValorMonetario(BigDecimal.ZERO);
+
     private final BigDecimal valor;
 
     public ValorMonetario(BigDecimal valor) {
@@ -29,6 +31,10 @@ public class ValorMonetario {
 
     public BigDecimal asBigDecimal() {
         return valor;
+    }
+
+    public ValorMonetario somar(ValorMonetario outro) {
+        return new ValorMonetario(valor.add(outro.valor));
     }
 
     @Override

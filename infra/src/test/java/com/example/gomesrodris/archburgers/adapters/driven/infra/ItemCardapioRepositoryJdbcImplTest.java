@@ -40,30 +40,24 @@ class ItemCardapioRepositoryJdbcImplTest {
     }
 
     @Test
-    void findByTipo_L() {
-        List<ItemCardapio> byTipo = repository.findByTipo(TipoItemCardapio.LANCHE);
+    void findAll() {
+        List<ItemCardapio> byTipo = repository.findAll();
 
-        assertThat(byTipo).hasSize(2);
+        assertThat(byTipo).hasSize(8);
 
-        assertThat(byTipo).containsExactly(
+        assertThat(byTipo.get(0)).isEqualTo(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
-                        "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90")),
+                        "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90"))
+        );
+
+        assertThat(byTipo.get(1)).isEqualTo(
                 new ItemCardapio(2, TipoItemCardapio.LANCHE, "Veggie Cheddar",
                         "Hamburger do Futuro com cebolas caramelizadas e cheddar vegano", new ValorMonetario("23.50"))
         );
-    }
 
-    @Test
-    void findByTipo_B() {
-        List<ItemCardapio> byTipo = repository.findByTipo(TipoItemCardapio.BEBIDA);
-
-        assertThat(byTipo).hasSize(2);
-
-        assertThat(byTipo).containsExactly(
-                new ItemCardapio(5, TipoItemCardapio.BEBIDA, "Dollynho",
-                        "Guaraná Dollynho", new ValorMonetario("5.00")),
-                new ItemCardapio(6, TipoItemCardapio.BEBIDA, "Chá gelado",
-                        "Chá gelado com limão, feito na casa", new ValorMonetario("6.00"))
+        assertThat(byTipo.get(7)).isEqualTo(
+                new ItemCardapio(8, TipoItemCardapio.SOBREMESA, "Mini churros",
+                        "Mini churros de doce de leite", new ValorMonetario("0.99"))
         );
     }
 }

@@ -29,7 +29,7 @@ class CardapioServicesTest {
 
     @Test
     void listLanches() {
-        when(itemCardapioRepository.findByTipo(TipoItemCardapio.LANCHE)).thenReturn(List.of(
+        when(itemCardapioRepository.findAll()).thenReturn(List.of(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
                         "Hamburger de ervilha com queijo prato",
                         new ValorMonetario("20.00")),
@@ -38,7 +38,7 @@ class CardapioServicesTest {
                         new ValorMonetario("25.00"))
         ));
 
-        var result = cardapioServices.listLanches();
+        var result = cardapioServices.listarItensCardapio();
 
         assertThat(result).containsExactly(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",

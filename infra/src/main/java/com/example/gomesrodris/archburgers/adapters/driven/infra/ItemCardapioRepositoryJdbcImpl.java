@@ -4,8 +4,6 @@ import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,12 +17,9 @@ import java.util.List;
  */
 @Repository
 public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ItemCardapioRepositoryJdbcImpl.class);
-
     public static final String SQL_SELECT_ITEMS_BY_TIPO = """
         select item_cardapio_id, tipo, nome, descricao, valor
         from item_cardapio
-        where tipo = ?
     """.stripIndent();
 
     private final ConnectionPool connectionPool;
@@ -35,10 +30,9 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
     }
 
     @Override
-    public List<ItemCardapio> findByTipo(TipoItemCardapio tipo) {
+    public List<ItemCardapio> findAll() {
         try (var connection = connectionPool.getConnection();
              var stmt = connection.prepareStatement(SQL_SELECT_ITEMS_BY_TIPO)) {
-            stmt.setString(1, tipo.getAbreviacao());
 
             ResultSet rs = stmt.executeQuery();
             List<ItemCardapio> results = new ArrayList<>();
@@ -55,8 +49,7 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
 
             return results;
         } catch (SQLException e) {
-            LOGGER.error("Error while fetching data from database: {}", e, e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
         }
     }
 }

@@ -2,7 +2,6 @@ package com.example.gomesrodris.archburgers.domain.services;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,8 @@ public class CardapioServices {
         this.itemCardapioRepository = itemCardapioRepository;
     }
 
-    public List<ItemCardapio> listLanches() {
-        return itemCardapioRepository.findByTipo(TipoItemCardapio.LANCHE);
+    public List<ItemCardapio> listarItensCardapio() {
+        return itemCardapioRepository.findAll();
     }
 
 }

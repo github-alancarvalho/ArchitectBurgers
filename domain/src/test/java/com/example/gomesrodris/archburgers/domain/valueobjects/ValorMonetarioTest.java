@@ -32,4 +32,13 @@ class ValorMonetarioTest {
         e = assertThrows(IllegalArgumentException.class, () -> new ValorMonetario("15.0003"));
         assertThat(e).hasMessage("Valor monetario invalido, mais que 2 digitos decimais: 15.0003");
     }
+
+    @Test
+    void somar() {
+        assertThat(new ValorMonetario(".1")
+                .somar(new ValorMonetario("0"))).isEqualTo(new ValorMonetario("0.10"));
+
+        assertThat(new ValorMonetario("25.98")
+                .somar(new ValorMonetario("10.5"))).isEqualTo(new ValorMonetario("36.48"));
+    }
 }

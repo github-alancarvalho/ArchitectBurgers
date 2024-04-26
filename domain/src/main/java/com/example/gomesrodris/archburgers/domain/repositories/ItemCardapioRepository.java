@@ -6,5 +6,5 @@ import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import java.util.List;
 
 public interface ItemCardapioRepository {
-    List<ItemCardapio> findByTipo(TipoItemCardapio tipo);
+    List<ItemCardapio> findAll();
 }
