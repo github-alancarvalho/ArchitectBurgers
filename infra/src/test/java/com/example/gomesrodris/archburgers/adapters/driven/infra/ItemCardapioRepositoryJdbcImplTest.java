@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ItemCardapioRepositoryJdbcImplTest {
     private static RealDatabaseTestHelper realDatabase;
-    private ConnectionPool connectionPool;
+    private DatabaseConnection databaseConnection;
 
     private ItemCardapioRepository repository;
 
@@ -30,13 +30,13 @@ class ItemCardapioRepositoryJdbcImplTest {
 
     @BeforeEach
     void setUp() {
-        connectionPool = realDatabase.getConnectionPool();
-        repository = new ItemCardapioRepositoryJdbcImpl(connectionPool);
+        databaseConnection = realDatabase.getConnectionPool();
+        repository = new ItemCardapioRepositoryJdbcImpl(databaseConnection);
     }
 
     @AfterEach
     void tearDown() {
-        connectionPool.close();
+        databaseConnection.close();
     }
 
     @Test

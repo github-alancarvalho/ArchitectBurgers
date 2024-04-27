@@ -14,15 +14,15 @@ import java.sql.SQLException;
 public class ClienteRepositoryJdbcImpl implements ClienteRepository {
     private final static String SQL_SELECT_CLIENTE_BY_CPF = "select cliente_id, nome, cpf, email from cliente where cpf = ?";
 
-    private final ConnectionPool connectionPool;
+    private final DatabaseConnection databaseConnection;
 
-    public ClienteRepositoryJdbcImpl(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
+    public ClienteRepositoryJdbcImpl(DatabaseConnection databaseConnection) {
+        this.databaseConnection = databaseConnection;
     }
 
     @Override
     public @Nullable Cliente getClienteByCpf(@NotNull Cpf cpf) {
-        try (var connection = connectionPool.getConnection();
+        try (var connection = databaseConnection.getConnection();
              var stmt = connection.prepareStatement(SQL_SELECT_CLIENTE_BY_CPF)) {
             stmt.setString(1, cpf.cpfNum());
 

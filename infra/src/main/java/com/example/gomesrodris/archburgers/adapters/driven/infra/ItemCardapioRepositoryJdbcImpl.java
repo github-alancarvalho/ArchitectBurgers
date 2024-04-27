@@ -22,16 +22,16 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
         from item_cardapio
     """.stripIndent();
 
-    private final ConnectionPool connectionPool;
+    private final DatabaseConnection databaseConnection;
 
     @Autowired
-    public ItemCardapioRepositoryJdbcImpl(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
+    public ItemCardapioRepositoryJdbcImpl(DatabaseConnection databaseConnection) {
+        this.databaseConnection = databaseConnection;
     }
 
     @Override
     public List<ItemCardapio> findAll() {
-        try (var connection = connectionPool.getConnection();
+        try (var connection = databaseConnection.getConnection();
              var stmt = connection.prepareStatement(SQL_SELECT_ITEMS_BY_TIPO)) {
 
             ResultSet rs = stmt.executeQuery();

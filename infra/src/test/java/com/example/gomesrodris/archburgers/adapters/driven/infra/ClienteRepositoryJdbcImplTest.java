@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ClienteRepositoryJdbcImplTest {
     private static RealDatabaseTestHelper realDatabase;
-    private ConnectionPool connectionPool;
+    private DatabaseConnection databaseConnection;
 
     private ClienteRepository repository;
 
@@ -27,13 +27,13 @@ class ClienteRepositoryJdbcImplTest {
 
     @BeforeEach
     void setUp() {
-        connectionPool = realDatabase.getConnectionPool();
-        repository = new ClienteRepositoryJdbcImpl(connectionPool);
+        databaseConnection = realDatabase.getConnectionPool();
+        repository = new ClienteRepositoryJdbcImpl(databaseConnection);
     }
 
     @AfterEach
     void tearDown() {
-        connectionPool.close();
+        databaseConnection.close();
     }
 
     @Test

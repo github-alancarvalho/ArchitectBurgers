@@ -1,7 +1,8 @@
 package com.example.gomesrodris.archburgers.testUtils;
 
-import com.example.gomesrodris.archburgers.adapters.driven.infra.ConnectionPool;
+import com.example.gomesrodris.archburgers.adapters.driven.infra.DatabaseConnection;
 import com.example.gomesrodris.archburgers.tools.migration.DatabaseMigration;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class RealDatabaseTestHelper {
@@ -20,8 +21,23 @@ public class RealDatabaseTestHelper {
         postgres.stop();
     }
 
-    public ConnectionPool getConnectionPool() {
-        return new ConnectionPool(postgres.getDriverClassName(),
+    public DatabaseConnection getConnectionPool() {
+        return new DatabaseConnection(postgres.getDriverClassName(),
                 postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+    }
+
+    @VisibleForTesting
+    public String getJdbcUrl() {
+        return postgres.getJdbcUrl();
+    }
+
+    @VisibleForTesting
+    public String getJdbcUsername() {
+        return postgres.getUsername();
+    }
+
+    @VisibleForTesting
+    public String getJdbcPassword() {
+        return postgres.getPassword();
     }
 }

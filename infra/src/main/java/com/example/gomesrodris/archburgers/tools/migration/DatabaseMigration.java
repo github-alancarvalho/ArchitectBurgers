@@ -1,6 +1,6 @@
 package com.example.gomesrodris.archburgers.tools.migration;
 
-import com.example.gomesrodris.archburgers.adapters.driven.infra.ConnectionPool;
+import com.example.gomesrodris.archburgers.adapters.driven.infra.DatabaseConnection;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
 import liquibase.Liquibase;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class DatabaseMigration implements AutoCloseable {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseMigration.class);
 
-    private final ConnectionPool connectionPool;
+    private final DatabaseConnection databaseConnection;
     private final boolean isPoolOwner;
 
     public static void main(String[] args) throws Exception {
@@ -32,20 +32,20 @@ public class DatabaseMigration implements AutoCloseable {
     }
 
     @Autowired
-    public DatabaseMigration(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
+    public DatabaseMigration(DatabaseConnection databaseConnection) {
+        this.databaseConnection = databaseConnection;
         this.isPoolOwner = false;
     }
 
     public DatabaseMigration(String driverClass, String dbUrl, String dbUser, String dbPass) {
-        this.connectionPool = new ConnectionPool(driverClass, dbUrl, dbUser, dbPass);
+        this.databaseConnection = new DatabaseConnection(driverClass, dbUrl, dbUser, dbPass);
         this.isPoolOwner = true;
     }
 
     public void runMigrations() throws Exception {
         LOGGER.info("Starting Database migrations");
 
-        try (var connection = connectionPool.getConnection()) {
+        try (var connection = databaseConnection.jdbcConnection()) {
 
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
             Liquibase liquibase = new liquibase.Liquibase("liquibase/dbchangelog.xml", new ClassLoaderResourceAccessor(), database);
@@ -58,6 +58,6 @@ public class DatabaseMigration implements AutoCloseable {
     @Override
     public void close() {
         if (isPoolOwner)
-            connectionPool.close();
+            databaseConnection.close();
     }
 }
