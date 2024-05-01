@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
+import com.example.gomesrodris.archburgers.domain.support.TransactionManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -16,7 +17,7 @@ import java.util.function.Supplier;
 
 @Component
 @Scope("singleton")
-public class DatabaseConnection implements AutoCloseable {
+public class DatabaseConnection implements TransactionManager, AutoCloseable {
     private final ComboPooledDataSource cpds;
 
     private final ThreadLocal<ConnectionInstance> inTransactionConnection = new ThreadLocal<>();
@@ -48,6 +49,7 @@ public class DatabaseConnection implements AutoCloseable {
         cpds = buildDataSource(driverClassEnv, dbUrlEnv, dbUserEnv, dbPassEnv);
     }
 
+    @Override
     public <T> T runInTransaction(Supplier<T> task) throws Exception {
         Connection conn = cpds.getConnection();
         try {

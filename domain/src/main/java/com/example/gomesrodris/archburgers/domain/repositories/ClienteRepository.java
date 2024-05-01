@@ -8,4 +8,8 @@ import org.jetbrains.annotations.Nullable;
 public interface ClienteRepository {
     @Nullable
     Cliente getClienteByCpf(@NotNull Cpf cpf);
+
+    Cliente getClienteById(int id);
+
+    Cliente salvarCliente(@NotNull Cliente cliente);
 }

@@ -45,6 +45,25 @@ class ClienteRepositoryJdbcImplTest {
     }
 
     @Test
+    void getClienteById() {
+        var cliente = repository.getClienteById(2);
+
+        assertThat(cliente).isEqualTo(new Cliente(2, "Wanderleia",
+                new Cpf("99988877714"), "wanderleia@example.com"));
+    }
+
+    @Test
+    void salvarCliente() {
+        var cliente = new Cliente(null, "Erasmo",
+                new Cpf("33344455508"), "erasmo@example.com");
+
+        var clienteSalvo = repository.salvarCliente(cliente);
+
+        assertThat(clienteSalvo).isEqualTo(new Cliente(3, "Erasmo",
+                new Cpf("33344455508"), "erasmo@example.com"));
+    }
+
+    @Test
     void getClienteByCpf_notFound() {
         var cliente = repository.getClienteByCpf(new Cpf("11122233396"));
         assertThat(cliente).isNull();
