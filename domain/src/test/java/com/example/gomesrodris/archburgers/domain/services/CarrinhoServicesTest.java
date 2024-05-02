@@ -5,8 +5,6 @@ import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
-import com.example.gomesrodris.archburgers.domain.support.TransactionManager;
-import com.example.gomesrodris.archburgers.domain.testUtils.DummyTransactionManager;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
@@ -36,9 +34,7 @@ class CarrinhoServicesTest {
 
     @BeforeEach
     void setUp() {
-        TransactionManager transactionManager = new DummyTransactionManager();
-
-        carrinhoServices = new CarrinhoServices(carrinhoRepository, clienteRepository, transactionManager, clock);
+        carrinhoServices = new CarrinhoServices(carrinhoRepository, clienteRepository, clock);
     }
 
     @Test

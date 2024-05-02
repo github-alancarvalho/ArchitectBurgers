@@ -4,74 +4,68 @@ import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
-import com.example.gomesrodris.archburgers.domain.support.TransactionManager;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class CarrinhoServices {
 
     private final CarrinhoRepository carrinhoRepository;
     private final ClienteRepository clienteRepository;
-    private final TransactionManager transactionManager;
     private final Clock clock;
 
     private final RecuperarCarrinhoPolicy recuperarCarrinhoPolicy;
     private final SalvarClientePolicy salvarClientePolicy;
 
-    @Autowired
-    public CarrinhoServices(CarrinhoRepository carrinhoRepository, ClienteRepository clienteRepository,
-                            TransactionManager transactionManager, Clock clock) {
+    public CarrinhoServices(CarrinhoRepository carrinhoRepository, ClienteRepository clienteRepository, Clock clock) {
         this.carrinhoRepository = carrinhoRepository;
         this.clienteRepository = clienteRepository;
-        this.transactionManager = transactionManager;
         this.clock = clock;
 
         this.recuperarCarrinhoPolicy = new RecuperarCarrinhoPolicy();
         this.salvarClientePolicy = new SalvarClientePolicy();
     }
 
-    public Carrinho criarCarrinho(@NotNull CarrinhoParam param) throws Exception {
+    /**
+     * @apiNote Este método executa múltiplas operações nos repositórios. É esperado que seja
+     * executado em um contexto transacional a ser fornecido pelos serviços de infraestrutura
+     */
+    public Carrinho criarCarrinho(@NotNull CarrinhoParam param) {
         boolean clienteIdentificado = param.isClienteIdentificado();
 
         param.getCpfValidado(); // Throw early if invalid
 
-        return transactionManager.runInTransaction(() -> {
-            if (clienteIdentificado) {
-                if (param.idCliente == null) {
-                    // Sanity-check para atender warnings da IDE - ja verificado em param.getMetodo()
-                    throw new RuntimeException("Unexpected state param.idCliente");
-                }
-
-                var carrinhoSalvo = recuperarCarrinhoPolicy.tryRecuperarCarrinho(param.idCliente);
-                if (carrinhoSalvo != null) {
-                    return carrinhoSalvo;
-                }
-
-                var cliente = clienteRepository.getClienteById(param.idCliente);
-                if (cliente == null) {
-                    throw new IllegalArgumentException("Cliente invalido! " + param.idCliente);
-                }
-
-                var newCarrinho = new Carrinho(null, cliente, null,
-                        List.of(), null, clock.localDateTime());
-                return carrinhoRepository.salvarCarrinho(newCarrinho);
-
-            } else {
-                Cliente novoCliente = salvarClientePolicy.salvarClienteSeDadosCompletos(param);
-                var newCarrinho = new Carrinho(null, novoCliente,
-                        novoCliente == null ? param.nomeCliente : null,
-                        List.of(), null, clock.localDateTime());
-                return carrinhoRepository.salvarCarrinho(newCarrinho);
+        if (clienteIdentificado) {
+            if (param.idCliente == null) {
+                // Sanity-check para atender warnings da IDE - ja verificado em param.getMetodo()
+                throw new RuntimeException("Unexpected state param.idCliente");
             }
-        });
+
+            var carrinhoSalvo = recuperarCarrinhoPolicy.tryRecuperarCarrinho(param.idCliente);
+            if (carrinhoSalvo != null) {
+                return carrinhoSalvo;
+            }
+
+            var cliente = clienteRepository.getClienteById(param.idCliente);
+            if (cliente == null) {
+                throw new IllegalArgumentException("Cliente invalido! " + param.idCliente);
+            }
+
+            var newCarrinho = new Carrinho(null, cliente, null,
+                    List.of(), null, clock.localDateTime());
+            return carrinhoRepository.salvarCarrinho(newCarrinho);
+
+        } else {
+            Cliente novoCliente = salvarClientePolicy.salvarClienteSeDadosCompletos(param);
+            var newCarrinho = new Carrinho(null, novoCliente,
+                    novoCliente == null ? param.nomeCliente : null,
+                    List.of(), null, clock.localDateTime());
+            return carrinhoRepository.salvarCarrinho(newCarrinho);
+        }
     }
 
     /**
