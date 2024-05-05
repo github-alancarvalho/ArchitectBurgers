@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DomainServiceBeans {
 
-    @Bean Clock clock() {
+    @Bean
+    Clock clock() {
         return new Clock();
     }
 
@@ -29,7 +30,9 @@ public class DomainServiceBeans {
 
     @Bean
     public CarrinhoServices carrinhoServices(CarrinhoRepository carrinhoRepository,
-                                             ClienteRepository clienteRepository, Clock clock) {
-        return new CarrinhoServices(carrinhoRepository, clienteRepository, clock);
+                                             ClienteRepository clienteRepository,
+                                             ItemCardapioRepository itemCardapioRepository,
+                                             Clock clock) {
+        return new CarrinhoServices(carrinhoRepository, clienteRepository, itemCardapioRepository, clock);
     }
 }

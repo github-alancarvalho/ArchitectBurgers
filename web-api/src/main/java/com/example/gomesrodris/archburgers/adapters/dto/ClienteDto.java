@@ -15,7 +15,7 @@ public record ClienteDto(
 
     public static ClienteDto fromEntity(Cliente cliente) {
         return new ClienteDto(
-                cliente.id(),
+                cliente.id() != null ? cliente.id().id() : null,
                 cliente.nome(),
                 cliente.cpf().cpfNum(),
                 cliente.email()

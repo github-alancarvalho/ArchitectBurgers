@@ -3,6 +3,7 @@ package com.example.gomesrodris.archburgers.adapters.driven.infra;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
+import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,10 +41,10 @@ public class ClienteRepositoryJdbcImpl implements ClienteRepository {
                 return null;
 
             return new Cliente(
-                    rs.getInt(1),
-                    rs.getString(2),
-                    new Cpf(rs.getString(3)),
-                    rs.getString(4));
+                    new IdCliente(rs.getInt("cliente_id")),
+                    rs.getString("nome"),
+                    new Cpf(rs.getString("cpf")),
+                    rs.getString("email"));
         } catch (SQLException e) {
             throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
         }
@@ -61,10 +62,10 @@ public class ClienteRepositoryJdbcImpl implements ClienteRepository {
                 return null;
 
             return new Cliente(
-                    rs.getInt(1),
-                    rs.getString(2),
-                    new Cpf(rs.getString(3)),
-                    rs.getString(4));
+                    new IdCliente(rs.getInt("cliente_id")),
+                    rs.getString("nome"),
+                    new Cpf(rs.getString("cpf")),
+                    rs.getString("email"));
         } catch (SQLException e) {
             throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
         }
@@ -84,7 +85,7 @@ public class ClienteRepositoryJdbcImpl implements ClienteRepository {
                 throw new IllegalStateException("Query was expected to return. " + SQL_INSERT_CLIENTE);
 
             return new Cliente(
-                    rs.getInt(1),
+                    new IdCliente(rs.getInt(1)),
                     cliente.nome(),
                     cliente.cpf(),
                     cliente.email());

@@ -5,8 +5,10 @@ import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
+import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
+import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,26 +30,36 @@ class CarrinhoServicesTest {
     @Mock
     private ClienteRepository clienteRepository;
     @Mock
+    private ItemCardapioRepository itemCardapioRepository;
+
+    @Mock
     private Clock clock;
 
     private CarrinhoServices carrinhoServices;
 
     @BeforeEach
     void setUp() {
-        carrinhoServices = new CarrinhoServices(carrinhoRepository, clienteRepository, clock);
+        carrinhoServices = new CarrinhoServices(carrinhoRepository, clienteRepository, itemCardapioRepository, clock);
     }
 
     @Test
-    void criarCarrinho_clienteIdentificado_carrinhoExistente() throws Exception {
-        when(carrinhoRepository.getCarrinhoByClienteId(123)).thenReturn(carrinhoCliente123);
+    void criarCarrinho_clienteIdentificado_carrinhoExistente() {
+        when(carrinhoRepository.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(carrinhoSalvoCliente123);
+
+        when(itemCardapioRepository.findByCarrinho(88)).thenReturn(List.of(
+                new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+        ));
 
         var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(123, null, null, null));
-        assertThat(result).isSameAs(carrinhoCliente123);
+        assertThat(result).isEqualTo(carrinhoSalvoCliente123.withItens(List.of(
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                ))
+        );
     }
 
     @Test
     void criarCarrinho_clienteIdentificado_novoCarrinho() throws Exception {
-        when(carrinhoRepository.getCarrinhoByClienteId(123)).thenReturn(null);
+        when(carrinhoRepository.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(null);
         when(clock.localDateTime()).thenReturn(dateTime);
 
         when(carrinhoRepository.salvarCarrinho(carrinhoVazioCliente123)).thenReturn(
@@ -84,17 +96,15 @@ class CarrinhoServicesTest {
     }
 
     // // // Predefined test objects
-    private final Cliente cliente123 = new Cliente(123, "Cliente", new Cpf("12332112340"), "cliente123@example.com");
+    private final Cliente cliente123 = new Cliente(new IdCliente(123), "Cliente", new Cpf("12332112340"), "cliente123@example.com");
     private final Cliente clienteSemId = new Cliente(null, "Cliente", new Cpf("12332112340"), "cliente123@example.com");
 
     private final LocalDateTime dateTime = LocalDateTime.of(2024, 4, 29, 15, 30);
 
-    private final Carrinho carrinhoCliente123 = new Carrinho(88, cliente123, null,
-            List.of(new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))),
-            "Mandar molho", dateTime);
+    private final Carrinho carrinhoSalvoCliente123 = Carrinho.carrinhoSalvoClienteIdentificado(
+            88, new IdCliente(123), null, dateTime);
 
-    private final Carrinho carrinhoNaoIdentificado = new Carrinho(null, null, "João",
-            List.of(), null, dateTime);
+    private final Carrinho carrinhoNaoIdentificado = Carrinho.newCarrinhoVazioClienteNaoIdentificado("João", dateTime);
 
-    private final Carrinho carrinhoVazioCliente123 = new Carrinho(null, cliente123, null, List.of(), null, dateTime);
+    private final Carrinho carrinhoVazioCliente123 = Carrinho.newCarrinhoVazioClienteIdentificado(new IdCliente(123), dateTime);
 }

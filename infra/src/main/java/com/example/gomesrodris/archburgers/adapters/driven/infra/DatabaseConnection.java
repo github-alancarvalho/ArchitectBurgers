@@ -1,6 +1,5 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
-import com.example.gomesrodris.archburgers.domain.support.TransactionManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.VisibleForTesting;

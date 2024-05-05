@@ -4,26 +4,33 @@ import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
+import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
+import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.Objects;
 
 public class CarrinhoServices {
 
     private final CarrinhoRepository carrinhoRepository;
     private final ClienteRepository clienteRepository;
+    private final ItemCardapioRepository itemCardapioRepository;
     private final Clock clock;
 
     private final RecuperarCarrinhoPolicy recuperarCarrinhoPolicy;
     private final SalvarClientePolicy salvarClientePolicy;
 
-    public CarrinhoServices(CarrinhoRepository carrinhoRepository, ClienteRepository clienteRepository, Clock clock) {
+    public CarrinhoServices(CarrinhoRepository carrinhoRepository,
+                            ClienteRepository clienteRepository,
+                            ItemCardapioRepository itemCardapioRepository,
+                            Clock clock) {
         this.carrinhoRepository = carrinhoRepository;
         this.clienteRepository = clienteRepository;
+        this.itemCardapioRepository = itemCardapioRepository;
         this.clock = clock;
 
         this.recuperarCarrinhoPolicy = new RecuperarCarrinhoPolicy();
@@ -40,32 +47,36 @@ public class CarrinhoServices {
         param.getCpfValidado(); // Throw early if invalid
 
         if (clienteIdentificado) {
-            if (param.idCliente == null) {
-                // Sanity-check para atender warnings da IDE - ja verificado em param.getMetodo()
-                throw new RuntimeException("Unexpected state param.idCliente");
-            }
-
-            var carrinhoSalvo = recuperarCarrinhoPolicy.tryRecuperarCarrinho(param.idCliente);
+            var carrinhoSalvo = recuperarCarrinhoPolicy.tryRecuperarCarrinho(
+                    new IdCliente(Objects.requireNonNull(param.idCliente, "Unexpected state: idCliente is null")));
             if (carrinhoSalvo != null) {
-                return carrinhoSalvo;
+                var itens = itemCardapioRepository.findByCarrinho(Objects.requireNonNull(carrinhoSalvo.id(), "Object from database should have ID"));
+                return carrinhoSalvo.withItens(itens);
             }
+        }
 
+        Carrinho newCarrinho;
+        if (clienteIdentificado) {
             var cliente = clienteRepository.getClienteById(param.idCliente);
             if (cliente == null) {
                 throw new IllegalArgumentException("Cliente invalido! " + param.idCliente);
             }
 
-            var newCarrinho = new Carrinho(null, cliente, null,
-                    List.of(), null, clock.localDateTime());
-            return carrinhoRepository.salvarCarrinho(newCarrinho);
-
+            newCarrinho = Carrinho.newCarrinhoVazioClienteIdentificado(
+                    Objects.requireNonNull(cliente.id(), "Unexpected state: cliente.id() is null"), clock.localDateTime());
         } else {
             Cliente novoCliente = salvarClientePolicy.salvarClienteSeDadosCompletos(param);
-            var newCarrinho = new Carrinho(null, novoCliente,
-                    novoCliente == null ? param.nomeCliente : null,
-                    List.of(), null, clock.localDateTime());
-            return carrinhoRepository.salvarCarrinho(newCarrinho);
+
+            if (novoCliente == null) {
+                newCarrinho = Carrinho.newCarrinhoVazioClienteNaoIdentificado(
+                        Objects.requireNonNull(param.nomeCliente, "Unexpected state: nomeCliente is null"), clock.localDateTime());
+            } else {
+                newCarrinho = Carrinho.newCarrinhoVazioClienteIdentificado(
+                        Objects.requireNonNull(novoCliente.id(), "Unexpected state: novoCliente.id() is null"), clock.localDateTime());
+            }
         }
+
+        return carrinhoRepository.salvarCarrinho(newCarrinho);
     }
 
     /**
@@ -95,7 +106,8 @@ public class CarrinhoServices {
             }
         }
 
-        @Nullable private Cpf getCpfValidado() {
+        @Nullable
+        private Cpf getCpfValidado() {
             if (StringUtils.isEmpty(cpf)) {
                 return null;
             } else {
@@ -109,8 +121,8 @@ public class CarrinhoServices {
      * carrega para permitir continuar a compra
      */
     private class RecuperarCarrinhoPolicy {
-        Carrinho tryRecuperarCarrinho(int idCliente) {
-            return carrinhoRepository.getCarrinhoByClienteId(idCliente);
+        Carrinho tryRecuperarCarrinho(IdCliente idCliente) {
+            return carrinhoRepository.getCarrinhoSalvoByCliente(idCliente);
         }
     }
 

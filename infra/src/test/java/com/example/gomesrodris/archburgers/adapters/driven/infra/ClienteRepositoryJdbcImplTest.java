@@ -3,6 +3,7 @@ package com.example.gomesrodris.archburgers.adapters.driven.infra;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
+import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
 import org.junit.jupiter.api.*;
 
@@ -40,7 +41,7 @@ class ClienteRepositoryJdbcImplTest {
     void getClienteByCpf() {
         var cliente = repository.getClienteByCpf(new Cpf("12332112340"));
 
-        assertThat(cliente).isEqualTo(new Cliente(1, "Roberto Carlos",
+        assertThat(cliente).isEqualTo(new Cliente(new IdCliente(1), "Roberto Carlos",
                 new Cpf("12332112340"), "roberto.carlos@example.com"));
     }
 
@@ -48,7 +49,7 @@ class ClienteRepositoryJdbcImplTest {
     void getClienteById() {
         var cliente = repository.getClienteById(2);
 
-        assertThat(cliente).isEqualTo(new Cliente(2, "Wanderleia",
+        assertThat(cliente).isEqualTo(new Cliente(new IdCliente(2), "Wanderleia",
                 new Cpf("99988877714"), "wanderleia@example.com"));
     }
 
@@ -59,7 +60,7 @@ class ClienteRepositoryJdbcImplTest {
 
         var clienteSalvo = repository.salvarCliente(cliente);
 
-        assertThat(clienteSalvo).isEqualTo(new Cliente(3, "Erasmo",
+        assertThat(clienteSalvo).isEqualTo(new Cliente(new IdCliente(3), "Erasmo",
                 new Cpf("33344455508"), "erasmo@example.com"));
     }
 

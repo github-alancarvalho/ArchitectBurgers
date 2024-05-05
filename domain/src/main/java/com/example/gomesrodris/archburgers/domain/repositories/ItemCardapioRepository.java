@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ItemCardapioRepository {
     List<ItemCardapio> findAll();
+    List<ItemCardapio> findByCarrinho(int idCarrinho);
 }

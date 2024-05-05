@@ -60,4 +60,21 @@ class ItemCardapioRepositoryJdbcImplTest {
                         "Mini churros de doce de leite", new ValorMonetario("0.99"))
         );
     }
+
+    @Test
+    void findByCarrinho() {
+        List<ItemCardapio> byTipo = repository.findByCarrinho(1);
+
+        assertThat(byTipo).hasSize(2);
+
+        assertThat(byTipo.get(0)).isEqualTo(
+                new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
+                        "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90"))
+        );
+
+        assertThat(byTipo.get(1)).isEqualTo(
+                new ItemCardapio(3, TipoItemCardapio.ACOMPANHAMENTO, "Batatas Fritas P",
+                        "Batatas fritas porção pequena", new ValorMonetario("8.00"))
+        );
+    }
 }
