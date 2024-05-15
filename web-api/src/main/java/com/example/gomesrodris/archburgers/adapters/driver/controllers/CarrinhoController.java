@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class CarrinhoController {
     }
 
     @PostMapping(path = "/carrinho")
-    public ResponseEntity<CarrinhoDto> iniciarCarrinho(CarrinhoServices.CarrinhoParam param) {
+    public ResponseEntity<CarrinhoDto> iniciarCarrinho(@RequestBody CarrinhoServices.CarrinhoParam param) {
 
         Carrinho carrinho;
         try {
@@ -43,6 +44,6 @@ public class CarrinhoController {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar/recuperar carrinho");
         }
 
-        return CarrinhoDto.fromEntity(carrinho);
+        return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
     }
 }

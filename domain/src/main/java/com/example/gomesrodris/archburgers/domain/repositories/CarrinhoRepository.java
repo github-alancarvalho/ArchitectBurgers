@@ -10,5 +10,7 @@ public interface CarrinhoRepository {
      */
     Carrinho getCarrinhoSalvoByCliente(IdCliente idCliente);
 
-    Carrinho salvarCarrinho(Carrinho carrinho);
+    Carrinho getCarrinho(int idCarrinho);
+
+    Carrinho salvarCarrinhoVazio(Carrinho carrinho);
 }

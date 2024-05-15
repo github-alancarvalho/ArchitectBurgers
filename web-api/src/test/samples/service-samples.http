@@ -1,0 +1,48 @@
+###
+# @name Identifica Cliente
+# Identificar cliente pelo CPF
+GET http://localhost:8090/cliente?cpf=12332112340
+
+###
+# @name Novo carrinho cliente identificado
+# Inicializar carrinho - Opção 1 - a partir de cliente identificado
+POST http://localhost:8090/carrinho
+Content-Type: application/json
+
+{
+  "idCliente": 1
+}
+
+###
+# @name Carrinho existente cliente identificado
+# Inicializar carrinho - Opção 1.1 - a partir de cliente identificado (recuperou anterior)
+POST http://localhost:8090/carrinho
+Content-Type: application/json
+
+{
+  "idCliente": 2
+}
+
+###
+# @name Novo carrinho cliente não identificado
+# Inicializar carrinho - Opção 2 - cliente anônimo
+POST http://localhost:8090/carrinho
+Content-Type: application/json
+
+{
+  "nomeCliente": "Cliente José"
+}
+
+###
+# @name Novo carrinho e cadastrar cliente
+# Inicializar carrinho - Opção 2 - cliente anônimo
+POST http://localhost:8090/carrinho
+Content-Type: application/json
+
+{
+  "nomeCliente": "Cliente Maria",
+  "cpf": "11122233396",
+  "email": "maria.cliente@example.org"
+}
+
+

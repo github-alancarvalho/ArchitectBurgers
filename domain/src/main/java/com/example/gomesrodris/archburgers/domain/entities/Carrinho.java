@@ -34,7 +34,7 @@ public final class Carrinho {
         return new Carrinho(null, null, nomeCliente, List.of(), null, dataHoraCarrinhoCriado);
     }
 
-    private Carrinho(
+    public Carrinho(
             @Nullable Integer id,
             @Nullable IdCliente idClienteIdentificado,
             @Nullable String nomeClienteNaoIdentificado,

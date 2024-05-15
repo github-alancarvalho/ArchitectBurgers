@@ -76,7 +76,7 @@ public class CarrinhoServices {
             }
         }
 
-        return carrinhoRepository.salvarCarrinho(newCarrinho);
+        return carrinhoRepository.salvarCarrinhoVazio(newCarrinho);
     }
 
     /**

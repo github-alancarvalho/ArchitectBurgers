@@ -62,7 +62,7 @@ class CarrinhoServicesTest {
         when(carrinhoRepository.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(null);
         when(clock.localDateTime()).thenReturn(dateTime);
 
-        when(carrinhoRepository.salvarCarrinho(carrinhoVazioCliente123)).thenReturn(
+        when(carrinhoRepository.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
                 carrinhoVazioCliente123.withId(99));
 
         when(clienteRepository.getClienteById(123)).thenReturn(cliente123);
@@ -75,7 +75,7 @@ class CarrinhoServicesTest {
     void criarCarrinho_clienteNaoIdentificado_novoCarrinho() throws Exception {
         when(clock.localDateTime()).thenReturn(dateTime);
 
-        when(carrinhoRepository.salvarCarrinho(carrinhoNaoIdentificado)).thenReturn(
+        when(carrinhoRepository.salvarCarrinhoVazio(carrinhoNaoIdentificado)).thenReturn(
                 carrinhoNaoIdentificado.withId(101));
 
         var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(null, "João", null, null));
@@ -88,7 +88,7 @@ class CarrinhoServicesTest {
 
         when(clienteRepository.salvarCliente(clienteSemId)).thenReturn(cliente123);
 
-        when(carrinhoRepository.salvarCarrinho(carrinhoVazioCliente123)).thenReturn(
+        when(carrinhoRepository.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
                 carrinhoVazioCliente123.withId(102));
 
         var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(null, "Cliente", "12332112340", "cliente123@example.com"));
