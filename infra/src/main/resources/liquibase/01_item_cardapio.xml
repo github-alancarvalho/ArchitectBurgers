@@ -57,13 +57,6 @@
 
         <insert tableName="item_cardapio">
             <column name="tipo" value="B"/>
-            <column name="nome" value="Dollynho"/>
-            <column name="descricao" value="Guaraná Dollynho"/>
-            <column name="valor" value="5"/>
-        </insert>
-
-        <insert tableName="item_cardapio">
-            <column name="tipo" value="B"/>
             <column name="nome" value="Chá gelado"/>
             <column name="descricao" value="Chá gelado com limão, feito na casa"/>
             <column name="valor" value="6.00"/>
@@ -81,6 +74,13 @@
             <column name="nome" value="Mini churros"/>
             <column name="descricao" value="Mini churros de doce de leite"/>
             <column name="valor" value="0.99"/>
+        </insert>
+
+        <insert tableName="item_cardapio">
+            <column name="tipo" value="B"/>
+            <column name="nome" value="Dollynho"/>
+            <column name="descricao" value="Guaraná Dollynho"/>
+            <column name="valor" value="5"/>
         </insert>
     </changeSet>
 

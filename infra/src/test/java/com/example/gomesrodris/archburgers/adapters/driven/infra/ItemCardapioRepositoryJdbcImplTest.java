@@ -41,38 +41,47 @@ class ItemCardapioRepositoryJdbcImplTest {
 
     @Test
     void findAll() {
-        List<ItemCardapio> byTipo = repository.findAll();
+        List<ItemCardapio> allItens = repository.findAll();
 
-        assertThat(byTipo).hasSize(8);
+        assertThat(allItens).hasSize(8);
 
-        assertThat(byTipo.get(0)).isEqualTo(
+        assertThat(allItens.get(0)).isEqualTo(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
                         "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90"))
         );
 
-        assertThat(byTipo.get(1)).isEqualTo(
+        assertThat(allItens.get(1)).isEqualTo(
                 new ItemCardapio(2, TipoItemCardapio.LANCHE, "Veggie Cheddar",
                         "Hamburger do Futuro com cebolas caramelizadas e cheddar vegano", new ValorMonetario("23.50"))
         );
 
-        assertThat(byTipo.get(7)).isEqualTo(
-                new ItemCardapio(8, TipoItemCardapio.SOBREMESA, "Mini churros",
+        // Verifica se ordenação por tipos foi correta
+        assertThat(allItens.get(2).tipo()).isEqualTo(TipoItemCardapio.ACOMPANHAMENTO);
+        assertThat(allItens.get(3).tipo()).isEqualTo(TipoItemCardapio.ACOMPANHAMENTO);
+
+        assertThat(allItens.get(4).tipo()).isEqualTo(TipoItemCardapio.BEBIDA);
+        assertThat(allItens.get(5).tipo()).isEqualTo(TipoItemCardapio.BEBIDA);
+
+        assertThat(allItens.get(6).tipo()).isEqualTo(TipoItemCardapio.SOBREMESA);
+
+        assertThat(allItens.get(7)).isEqualTo(
+                new ItemCardapio(7, TipoItemCardapio.SOBREMESA, "Mini churros",
                         "Mini churros de doce de leite", new ValorMonetario("0.99"))
         );
     }
 
     @Test
     void findByCarrinho() {
-        List<ItemCardapio> byTipo = repository.findByCarrinho(1);
+        List<ItemCardapio> itensCarrinho = repository.findByCarrinho(1);
 
-        assertThat(byTipo).hasSize(2);
+        assertThat(itensCarrinho).hasSize(2);
 
-        assertThat(byTipo.get(0)).isEqualTo(
+        assertThat(itensCarrinho.get(0)).isEqualTo(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
                         "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90"))
         );
 
-        assertThat(byTipo.get(1)).isEqualTo(
+        assertThat(itensCarrinho.get(1)).isEqualTo(
                 new ItemCardapio(3, TipoItemCardapio.ACOMPANHAMENTO, "Batatas Fritas P",
                         "Batatas fritas porção pequena", new ValorMonetario("8.00"))
         );

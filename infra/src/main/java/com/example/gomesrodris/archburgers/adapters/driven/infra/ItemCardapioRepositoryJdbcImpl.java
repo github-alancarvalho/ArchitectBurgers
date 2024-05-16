@@ -22,7 +22,14 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
     @Language("SQL")
     private static final String SQL_SELECT_ALL_ITEMS = """
         select item_cardapio_id, tipo, nome, descricao, valor
-        from item_cardapio
+        from item_cardapio 
+        order by case 
+            when tipo = 'L' then 1
+            when tipo = 'A' then 2
+            when tipo = 'B' then 3
+            when tipo = 'S' then 4
+            end
+        asc, item_cardapio_id asc
     """.stripIndent();
 
     @Language("SQL")
@@ -31,6 +38,13 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
         from item_cardapio item 
         inner join carrinho_item ci ON ci.item_cardapio_id = item.item_cardapio_id
         where ci.carrinho_id = ?
+        order by case 
+            when tipo = 'L' then 1
+            when tipo = 'A' then 2
+            when tipo = 'B' then 3
+            when tipo = 'S' then 4
+            end
+        asc, item_cardapio_id asc
     """.stripIndent();
 
     private final DatabaseConnection databaseConnection;

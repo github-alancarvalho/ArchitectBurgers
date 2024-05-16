@@ -45,4 +45,8 @@ Content-Type: application/json
   "email": "maria.cliente@example.org"
 }
 
+###
+# @name Consulta cardápio
+GET http://localhost:8090/cardapio
+
 
