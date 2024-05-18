@@ -1,3 +1,4 @@
+### ######### Etapa 1 identificação do cliente e criação de Carrinho
 ###
 # @name Identifica Cliente
 # Identificar cliente pelo CPF
@@ -45,6 +46,8 @@ Content-Type: application/json
   "email": "maria.cliente@example.org"
 }
 
+
+### ######### Etapa 2 seleção de itens
 ###
 # @name Consulta cardápio
 GET http://localhost:8090/cardapio
@@ -58,3 +61,10 @@ Content-Type: application/json
 {
     "idItemCardapio": 6
 }
+
+
+### ######### Etapa 3 checkout
+###
+# @name Listar formas pagamento
+GET http://localhost:8090/pagamento/opcoes
+
