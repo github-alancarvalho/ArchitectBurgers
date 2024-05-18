@@ -71,7 +71,7 @@ GET http://localhost:8090/pagamento/opcoes
 
 ###
 # @name Criar pedido
-POST http://localhost:8090/pedido
+POST http://localhost:8090/pedidos
 Content-Type: application/json
 
 {

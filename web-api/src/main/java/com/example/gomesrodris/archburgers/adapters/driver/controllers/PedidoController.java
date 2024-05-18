@@ -30,7 +30,7 @@ public class PedidoController {
         this.transactionManager = transactionManager;
     }
 
-    @PostMapping(path = "/pedido")
+    @PostMapping(path = "/pedidos")
     public ResponseEntity<PedidoDto> criarPedido(@RequestBody PedidoServices.CriarPedidoParam param) {
 
         Pedido pedido;
