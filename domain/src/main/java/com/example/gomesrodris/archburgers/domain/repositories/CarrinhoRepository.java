@@ -1,6 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.repositories;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 
 public interface CarrinhoRepository {
@@ -13,4 +14,6 @@ public interface CarrinhoRepository {
     Carrinho getCarrinho(int idCarrinho);
 
     Carrinho salvarCarrinhoVazio(Carrinho carrinho);
+
+    void salvarItemCarrinho(Carrinho carrinho, ItemPedido newItem);
 }

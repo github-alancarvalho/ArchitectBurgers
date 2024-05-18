@@ -3,6 +3,7 @@ package com.example.gomesrodris.archburgers.domain.services;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,12 +49,16 @@ class CarrinhoServicesTest {
         when(carrinhoRepository.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(carrinhoSalvoCliente123);
 
         when(itemCardapioRepository.findByCarrinho(88)).thenReturn(List.of(
-                new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                )
         ));
 
         var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(123, null, null, null));
         assertThat(result).isEqualTo(carrinhoSalvoCliente123.withItens(List.of(
-                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                        new ItemPedido(1,
+                                new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                        )
                 ))
         );
     }
@@ -93,6 +99,46 @@ class CarrinhoServicesTest {
 
         var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(null, "Cliente", "12332112340", "cliente123@example.com"));
         assertThat(result).isEqualTo(carrinhoVazioCliente123.withId(102));
+    }
+
+    @Test
+    void addItemCarrinho() {
+        Carrinho carrinhoInicial = Carrinho.carrinhoSalvoClienteIdentificado(
+                88, new IdCliente(123), null, dateTime);
+
+        when(carrinhoRepository.getCarrinho(88)).thenReturn(carrinhoInicial);
+
+        when(itemCardapioRepository.findByCarrinho(88)).thenReturn(List.of(
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                ),
+                new ItemPedido(2,
+                        new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
+                )
+        ));
+
+        when(itemCardapioRepository.findById(1002)).thenReturn(
+                new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
+        );
+
+        var newCarrinho = carrinhoServices.addItem(88, 1002);
+
+        assertThat(newCarrinho).isEqualTo(carrinhoInicial.withItens(List.of(
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                ),
+                new ItemPedido(2,
+                        new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
+                ),
+                new ItemPedido(3,
+                        new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
+                )
+        )));
+
+        verify(carrinhoRepository).salvarItemCarrinho(newCarrinho,
+                new ItemPedido(3,
+                        new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
+        ));
     }
 
     // // // Predefined test objects

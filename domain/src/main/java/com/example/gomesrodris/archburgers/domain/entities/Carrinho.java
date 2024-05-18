@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,7 +14,7 @@ public final class Carrinho {
     private final @Nullable Integer id;
     private final @Nullable IdCliente idClienteIdentificado;
     private final @Nullable String nomeClienteNaoIdentificado;
-    private final @NotNull List<ItemCardapio> itens;
+    private final @NotNull List<ItemPedido> itens;
     private final @Nullable String observacoes;
     private final @NotNull LocalDateTime dataHoraCarrinhoCriado;
 
@@ -39,7 +40,7 @@ public final class Carrinho {
             @Nullable IdCliente idClienteIdentificado,
             @Nullable String nomeClienteNaoIdentificado,
 
-            @NotNull List<ItemCardapio> itens,
+            @NotNull List<ItemPedido> itens,
 
             @Nullable String observacoes,
 
@@ -54,16 +55,26 @@ public final class Carrinho {
     }
 
     public ValorMonetario getValorTotal() {
-        return ItemCardapio.somarValores(itens);
+        return ItemCardapio.somarValores(itens.stream().map(ItemPedido::itemCardapio).toList());
     }
 
     public Carrinho withId(Integer newId) {
         return new Carrinho(newId, idClienteIdentificado, nomeClienteNaoIdentificado, itens, observacoes, dataHoraCarrinhoCriado);
     }
 
-    public Carrinho withItens(List<ItemCardapio> newItens) {
+    public Carrinho withItens(List<ItemPedido> newItens) {
         return new Carrinho(id, idClienteIdentificado, nomeClienteNaoIdentificado,
                 newItens, observacoes, dataHoraCarrinhoCriado);
+    }
+
+    public Carrinho adicionarItem(ItemCardapio newItem) {
+        List<ItemPedido> newList = new ArrayList<>(itens);
+        var maxSequencia = itens.stream().mapToInt(ItemPedido::numSequencia).max();
+        var nextSequencia = maxSequencia.orElse(0) + 1;
+        newList.add(new ItemPedido(nextSequencia, newItem));
+
+        return new Carrinho(id, idClienteIdentificado, nomeClienteNaoIdentificado,
+                newList, observacoes, dataHoraCarrinhoCriado);
     }
 
     public @Nullable Integer id() {
@@ -78,7 +89,7 @@ public final class Carrinho {
         return nomeClienteNaoIdentificado;
     }
 
-    public @NotNull List<ItemCardapio> itens() {
+    public @NotNull List<ItemPedido> itens() {
         return itens;
     }
 

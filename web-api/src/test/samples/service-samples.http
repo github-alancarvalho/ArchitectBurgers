@@ -50,3 +50,11 @@ Content-Type: application/json
 GET http://localhost:8090/cardapio
 
 
+###
+# @name Add Item to Carrinho
+POST http://localhost:8090/carrinho/2
+Content-Type: application/json
+
+{
+    "idItemCardapio": 6
+}

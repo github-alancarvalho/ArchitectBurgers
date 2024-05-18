@@ -1,6 +1,7 @@
 package com.example.gomesrodris.archburgers.adapters.dto;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.utils.DateUtils;
 
 import java.util.ArrayList;
@@ -19,10 +20,11 @@ public record CarrinhoDto(
     public static CarrinhoDto fromEntity(Carrinho carrinho) {
         List<Item> dtoItens = new ArrayList<>();
 
-        for (int i = 0; i < carrinho.itens().size(); i++) {
-            var nextItem = carrinho.itens().get(i);
-            dtoItens.add(new Item(i, nextItem.id(), nextItem.tipo().name(),
-                    nextItem.nome(), nextItem.descricao(), ValorMonetarioDto.from(nextItem.valor())));
+        for (ItemPedido itemPedido : carrinho.itens()) {
+            dtoItens.add(new Item(itemPedido.numSequencia(), itemPedido.itemCardapio().id(),
+                    itemPedido.itemCardapio().tipo().name(),
+                    itemPedido.itemCardapio().nome(), itemPedido.itemCardapio().descricao(),
+                    ValorMonetarioDto.from(itemPedido.itemCardapio().valor())));
         }
 
         return new CarrinhoDto(carrinho.id(),
@@ -34,7 +36,7 @@ public record CarrinhoDto(
     }
 
     public record Item(
-            int index,
+            int numSequencia,
             Integer idItemCardapio,
             String tipo,
             String nome,

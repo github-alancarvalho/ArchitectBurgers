@@ -1,11 +1,12 @@
 package com.example.gomesrodris.archburgers.domain.repositories;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
-import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 
 import java.util.List;
 
 public interface ItemCardapioRepository {
+    ItemCardapio findById(int id);
     List<ItemCardapio> findAll();
-    List<ItemCardapio> findByCarrinho(int idCarrinho);
+    List<ItemPedido> findByCarrinho(int idCarrinho);
 }

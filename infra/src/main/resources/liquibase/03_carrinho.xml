@@ -34,6 +34,9 @@
                 <constraints primaryKey="false" nullable="false"
                              foreignKeyName="fk_carrinho_item_cardapio" references="item_cardapio(item_cardapio_id)" />
             </column>
+            <column name="num_sequencia" type="int">
+                <constraints primaryKey="false" nullable="false" />
+            </column>
         </createTable>
 
         <insert tableName="carrinho">
@@ -44,10 +47,12 @@
         <insert tableName="carrinho_item">
             <column name="carrinho_id" value="1"/>
             <column name="item_cardapio_id" value="1"/>
+            <column name="num_sequencia" value="1"/>
         </insert>
         <insert tableName="carrinho_item">
             <column name="carrinho_id" value="1"/>
             <column name="item_cardapio_id" value="3"/>
+            <column name="num_sequencia" value="2"/>
         </insert>
 
     </changeSet>

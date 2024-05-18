@@ -1,11 +1,18 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
+import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
+import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
+import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
 import org.junit.jupiter.api.*;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,5 +110,24 @@ class CarrinhoRepositoryJdbcImplTest {
         assertThat(carrinhoSalvo.dataHoraCarrinhoCriado()).isEqualTo(
                 LocalDateTime.of(2024, 4, 30, 20, 21, 40)
         );
+    }
+
+    @Test
+    void salvarItemCarrinho() throws SQLException {
+        var carrinhoSalvo = carrinhoRepository.getCarrinhoSalvoByCliente(new IdCliente(2));
+        assertThat(carrinhoSalvo).isNotNull();
+
+        carrinhoRepository.salvarItemCarrinho(carrinhoSalvo, new ItemPedido(3,
+                        new ItemCardapio(7, TipoItemCardapio.SOBREMESA, "Mini churros",
+                                "Mini churros de doce de leite", new ValorMonetario("0.99"))
+                )
+        );
+
+        try (var conn = databaseConnection.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("select * from carrinho_item where carrinho_id = 1 and item_cardapio_id = 7 and num_sequencia = 3");
+            ResultSet rs = stmt.executeQuery();
+
+            assertThat(rs.next()).isTrue(); // Record exists
+        }
     }
 }

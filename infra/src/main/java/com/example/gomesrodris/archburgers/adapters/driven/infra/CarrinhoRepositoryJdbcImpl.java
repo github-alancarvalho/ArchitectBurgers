@@ -1,6 +1,7 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import org.intellij.lang.annotations.Language;
@@ -13,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Objects;
 
 @Repository
 public class CarrinhoRepositoryJdbcImpl implements CarrinhoRepository {
@@ -32,6 +34,12 @@ public class CarrinhoRepositoryJdbcImpl implements CarrinhoRepository {
     private final String SQL_INSERT_CARRINHO_EMPTY = """
                 insert into carrinho (id_cliente_identificado,nome_cliente_nao_identificado,observacoes,data_hora_criado)
                 values (?,?,?,?) returning carrinho_id
+            """;
+
+    @Language("SQL")
+    private final String SQL_INSERT_ITEM_CARRINHO = """
+                insert into carrinho_item (carrinho_id, item_cardapio_id, num_sequencia)
+                values (?,?,?)
             """;
 
     private final DatabaseConnection databaseConnection;
@@ -93,6 +101,22 @@ public class CarrinhoRepositoryJdbcImpl implements CarrinhoRepository {
             int newId = rs.getInt(1);
 
             return carrinho.withId(newId);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void salvarItemCarrinho(Carrinho carrinho, ItemPedido newItem) {
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_INSERT_ITEM_CARRINHO)) {
+
+            stmt.setInt(1, Objects.requireNonNull(carrinho.id(), "Must be persisted to add items"));
+            stmt.setInt(2, newItem.itemCardapio().id());
+            stmt.setInt(3, newItem.numSequencia());
+
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
             throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);

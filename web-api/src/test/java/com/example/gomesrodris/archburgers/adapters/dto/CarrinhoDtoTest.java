@@ -3,6 +3,7 @@ package com.example.gomesrodris.archburgers.adapters.dto;//import static org.jun
 import com.example.gomesrodris.archburgers.adapters.testUtils.TestLocale;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
@@ -25,18 +26,21 @@ class CarrinhoDtoTest {
     void fromEntity() {
         var entity1 = Carrinho.carrinhoSalvoClienteIdentificado(123, new IdCliente(98),
                         "Não adicionar molho", LocalDateTime.of(2024, 4, 29, 15, 30))
-                .withItens(List.of(new ItemCardapio(2, TipoItemCardapio.LANCHE, "Cheese Burger",
-                                "Hamburger com queijo", new ValorMonetario("18.50")),
-                        new ItemCardapio(14, TipoItemCardapio.BEBIDA, "Refrigerante P",
+                .withItens(List.of(
+                        new ItemPedido(1, new ItemCardapio(2, TipoItemCardapio.LANCHE, "Cheese Burger",
+                                "Hamburger com queijo", new ValorMonetario("18.50"))
+                        ),
+                        new ItemPedido(2, new ItemCardapio(14, TipoItemCardapio.BEBIDA, "Refrigerante P",
                                 "Refrigerante 300ml", new ValorMonetario("4.99"))
+                        )
                 ));
 
         var dto = CarrinhoDto.fromEntity(entity1);
 
         List<CarrinhoDto.Item> dtoItens = List.of(
-                new CarrinhoDto.Item(0, 2, "LANCHE", "Cheese Burger",
+                new CarrinhoDto.Item(1, 2, "LANCHE", "Cheese Burger",
                         "Hamburger com queijo", new ValorMonetarioDto("18.50", "R$ 18,50")),
-                new CarrinhoDto.Item(1, 14, "BEBIDA", "Refrigerante P",
+                new CarrinhoDto.Item(2, 14, "BEBIDA", "Refrigerante P",
                         "Refrigerante 300ml", new ValorMonetarioDto("4.99", "R$ 4,99"))
         );
 

@@ -1,6 +1,7 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
@@ -40,6 +41,20 @@ class ItemCardapioRepositoryJdbcImplTest {
     }
 
     @Test
+    void findById() {
+        ItemCardapio item = repository.findById(6);
+        assertThat(item).isEqualTo(new ItemCardapio(6, TipoItemCardapio.SOBREMESA,
+                "Milk shake", "Milk Shake de chocolate, morango ou baunilha. Escolha o sabor na observação",
+                new ValorMonetario("12.50")));
+    }
+
+    @Test
+    void findById_nonExisting() {
+        ItemCardapio item = repository.findById(66);
+        assertThat(item).isNull();
+    }
+
+    @Test
     void findAll() {
         List<ItemCardapio> allItens = repository.findAll();
 
@@ -72,18 +87,22 @@ class ItemCardapioRepositoryJdbcImplTest {
 
     @Test
     void findByCarrinho() {
-        List<ItemCardapio> itensCarrinho = repository.findByCarrinho(1);
+        List<ItemPedido> itensCarrinho = repository.findByCarrinho(1);
 
         assertThat(itensCarrinho).hasSize(2);
 
         assertThat(itensCarrinho.get(0)).isEqualTo(
-                new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
-                        "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90"))
+                new ItemPedido(1,
+                        new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
+                                "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90"))
+                )
         );
 
         assertThat(itensCarrinho.get(1)).isEqualTo(
-                new ItemCardapio(3, TipoItemCardapio.ACOMPANHAMENTO, "Batatas Fritas P",
-                        "Batatas fritas porção pequena", new ValorMonetario("8.00"))
+                new ItemPedido(2,
+                        new ItemCardapio(3, TipoItemCardapio.ACOMPANHAMENTO, "Batatas Fritas P",
+                                "Batatas fritas porção pequena", new ValorMonetario("8.00"))
+                )
         );
     }
 }

@@ -2,6 +2,7 @@ package com.example.gomesrodris.archburgers.domain.services;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
@@ -77,6 +78,34 @@ public class CarrinhoServices {
         }
 
         return carrinhoRepository.salvarCarrinhoVazio(newCarrinho);
+    }
+
+    /**
+     *
+     */
+    public Carrinho addItem(int idCarrinho, int idItemCardapio) {
+        var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
+        if (carrinho == null) {
+            throw new IllegalArgumentException("Carrinho invalido! " + idCarrinho);
+        }
+
+        var itemCardapio = itemCardapioRepository.findById(idItemCardapio);
+        if (itemCardapio == null) {
+            throw new IllegalArgumentException("Item cardapio invalido! " + idItemCardapio);
+        }
+
+        var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
+        carrinho = carrinho.withItens(currentItens);
+
+        var newCarrinho = carrinho.adicionarItem(itemCardapio);
+
+        ItemPedido newItem = newCarrinho.itens().getLast();
+        if (newItem.itemCardapio().id() != idItemCardapio) {
+            throw new IllegalStateException("Invalid state check! Last item should be the new. " + idItemCardapio + " - " + newItem);
+        }
+
+        carrinhoRepository.salvarItemCarrinho(newCarrinho, newItem);
+        return newCarrinho;
     }
 
     /**
