@@ -16,4 +16,6 @@ public interface CarrinhoRepository {
     Carrinho salvarCarrinhoVazio(Carrinho carrinho);
 
     void salvarItemCarrinho(Carrinho carrinho, ItemPedido newItem);
+
+    void deleteCarrinho(Carrinho carrinho);
 }

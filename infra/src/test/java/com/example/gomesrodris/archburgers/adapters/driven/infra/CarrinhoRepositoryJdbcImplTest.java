@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -129,5 +130,50 @@ class CarrinhoRepositoryJdbcImplTest {
 
             assertThat(rs.next()).isTrue(); // Record exists
         }
+    }
+
+    @Test
+    void deleteCarrinho() throws SQLException {
+        Carrinho carrinho = Carrinho.newCarrinhoVazioClienteNaoIdentificado("Sr. Anônimo",
+                LocalDateTime.of(2024, 4, 30, 20, 21, 40));
+
+        var savedCarrinho = carrinhoRepository.salvarCarrinhoVazio(carrinho);
+        assertThat(savedCarrinho.id()).isGreaterThan(1);
+
+        carrinhoRepository.salvarItemCarrinho(savedCarrinho, new ItemPedido(1,
+                        new ItemCardapio(1, TipoItemCardapio.SOBREMESA, "Hamburger",
+                                "Hamburger", new ValorMonetario("20.50"))
+                )
+        );
+
+        var counts = getCounts(Objects.requireNonNull(savedCarrinho.id(), "Non null was expected"));
+        assertThat(counts[0]).isEqualTo(1);
+        assertThat(counts[1]).isEqualTo(1);
+
+        carrinhoRepository.deleteCarrinho(savedCarrinho);
+
+        counts = getCounts(savedCarrinho.id());
+        assertThat(counts[0]).isEqualTo(0);
+        assertThat(counts[1]).isEqualTo(0);
+    }
+
+    private int[] getCounts(int idCarrinho) throws SQLException {
+        int[] counts = new int[2];
+        try (var conn = databaseConnection.jdbcConnection();
+             var stmt1 = conn.prepareStatement("select count(*) from carrinho where carrinho_id = ?");
+             var stmt2 = conn.prepareStatement("select count(*) from carrinho_item where carrinho_id = ?")) {
+
+            stmt1.setInt(1, idCarrinho);
+            var rs1 = stmt1.executeQuery();
+            stmt2.setInt(1, idCarrinho);
+            var rs2 = stmt2.executeQuery();
+
+            assertThat(rs1.next()).isTrue();
+            assertThat(rs2.next()).isTrue();
+
+            counts[0] = rs1.getInt(1);
+            counts[1] = rs2.getInt(1);
+        }
+        return counts;
     }
 }

@@ -47,7 +47,11 @@ public class PedidoServices {
                 StatusPedido.RECEBIDO, new InfoPagamento(formaPagamento),
                 clock.localDateTime());
 
-        return pedidoRepository.savePedido(pedido);
+        Pedido saved = pedidoRepository.savePedido(pedido);
+
+        carrinhoRepository.deleteCarrinho(carrinho);
+
+        return saved;
     }
 
     public record CriarPedidoParam(
