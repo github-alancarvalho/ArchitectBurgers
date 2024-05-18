@@ -8,5 +8,6 @@
     <include file="/liquibase/01_item_cardapio.xml" />
     <include file="/liquibase/02_cliente.xml" />
     <include file="/liquibase/03_carrinho.xml" />
+    <include file="/liquibase/04_pedido.xml" />
 
 </databaseChangeLog>

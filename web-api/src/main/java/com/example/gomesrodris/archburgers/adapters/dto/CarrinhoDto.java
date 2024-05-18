@@ -11,17 +11,17 @@ public record CarrinhoDto(
         Integer id,
         Integer idClienteIdentificado,
         String nomeClienteNaoIdentificado,
-        List<Item> itens,
+        List<ItemPedidoDto> itens,
         String observacoes,
         ValorMonetarioDto valorTotal,
         Long dataHoraCarrinhoCriado
 ) {
 
     public static CarrinhoDto fromEntity(Carrinho carrinho) {
-        List<Item> dtoItens = new ArrayList<>();
+        List<ItemPedidoDto> dtoItens = new ArrayList<>();
 
         for (ItemPedido itemPedido : carrinho.itens()) {
-            dtoItens.add(new Item(itemPedido.numSequencia(), itemPedido.itemCardapio().id(),
+            dtoItens.add(new ItemPedidoDto(itemPedido.numSequencia(), itemPedido.itemCardapio().id(),
                     itemPedido.itemCardapio().tipo().name(),
                     itemPedido.itemCardapio().nome(), itemPedido.itemCardapio().descricao(),
                     ValorMonetarioDto.from(itemPedido.itemCardapio().valor())));
@@ -35,14 +35,4 @@ public record CarrinhoDto(
                 DateUtils.toTimestamp(carrinho.dataHoraCarrinhoCriado()));
     }
 
-    public record Item(
-            int numSequencia,
-            Integer idItemCardapio,
-            String tipo,
-            String nome,
-            String descricao,
-            ValorMonetarioDto valor
-    ) {
-
-    }
 }

@@ -9,6 +9,19 @@ public enum FormaPagamento {
         this.descricao = descricao;
     }
 
+    public static FormaPagamento fromName(String formaPagamento) {
+        if (formaPagamento == null) {
+            return null;
+        }
+
+        for (FormaPagamento value : values()) {
+            if (value.name().equalsIgnoreCase(formaPagamento))
+                return value;
+        }
+
+        throw new IllegalArgumentException("Forma de pagamento inválida: " + formaPagamento);
+    }
+
     public String getDescricao() {
         return descricao;
     }

@@ -37,10 +37,10 @@ class CarrinhoDtoTest {
 
         var dto = CarrinhoDto.fromEntity(entity1);
 
-        List<CarrinhoDto.Item> dtoItens = List.of(
-                new CarrinhoDto.Item(1, 2, "LANCHE", "Cheese Burger",
+        List<ItemPedidoDto> dtoItens = List.of(
+                new ItemPedidoDto(1, 2, "LANCHE", "Cheese Burger",
                         "Hamburger com queijo", new ValorMonetarioDto("18.50", "R$ 18,50")),
-                new CarrinhoDto.Item(2, 14, "BEBIDA", "Refrigerante P",
+                new ItemPedidoDto(2, 14, "BEBIDA", "Refrigerante P",
                         "Refrigerante 300ml", new ValorMonetarioDto("4.99", "R$ 4,99"))
         );
 

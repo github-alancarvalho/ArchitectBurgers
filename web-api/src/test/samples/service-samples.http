@@ -68,3 +68,15 @@ Content-Type: application/json
 # @name Listar formas pagamento
 GET http://localhost:8090/pagamento/opcoes
 
+
+###
+# @name Criar pedido
+POST http://localhost:8090/pedido
+Content-Type: application/json
+
+{
+  "idCarrinho": 2,
+  "formaPagamento": "DINHEIRO"
+}
+
+

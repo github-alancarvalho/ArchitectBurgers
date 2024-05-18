@@ -3,9 +3,11 @@ package com.example.gomesrodris.archburgers.di;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
+import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
 import com.example.gomesrodris.archburgers.domain.services.CardapioServices;
 import com.example.gomesrodris.archburgers.domain.services.CarrinhoServices;
 import com.example.gomesrodris.archburgers.domain.services.ClienteServices;
+import com.example.gomesrodris.archburgers.domain.services.PedidoServices;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,5 +36,13 @@ public class DomainServiceBeans {
                                              ItemCardapioRepository itemCardapioRepository,
                                              Clock clock) {
         return new CarrinhoServices(carrinhoRepository, clienteRepository, itemCardapioRepository, clock);
+    }
+
+    @Bean
+    public PedidoServices pedidoServices(CarrinhoRepository carrinhoRepository,
+                                         ItemCardapioRepository itemCardapioRepository,
+                                         PedidoRepository pedidoRepository,
+                                         Clock clock) {
+        return new PedidoServices(pedidoRepository, carrinhoRepository, itemCardapioRepository, clock);
     }
 }

@@ -1,5 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.entities;
 
+import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
+import com.example.gomesrodris.archburgers.domain.valueobjects.InfoPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import org.jetbrains.annotations.NotNull;
@@ -9,21 +11,31 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record Pedido(
-        @NotNull Integer id,
+        @Nullable Integer id,
 
-        @Nullable Cliente clienteIdentificado,
+        @Nullable IdCliente idClienteIdentificado,
         @Nullable String nomeClienteNaoIdentificado,
 
-        @NotNull List<ItemCardapio> itens,
+        @NotNull List<ItemPedido> itens,
 
         @Nullable String observacoes,
 
         @NotNull StatusPedido status,
 
+        @NotNull InfoPagamento infoPagamento,
+
         @NotNull LocalDateTime dataHoraPedido
 ) {
 
     public ValorMonetario getValorTotal() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return ItemCardapio.somarValores(itens.stream().map(ItemPedido::itemCardapio).toList());
+    }
+
+    public Pedido withId(int newId) {
+        return new Pedido(newId, idClienteIdentificado, nomeClienteNaoIdentificado, itens, observacoes, status, infoPagamento, dataHoraPedido);
+    }
+
+    public Pedido withItens(List<ItemPedido> newItens) {
+        return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado, newItens, observacoes, status, infoPagamento, dataHoraPedido);
     }
 }
