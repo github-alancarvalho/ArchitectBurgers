@@ -27,6 +27,27 @@ public record Pedido(
         @NotNull LocalDateTime dataHoraPedido
 ) {
 
+    public Pedido validar() {
+        if (status != StatusPedido.RECEBIDO) {
+            throw new IllegalArgumentException("Status invalido para validação do pedido: " + status);
+        }
+        return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
+                itens, observacoes, StatusPedido.PREPARACAO, infoPagamento, dataHoraPedido);
+    }
+
+    public Pedido setPronto() {
+        if (status != StatusPedido.PREPARACAO) {
+            throw new IllegalArgumentException("Status invalido para mudar para Pronto: " + status);
+        }
+        return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
+                itens, observacoes, StatusPedido.PRONTO, infoPagamento, dataHoraPedido);
+    }
+
+    public Pedido cancelar() {
+        return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
+                itens, observacoes, StatusPedido.CANCELADO, infoPagamento, dataHoraPedido);
+    }
+
     public ValorMonetario getValorTotal() {
         return ItemCardapio.somarValores(itens.stream().map(ItemPedido::itemCardapio).toList());
     }

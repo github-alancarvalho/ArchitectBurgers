@@ -10,4 +10,6 @@ public interface PedidoRepository {
     Pedido savePedido(Pedido pedido);
 
     List<Pedido> listPedidos(StatusPedido filtroStatus);
+
+    void updateStatus(Pedido pedido);
 }

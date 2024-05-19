@@ -9,10 +9,12 @@ import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.InfoPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class PedidoServices {
     private final PedidoRepository pedidoRepository;
@@ -67,6 +69,24 @@ public class PedidoServices {
             var itens = itemCardapioRepository.findByPedido(Objects.requireNonNull(p.id(), "Expected pedidos to have ID"));
             return p.withItens(itens);
         }).toList();
+    }
+
+    public Pedido validarPedido(Integer idPedido) {
+        return loadAndApply(idPedido, Pedido::validar);
+    }
+
+    public Pedido cancelarPedido(Integer idPedido) {
+        return loadAndApply(idPedido, Pedido::cancelar);
+    }
+
+    private @NotNull Pedido loadAndApply(Integer idPedido, Function<Pedido, Pedido> update) {
+        var pedido = pedidoRepository.getPedido(Objects.requireNonNull(idPedido, "ID não pode ser null"));
+        var atualizado = update.apply(pedido);
+        pedidoRepository.updateStatus(atualizado);
+
+        var itens = itemCardapioRepository.findByPedido(idPedido);
+
+        return atualizado.withItens(itens);
     }
 
     public record CriarPedidoParam(

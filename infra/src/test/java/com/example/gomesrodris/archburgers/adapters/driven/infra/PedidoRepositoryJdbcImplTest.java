@@ -8,6 +8,7 @@ import com.example.gomesrodris.archburgers.domain.valueobjects.*;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
 import org.junit.jupiter.api.*;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -67,9 +68,12 @@ class PedidoRepositoryJdbcImplTest {
 
         var saved = pedidoRepository.savePedido(pedido);
 
-        assertThat(saved).isEqualTo(pedido.withId(2));
+        assertThat(saved.id()).isNotNull();
+        assertThat(saved.id()).isGreaterThan(1);
 
-        var loaded = pedidoRepository.getPedido(2);
+        assertThat(saved).isEqualTo(pedido.withId(saved.id()));
+
+        var loaded = pedidoRepository.getPedido(saved.id());
         assertThat(loaded).isEqualTo(saved.withItens(List.of()));
     }
 
@@ -91,5 +95,36 @@ class PedidoRepositoryJdbcImplTest {
         var pedidos = pedidoRepository.listPedidos(StatusPedido.CANCELADO);
 
         assertThat(pedidos).hasSize(0);
+    }
+
+    @Test
+    void updateStatus() throws SQLException {
+        var pedido = new Pedido(null, null, "Wanderley", List.of(), "Lanche sem cebola",
+                StatusPedido.PREPARACAO,
+                new InfoPagamento(FormaPagamento.DINHEIRO), LocalDateTime.of(2024, 5, 18, 15, 30, 12));
+
+        var saved = pedidoRepository.savePedido(pedido);
+
+        assertThat(saved.id()).isNotNull();
+        assertThat(saved.id()).isGreaterThan(1);
+
+        assertThat(readStatus(saved.id())).isEqualTo("PREPARACAO");
+
+        pedidoRepository.updateStatus(saved.setPronto());
+
+        assertThat(readStatus(saved.id())).isEqualTo("PRONTO");
+    }
+
+    private String readStatus(int idPedido) throws SQLException {
+        try(var conn = databaseConnection.jdbcConnection();
+            var stmt = conn.prepareStatement("select status from pedido where pedido_id = ?")) {
+
+            stmt.setInt(1, idPedido);
+            var rs = stmt.executeQuery();
+
+            assertThat(rs.next()).isTrue();
+
+            return rs.getString(1);
+        }
     }
 }

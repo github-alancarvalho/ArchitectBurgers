@@ -16,6 +16,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Implementation of the Repository based on a relational database via JDBC
@@ -41,6 +42,11 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             insert into pedido (id_cliente_identificado,nome_cliente_nao_identificado,
                observacoes,status,forma_pagamento,data_hora_pedido)
             values (?,?,?,?,?,?) returning pedido_id;
+            """;
+
+    @Language("SQL")
+    private static final String SQL_UPDATE_STATUS = """
+            update pedido set status = ? where pedido_id = ?;
             """;
 
     private final DatabaseConnection databaseConnection;
@@ -112,6 +118,20 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             }
 
             return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateStatus(Pedido pedido) {
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_UPDATE_STATUS)) {
+
+            stmt.setString(1, pedido.status().name());
+            stmt.setInt(2, Objects.requireNonNull(pedido.id(), "Must have ID to update"));
+
+            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
         }

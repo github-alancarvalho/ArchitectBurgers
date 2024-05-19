@@ -48,7 +48,7 @@ public class PedidoController {
         return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
     }
 
-    @GetMapping(path="/pedidos")
+    @GetMapping(path = "/pedidos")
     public ResponseEntity<List<PedidoDto>> listarPedidos(@RequestParam(value = "status", required = false) String filtroStatus) {
         List<Pedido> result;
         try {
@@ -64,5 +64,35 @@ public class PedidoController {
         }
 
         return WebUtils.okResponse(result.stream().map(PedidoDto::fromEntity).toList());
+    }
+
+    @PostMapping(path = "/pedidos/{idPedido}/validar")
+    public ResponseEntity<PedidoDto> validarPedido(@PathVariable("idPedido") Integer idPedido) {
+        Pedido pedido;
+        try {
+            pedido = transactionManager.runInTransaction(() -> pedidoServices.validarPedido(idPedido));
+        } catch (IllegalArgumentException iae) {
+            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Ocorreu um erro ao atualizar pedido: {}", e, e);
+            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar pedido");
+        }
+
+        return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
+    }
+
+    @PostMapping(path = "/pedidos/{idPedido}/cancelar")
+    public ResponseEntity<PedidoDto> cancelarPedido(@PathVariable("idPedido") Integer idPedido) {
+        Pedido pedido;
+        try {
+            pedido = transactionManager.runInTransaction(() -> pedidoServices.cancelarPedido(idPedido));
+        } catch (IllegalArgumentException iae) {
+            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Ocorreu um erro ao atualizar pedido: {}", e, e);
+            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar pedido");
+        }
+
+        return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
     }
 }

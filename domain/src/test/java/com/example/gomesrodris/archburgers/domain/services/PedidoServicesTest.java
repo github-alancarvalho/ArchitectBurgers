@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,6 +91,34 @@ class PedidoServicesTest {
                 new PedidoServices.CriarPedidoParam(12, "DINHEIRO"));
 
         assertThat(result).isEqualTo(expectedPedido.withId(33));
+    }
+
+    @Test
+    void validarPedido() {
+        var pedido = new Pedido(42, new IdCliente(25), null,
+                List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
+                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+
+        when(pedidoRepository.getPedido(42)).thenReturn(pedido);
+        when(itemCardapioRepository.findByPedido(42)).thenReturn(List.of(
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                )
+        ));
+
+        var expectedNewPedido = new Pedido(42, new IdCliente(25), null, List.of(), "Lanche sem cebola", StatusPedido.PREPARACAO,
+                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+
+        ///
+        var newPedido = pedidoServices.validarPedido(42);
+
+        assertThat(newPedido).isEqualTo(expectedNewPedido.withItens(List.of(
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                )
+        )));
+
+        verify(pedidoRepository).updateStatus(expectedNewPedido);
     }
 
     ///////////
