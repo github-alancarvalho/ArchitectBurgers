@@ -55,11 +55,11 @@ GET http://localhost:8090/cardapio
 
 ###
 # @name Add Item to Carrinho
-POST http://localhost:8090/carrinho/2
+POST http://localhost:8090/carrinho/4
 Content-Type: application/json
 
 {
-    "idItemCardapio": 6
+    "idItemCardapio": 1
 }
 
 
@@ -75,7 +75,7 @@ POST http://localhost:8090/pedidos
 Content-Type: application/json
 
 {
-  "idCarrinho": 2,
+  "idCarrinho": 4,
   "formaPagamento": "DINHEIRO"
 }
 
@@ -87,10 +87,21 @@ GET http://localhost:8090/pedidos?status=RECEBIDO
 
 ###
 # @name Validar pedido
-POST http://localhost:8090/pedidos/3/validar
+POST http://localhost:8090/pedidos/5/validar
 
 ###
 # @name Cancelar pedido
 POST http://localhost:8090/pedidos/4/cancelar
+
+###
+# @name Listar pedidos em preparação (cozinha)
+GET http://localhost:8090/pedidos?status=PREPARACAO
+
+###
+# @name Listar pedidos com atraso
+GET http://localhost:8090/pedidos?atraso=true
+
+
+
 
 

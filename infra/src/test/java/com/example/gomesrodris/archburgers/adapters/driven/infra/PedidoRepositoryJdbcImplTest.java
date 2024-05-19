@@ -55,15 +55,15 @@ class PedidoRepositoryJdbcImplTest {
     }
 
     @Test
-    void savePedido() {
+    void savePedido() throws SQLException {
         var pedido = new Pedido(null, null, "Wanderley", List.of(
                 new ItemPedido(1,
-                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                        new ItemCardapio(3, TipoItemCardapio.ACOMPANHAMENTO, "Batatas Fritas P", "Batatas fritas porção pequena", new ValorMonetario("8.00"))
                 ),
                 new ItemPedido(2,
-                        new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
+                        new ItemCardapio(6, TipoItemCardapio.BEBIDA, "Chá gelado", "Chá gelado com limão, feito na casa", new ValorMonetario("6.00"))
                 )
-        ), "Lanche sem cebola", StatusPedido.RECEBIDO,
+        ), "Batatas com muito sal", StatusPedido.RECEBIDO,
                 new InfoPagamento(FormaPagamento.DINHEIRO), LocalDateTime.of(2024, 5, 18, 15, 30, 12));
 
         var saved = pedidoRepository.savePedido(pedido);
@@ -75,24 +75,68 @@ class PedidoRepositoryJdbcImplTest {
 
         var loaded = pedidoRepository.getPedido(saved.id());
         assertThat(loaded).isEqualTo(saved.withItens(List.of()));
+
+        try (var conn = databaseConnection.jdbcConnection();
+            var stmt = conn.prepareStatement("select item_cardapio_id,num_sequencia from pedido_item where pedido_id = ?")) {
+
+            stmt.setInt(1, saved.id());
+            var rs = stmt.executeQuery();
+
+            assertThat(rs.next()).isTrue();
+            assertThat(rs.getInt("item_cardapio_id")).isEqualTo(3);
+            assertThat(rs.getInt("num_sequencia")).isEqualTo(1);
+
+            assertThat(rs.next()).isTrue();
+            assertThat(rs.getInt("item_cardapio_id")).isEqualTo(6);
+            assertThat(rs.getInt("num_sequencia")).isEqualTo(2);
+
+            assertThat(rs.next()).isFalse();
+        }
     }
 
     @Test
     void listPedidosByStatus_found() {
-        var pedidos = pedidoRepository.listPedidos(StatusPedido.RECEBIDO);
+        var pedidos = pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO, StatusPedido.PRONTO), null);
 
-        assertThat(pedidos).hasSize(1);
+        assertThat(pedidos.size()).isGreaterThanOrEqualTo(2);
 
-        assertThat(pedidos.getFirst()).isEqualTo(new Pedido(1, null, "Cliente Erasmo",
+        assertThat(pedidos).contains(new Pedido(1, null, "Cliente Erasmo",
                 Collections.emptyList(), "Sem cebola", StatusPedido.RECEBIDO,
+                new InfoPagamento(FormaPagamento.DINHEIRO),
+                LocalDateTime.of(2024, 5, 18, 15, 30, 12))
+        );
+
+        assertThat(pedidos).contains(new Pedido(2, null, "Paulo Sérgio",
+                Collections.emptyList(), null, StatusPedido.PRONTO,
                 new InfoPagamento(FormaPagamento.DINHEIRO),
                 LocalDateTime.of(2024, 5, 18, 15, 30, 12))
         );
     }
 
     @Test
+    void listPedidosByStatusAndOlderThanTime() {
+        // NOT older than ref time
+        var p1 = pedidoRepository.savePedido(new Pedido(null, null, "Wanderley", List.of(), null,
+                StatusPedido.PREPARACAO,
+                new InfoPagamento(FormaPagamento.DINHEIRO),
+                LocalDateTime.of(2024, 5, 19, 10, 30, 12)));
+
+        // OLDER than ref time
+        var p2 = pedidoRepository.savePedido(new Pedido(null, null, "Carlinhos", List.of(), null,
+                StatusPedido.PREPARACAO,
+                new InfoPagamento(FormaPagamento.DINHEIRO),
+                LocalDateTime.of(2024, 5, 19, 10, 5, 10)));
+
+        var pedidos = pedidoRepository.listPedidos(List.of(StatusPedido.PREPARACAO),
+                LocalDateTime.of(2024, 5, 19, 10, 10, 0));
+
+        assertThat(pedidos).doesNotContain(p1);
+        assertThat(pedidos).contains(p2);
+    }
+
+    @Test
     void listPedidosByStatus_notFound() {
-        var pedidos = pedidoRepository.listPedidos(StatusPedido.CANCELADO);
+        var pedidos = pedidoRepository.listPedidos(List.of(StatusPedido.CANCELADO), null);
 
         assertThat(pedidos).hasSize(0);
     }
@@ -116,8 +160,8 @@ class PedidoRepositoryJdbcImplTest {
     }
 
     private String readStatus(int idPedido) throws SQLException {
-        try(var conn = databaseConnection.jdbcConnection();
-            var stmt = conn.prepareStatement("select status from pedido where pedido_id = ?")) {
+        try (var conn = databaseConnection.jdbcConnection();
+             var stmt = conn.prepareStatement("select status from pedido where pedido_id = ?")) {
 
             stmt.setInt(1, idPedido);
             var rs = stmt.executeQuery();

@@ -121,6 +121,61 @@ class PedidoServicesTest {
         verify(pedidoRepository).updateStatus(expectedNewPedido);
     }
 
+    @Test
+    void listarPedidos_byStatus() {
+        when(pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO), null)).thenReturn(List.of(
+                new Pedido(42, new IdCliente(25), null,
+                        List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
+                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime),
+                new Pedido(43, null, "Cliente Maria",
+                        List.of(), null, StatusPedido.RECEBIDO,
+                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
+        ));
+
+        var result = pedidoServices.listarPedidosByStatus(StatusPedido.RECEBIDO);
+
+        assertThat(result).containsExactly(
+                new Pedido(42, new IdCliente(25), null,
+                        List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
+                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime),
+                new Pedido(43, null, "Cliente Maria",
+                        List.of(), null, StatusPedido.RECEBIDO,
+                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
+        );
+    }
+
+    @Test
+    void listarPedidos_comAtraso() {
+        when(clock.localDateTime()).thenReturn(LocalDateTime.of(
+           2024, 5, 18, 10, 40, 28
+        ));
+
+        var expectedLimitTime = LocalDateTime.of(
+                2024, 5, 18, 10, 20, 28
+        );
+
+        when(pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO, StatusPedido.PREPARACAO), expectedLimitTime)).thenReturn(List.of(
+
+                new Pedido(42, new IdCliente(25), null,
+                        List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
+                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime),
+                new Pedido(43, null, "Cliente Maria",
+                        List.of(), null, StatusPedido.PREPARACAO,
+                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
+        ));
+
+        var result = pedidoServices.listarPedidosComAtraso();
+
+        assertThat(result).containsExactly(
+                new Pedido(42, new IdCliente(25), null,
+                        List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
+                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime),
+                new Pedido(43, null, "Cliente Maria",
+                        List.of(), null, StatusPedido.PREPARACAO,
+                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
+        );
+    }
+
     ///////////
     private final LocalDateTime dateTime = LocalDateTime.of(2024, 5, 18, 15, 30);
 }

@@ -59,12 +59,23 @@ public class PedidoServices {
         return saved;
     }
 
-    public List<Pedido> listarPedidos(@Nullable StatusPedido filtroStatus) {
+    public List<Pedido> listarPedidosByStatus(@Nullable StatusPedido filtroStatus) {
         if (filtroStatus == null) {
             throw new IllegalArgumentException("Obrigatório informar um filtro");
         }
 
-        var pedidos = pedidoRepository.listPedidos(filtroStatus);
+        var pedidos = pedidoRepository.listPedidos(List.of(filtroStatus), null);
+        return pedidos.stream().map(p -> {
+            var itens = itemCardapioRepository.findByPedido(Objects.requireNonNull(p.id(), "Expected pedidos to have ID"));
+            return p.withItens(itens);
+        }).toList();
+    }
+
+    public List<Pedido> listarPedidosComAtraso() {
+        var now = clock.localDateTime();
+        var olderThan = now.minusMinutes(20);
+
+        var pedidos = pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO, StatusPedido.PREPARACAO), olderThan);
         return pedidos.stream().map(p -> {
             var itens = itemCardapioRepository.findByPedido(Objects.requireNonNull(p.id(), "Expected pedidos to have ID"));
             return p.withItens(itens);

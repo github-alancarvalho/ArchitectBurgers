@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
+import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
@@ -8,15 +9,15 @@ import com.example.gomesrodris.archburgers.domain.valueobjects.InfoPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Repository based on a relational database via JDBC
@@ -34,7 +35,7 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
     private static final String SQL_SELECT_PEDIDOS_BY_STATUS = """
             select pedido_id,id_cliente_identificado,nome_cliente_nao_identificado,
                observacoes,status,forma_pagamento,data_hora_pedido
-            from pedido where status = ?
+            from pedido where status IN (_PARAM_PLACEHOLDERS_)
             """;
 
     @Language("SQL")
@@ -42,6 +43,12 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             insert into pedido (id_cliente_identificado,nome_cliente_nao_identificado,
                observacoes,status,forma_pagamento,data_hora_pedido)
             values (?,?,?,?,?,?) returning pedido_id;
+            """;
+
+    @Language("SQL")
+    private static final String SQL_INSERT_ITEM = """
+            insert into pedido_item (pedido_id, item_cardapio_id, num_sequencia)
+            values (?,?,?);
             """;
 
     @Language("SQL")
@@ -75,7 +82,8 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
     @Override
     public Pedido savePedido(Pedido pedido) {
         try (var connection = databaseConnection.getConnection();
-             var stmt = connection.prepareStatement(SQL_INSERT_PEDIDO)) {
+             var stmt = connection.prepareStatement(SQL_INSERT_PEDIDO);
+             var stmtItem = connection.prepareStatement(SQL_INSERT_ITEM)) {
 
             if (pedido.idClienteIdentificado() != null) {
                 stmt.setInt(1, pedido.idClienteIdentificado().id());
@@ -97,6 +105,14 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
 
             var id = rs.getInt(1);
 
+            for (ItemPedido item : pedido.itens()) {
+                stmtItem.clearParameters();
+                stmtItem.setInt(1, id);
+                stmtItem.setInt(2, item.itemCardapio().id());
+                stmtItem.setInt(3, item.numSequencia());
+                stmtItem.executeUpdate();
+            }
+
             return pedido.withId(id);
 
         } catch (SQLException e) {
@@ -105,10 +121,25 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
     }
 
     @Override
-    public List<Pedido> listPedidos(@NotNull StatusPedido filtroStatus) {
+    public List<Pedido> listPedidos(List<StatusPedido> filtroStatus,
+                                    @Nullable LocalDateTime olderThan) {
+        var sql =  SQL_SELECT_PEDIDOS_BY_STATUS.replace("_PARAM_PLACEHOLDERS_",
+                filtroStatus.stream().map(s -> "?").collect(Collectors.joining(",")));
+
+        if (olderThan != null) {
+            sql = sql + " and data_hora_pedido <= ?";
+        }
+
         try (var connection = databaseConnection.getConnection();
-             var stmt = connection.prepareStatement(SQL_SELECT_PEDIDOS_BY_STATUS)) {
-            stmt.setString(1, filtroStatus.name());
+             var stmt = connection.prepareStatement(sql)) {
+
+            for (int i = 0; i < filtroStatus.size(); i++) {
+                stmt.setString(i + 1, filtroStatus.get(i).name());
+            }
+
+            if (olderThan != null) {
+                stmt.setObject(filtroStatus.size() + 1, olderThan);
+            }
 
             ResultSet rs = stmt.executeQuery();
             List<Pedido> result = new ArrayList<>();
