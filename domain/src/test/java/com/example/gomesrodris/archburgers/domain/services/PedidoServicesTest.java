@@ -4,6 +4,7 @@ import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
+import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
@@ -33,13 +34,15 @@ class PedidoServicesTest {
     private ItemCardapioRepository itemCardapioRepository;
     @Mock
     private Clock clock;
+    @Mock
+    private PainelPedidos painelPedidos;
 
     private PedidoServices pedidoServices;
 
     @BeforeEach
     void setUp() {
         pedidoServices = new PedidoServices(
-                pedidoRepository, carrinhoRepository, itemCardapioRepository, clock);
+                pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
     }
 
     @Test
@@ -119,6 +122,38 @@ class PedidoServicesTest {
         )));
 
         verify(pedidoRepository).updateStatus(expectedNewPedido);
+    }
+
+    @Test
+    void setPedidoPronto() {
+        var pedido = new Pedido(45, new IdCliente(25), null,
+                List.of(), "Lanche sem cebola", StatusPedido.PREPARACAO,
+                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+
+        when(pedidoRepository.getPedido(45)).thenReturn(pedido);
+        when(itemCardapioRepository.findByPedido(45)).thenReturn(List.of(
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                )
+        ));
+
+        var expectedNewPedido = new Pedido(45, new IdCliente(25), null, List.of(), "Lanche sem cebola",
+                StatusPedido.PRONTO,
+                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+
+        Pedido expectedNewPedidoWithItens = expectedNewPedido.withItens(List.of(
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                )
+        ));
+
+        ///
+        var newPedido = pedidoServices.setPronto(45);
+
+        assertThat(newPedido).isEqualTo(expectedNewPedidoWithItens);
+
+        verify(pedidoRepository).updateStatus(expectedNewPedido);
+        verify(painelPedidos).notificarPedidoPronto(expectedNewPedidoWithItens);
     }
 
     @Test

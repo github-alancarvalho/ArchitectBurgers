@@ -1,6 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.services;
 
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
+import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
@@ -21,12 +22,15 @@ public class PedidoServices {
     private final CarrinhoRepository carrinhoRepository;
     private final ItemCardapioRepository itemCardapioRepository;
     private final Clock clock;
+    private final PainelPedidos painelPedidos;
 
-    public PedidoServices(PedidoRepository pedidoRepository, CarrinhoRepository carrinhoRepository, ItemCardapioRepository itemCardapioRepository, Clock clock) {
+    public PedidoServices(PedidoRepository pedidoRepository, CarrinhoRepository carrinhoRepository, ItemCardapioRepository itemCardapioRepository,
+                          Clock clock, PainelPedidos painelPedidos) {
         this.pedidoRepository = pedidoRepository;
         this.carrinhoRepository = carrinhoRepository;
         this.itemCardapioRepository = itemCardapioRepository;
         this.clock = clock;
+        this.painelPedidos = painelPedidos;
     }
 
     public Pedido criarPedido(CriarPedidoParam param) {
@@ -88,6 +92,12 @@ public class PedidoServices {
 
     public Pedido cancelarPedido(Integer idPedido) {
         return loadAndApply(idPedido, Pedido::cancelar);
+    }
+
+    public Pedido setPronto(Integer idPedido) {
+        Pedido updated = loadAndApply(idPedido, Pedido::setPronto);
+        painelPedidos.notificarPedidoPronto(updated);
+        return updated;
     }
 
     private @NotNull Pedido loadAndApply(Integer idPedido, Function<Pedido, Pedido> update) {

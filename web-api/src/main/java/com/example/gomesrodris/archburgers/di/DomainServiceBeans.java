@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.di;
 
+import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
@@ -42,7 +43,8 @@ public class DomainServiceBeans {
     public PedidoServices pedidoServices(CarrinhoRepository carrinhoRepository,
                                          ItemCardapioRepository itemCardapioRepository,
                                          PedidoRepository pedidoRepository,
-                                         Clock clock) {
-        return new PedidoServices(pedidoRepository, carrinhoRepository, itemCardapioRepository, clock);
+                                         Clock clock,
+                                         PainelPedidos painelPedidos) {
+        return new PedidoServices(pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
     }
 }
