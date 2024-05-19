@@ -108,6 +108,25 @@ public class CarrinhoServices {
         return newCarrinho;
     }
 
+    public Carrinho deleteItem(int idCarrinho, int numSequencia) {
+        var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
+        if (carrinho == null) {
+            throw new IllegalArgumentException("Carrinho invalido! " + idCarrinho);
+        }
+
+        var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
+        carrinho = carrinho.withItens(currentItens);
+
+        carrinho = carrinho.deleteItem(numSequencia);
+
+        carrinhoRepository.deleteItensCarrinho(carrinho);
+        for (ItemPedido item : carrinho.itens()) {
+            carrinhoRepository.salvarItemCarrinho(carrinho, item);
+        }
+
+        return carrinho;
+    }
+
     /**
      *
      */
@@ -125,6 +144,16 @@ public class CarrinhoServices {
         newCarrinho = newCarrinho.withItens(currentItens);
 
         return newCarrinho;
+    }
+
+    public Carrinho findCarrinho(int idCarrinho) {
+        var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
+        if (carrinho == null) {
+            throw new IllegalArgumentException("Carrinho invalido! " + idCarrinho);
+        }
+
+        var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
+        return carrinho.withItens(currentItens);
     }
 
     /**

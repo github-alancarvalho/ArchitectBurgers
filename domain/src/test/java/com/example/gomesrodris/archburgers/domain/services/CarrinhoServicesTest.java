@@ -138,6 +138,47 @@ class CarrinhoServicesTest {
         verify(carrinhoRepository).salvarItemCarrinho(newCarrinho,
                 new ItemPedido(3,
                         new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
+                ));
+    }
+
+    @Test
+    void deleteItem() {
+        Carrinho carrinhoInicial = Carrinho.carrinhoSalvoClienteIdentificado(
+                88, new IdCliente(123), null, dateTime);
+
+        when(carrinhoRepository.getCarrinho(88)).thenReturn(carrinhoInicial);
+
+        when(itemCardapioRepository.findByCarrinho(88)).thenReturn(List.of(
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                ),
+                new ItemPedido(2,
+                        new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
+                ),
+                new ItemPedido(3,
+                        new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
+                )
+        ));
+
+        ///
+        var updated = carrinhoServices.deleteItem(88, 2);
+
+        Carrinho expectedNewCarrinho = carrinhoInicial.withItens(List.of(
+                new ItemPedido(1,
+                        new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+                ),
+                new ItemPedido(2,
+                        new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
+                )
+        ));
+        assertThat(updated).isEqualTo(expectedNewCarrinho);
+
+        verify(carrinhoRepository).deleteItensCarrinho(expectedNewCarrinho);
+        verify(carrinhoRepository).salvarItemCarrinho(expectedNewCarrinho, new ItemPedido(1,
+                new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
+        ));
+        verify(carrinhoRepository).salvarItemCarrinho(expectedNewCarrinho, new ItemPedido(2,
+                new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
         ));
     }
 
@@ -153,4 +194,5 @@ class CarrinhoServicesTest {
     private final Carrinho carrinhoNaoIdentificado = Carrinho.newCarrinhoVazioClienteNaoIdentificado("João", dateTime);
 
     private final Carrinho carrinhoVazioCliente123 = Carrinho.newCarrinhoVazioClienteIdentificado(new IdCliente(123), dateTime);
+
 }

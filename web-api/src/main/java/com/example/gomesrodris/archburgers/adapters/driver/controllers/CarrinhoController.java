@@ -27,6 +27,23 @@ public class CarrinhoController {
         this.transactionManager = transactionManager;
     }
 
+    @GetMapping(path = "/carrinho/{idCarrinho}")
+    public ResponseEntity<CarrinhoDto> findCarrinho(@PathVariable("idCarrinho") Integer idCarrinho) {
+
+        try {
+            if (idCarrinho == null)
+                throw new IllegalArgumentException("Path param idCarrinho missing");
+
+            var carrinho = carrinhoServices.findCarrinho(idCarrinho);
+            return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
+        } catch (IllegalArgumentException iae) {
+            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Ocorreu um erro ao consultar carrinho: {}", e, e);
+            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao consultar carrinho");
+        }
+    }
+
     @PostMapping(path = "/carrinho")
     public ResponseEntity<CarrinhoDto> iniciarCarrinho(@RequestBody CarrinhoServices.CarrinhoParam param) {
 
@@ -60,6 +77,30 @@ public class CarrinhoController {
         } catch (Exception e) {
             LOGGER.error("Ocorreu um erro ao adicionar item no carrinho: {}", e, e);
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao adicionar item no carrinho");
+        }
+
+        return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
+    }
+
+    @DeleteMapping(path = "/carrinho/{idCarrinho}/itens/{numSequencia}")
+    public ResponseEntity<CarrinhoDto> deleteItemCarrinho(
+            @PathVariable("idCarrinho") Integer idCarrinho,
+            @PathVariable("numSequencia") Integer numSequencia) {
+
+        Carrinho carrinho;
+        try {
+            if (idCarrinho == null)
+                throw new IllegalArgumentException("Path param idCarrinho missing");
+            if (numSequencia == null)
+                throw new IllegalArgumentException("Path param numSequencia missing");
+
+            carrinho = transactionManager.runInTransaction(() -> carrinhoServices.deleteItem(
+                    idCarrinho, numSequencia));
+        } catch (IllegalArgumentException iae) {
+            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Ocorreu um erro ao excluir item do carrinho: {}", e, e);
+            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao excluir item do carrinho");
         }
 
         return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));

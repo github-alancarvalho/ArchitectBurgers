@@ -106,6 +106,26 @@ public final class Carrinho {
         return dataHoraCarrinhoCriado;
     }
 
+    public Carrinho deleteItem(int numSequencia) {
+        List<ItemPedido> newItens = new ArrayList<>();
+
+        boolean found = false;
+        int seq = 0;
+        for (ItemPedido item : itens) {
+            if (item.numSequencia() == numSequencia) {
+                found = true;
+            } else {
+                newItens.add(new ItemPedido(++seq, item.itemCardapio()));
+            }
+        }
+
+        if (!found) {
+            throw new IllegalArgumentException("Não é possível excluir item fora da lista: " + numSequencia);
+        }
+
+        return this.withItens(newItens);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -134,5 +154,4 @@ public final class Carrinho {
                 "observacoes=" + observacoes + ", " +
                 "dataHoraCarrinhoCriado=" + dataHoraCarrinhoCriado + ']';
     }
-
 }

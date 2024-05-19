@@ -46,6 +46,10 @@ Content-Type: application/json
   "email": "maria.cliente@example.org"
 }
 
+###
+# @name Consultar carrinho
+GET http://localhost:8090/carrinho/1
+
 
 ### ######### Etapa 2 seleção de itens
 ###
@@ -61,6 +65,11 @@ Content-Type: application/json
 {
     "idItemCardapio": 1
 }
+
+###
+# @name Excluir itens do Carrinho
+DELETE http://localhost:8090/carrinho/1/itens/1
+Content-Type: application/json
 
 
 ###

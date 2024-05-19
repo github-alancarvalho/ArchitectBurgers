@@ -154,6 +154,19 @@ public class CarrinhoRepositoryJdbcImpl implements CarrinhoRepository {
     }
 
     @Override
+    public void deleteItensCarrinho(Carrinho carrinho) {
+        try (var connection = databaseConnection.getConnection();
+             var stmt1 = connection.prepareStatement(SQL_DELETE_ITEM_CARRINHO)) {
+
+            stmt1.setInt(1, Objects.requireNonNull(carrinho.id(), "Must be persisted to delete items"));
+            stmt1.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public void deleteCarrinho(Carrinho carrinho) {
         try (var connection = databaseConnection.getConnection();
              var stmt1 = connection.prepareStatement(SQL_DELETE_ITEM_CARRINHO);
