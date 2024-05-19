@@ -100,8 +100,17 @@ public class PedidoServices {
         return updated;
     }
 
+    public Pedido finalizarPedido(Integer idPedido) {
+        return loadAndApply(idPedido, Pedido::finalizar);
+    }
+
     private @NotNull Pedido loadAndApply(Integer idPedido, Function<Pedido, Pedido> update) {
         var pedido = pedidoRepository.getPedido(Objects.requireNonNull(idPedido, "ID não pode ser null"));
+
+        if (pedido == null) {
+            throw new IllegalArgumentException("Pedido não encontrado: " + idPedido);
+        }
+
         var atualizado = update.apply(pedido);
         pedidoRepository.updateStatus(atualizado);
 

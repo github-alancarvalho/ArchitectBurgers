@@ -105,6 +105,10 @@ GET http://localhost:8090/pedidos?atraso=true
 # @name Atualizar pedido Pronto
 POST http://localhost:8090/pedidos/5/setPronto
 
+###
+# @name Finalizar pedido
+POST http://localhost:8090/pedidos/5/finalizar
+
 
 
 

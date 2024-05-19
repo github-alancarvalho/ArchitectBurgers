@@ -43,6 +43,14 @@ public record Pedido(
                 itens, observacoes, StatusPedido.PRONTO, infoPagamento, dataHoraPedido);
     }
 
+    public Pedido finalizar() {
+        if (status != StatusPedido.PRONTO) {
+            throw new IllegalArgumentException("Status invalido para finalizar: " + status);
+        }
+        return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
+                itens, observacoes, StatusPedido.FINALIZADO, infoPagamento, dataHoraPedido);
+    }
+
     public Pedido cancelar() {
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
                 itens, observacoes, StatusPedido.CANCELADO, infoPagamento, dataHoraPedido);
