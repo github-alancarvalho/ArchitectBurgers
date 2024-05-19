@@ -157,6 +157,18 @@ class CarrinhoRepositoryJdbcImplTest {
         assertThat(counts[1]).isEqualTo(0);
     }
 
+    @Test
+    void updateObservacaoCarrinho() {
+        var carrinho = carrinhoRepository.getCarrinho(1);
+        assertThat(carrinho.observacoes()).isEqualTo("Sem cebola");
+
+        carrinho = carrinho.setObservacoes("Sem pickles e sem muito sal na batata");
+        carrinhoRepository.updateObservacaoCarrinho(carrinho);
+
+        var newCarrinho = carrinhoRepository.getCarrinho(1);
+        assertThat(newCarrinho.observacoes()).isEqualTo("Sem pickles e sem muito sal na batata");
+    }
+
     private int[] getCounts(int idCarrinho) throws SQLException {
         int[] counts = new int[2];
         try (var conn = databaseConnection.jdbcConnection();
@@ -176,4 +188,6 @@ class CarrinhoRepositoryJdbcImplTest {
         }
         return counts;
     }
+
+
 }

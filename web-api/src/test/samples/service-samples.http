@@ -63,6 +63,15 @@ Content-Type: application/json
 }
 
 
+###
+# @name Set observacoes no carrinho
+PUT http://localhost:8090/carrinho/1/obs
+Content-Type: application/json
+
+{
+  "observacoes": "Muito sal na batatinha por favor"
+}
+
 ### ######### Etapa 3 checkout
 ###
 # @name Listar formas pagamento

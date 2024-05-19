@@ -77,6 +77,11 @@ public final class Carrinho {
                 newList, observacoes, dataHoraCarrinhoCriado);
     }
 
+    public Carrinho setObservacoes(String obs) {
+        return new Carrinho(id, idClienteIdentificado, nomeClienteNaoIdentificado,
+                itens, obs, dataHoraCarrinhoCriado);
+    }
+
     public @Nullable Integer id() {
         return id;
     }

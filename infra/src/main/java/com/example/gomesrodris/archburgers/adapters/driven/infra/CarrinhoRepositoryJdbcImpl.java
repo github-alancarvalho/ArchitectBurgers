@@ -52,6 +52,11 @@ public class CarrinhoRepositoryJdbcImpl implements CarrinhoRepository {
                 delete from carrinho where carrinho_id = ?
             """;
 
+    @Language("SQL")
+    private final String SQL_UPDATE_OBSERVACAO = """
+                update carrinho set observacoes = ? where carrinho_id = ?
+            """;
+
     private final DatabaseConnection databaseConnection;
 
     @Autowired
@@ -125,6 +130,21 @@ public class CarrinhoRepositoryJdbcImpl implements CarrinhoRepository {
             stmt.setInt(1, Objects.requireNonNull(carrinho.id(), "Must be persisted to add items"));
             stmt.setInt(2, newItem.itemCardapio().id());
             stmt.setInt(3, newItem.numSequencia());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateObservacaoCarrinho(Carrinho carrinho) {
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_UPDATE_OBSERVACAO)) {
+
+            stmt.setString(1, carrinho.observacoes());
+            stmt.setInt(2, Objects.requireNonNull(carrinho.id(), "Must be persisted to update"));
 
             stmt.executeUpdate();
 

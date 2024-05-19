@@ -109,6 +109,25 @@ public class CarrinhoServices {
     }
 
     /**
+     *
+     */
+    public Carrinho setObservacoes(int idCarrinho, String textoObservacao) {
+        var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
+        if (carrinho == null) {
+            throw new IllegalArgumentException("Carrinho invalido! " + idCarrinho);
+        }
+
+        var newCarrinho = carrinho.setObservacoes(textoObservacao);
+
+        carrinhoRepository.updateObservacaoCarrinho(newCarrinho);
+
+        var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
+        newCarrinho = newCarrinho.withItens(currentItens);
+
+        return newCarrinho;
+    }
+
+    /**
      * Parâmetros para criação de carrinho. Oferece tres possíveis combinações de atributos:
      * <ul>
      *     <li>idCliente: Para associar o carrinho a um cliente cadastrado</li>

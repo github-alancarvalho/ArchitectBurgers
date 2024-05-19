@@ -3,6 +3,7 @@ package com.example.gomesrodris.archburgers.adapters.driver.controllers;
 import com.example.gomesrodris.archburgers.adapters.driven.infra.TransactionManager;
 import com.example.gomesrodris.archburgers.adapters.dto.AddItemCarrinhoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoDto;
+import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoObservacoesDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.services.CarrinhoServices;
@@ -11,10 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class CarrinhoController {
@@ -62,6 +60,27 @@ public class CarrinhoController {
         } catch (Exception e) {
             LOGGER.error("Ocorreu um erro ao adicionar item no carrinho: {}", e, e);
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao adicionar item no carrinho");
+        }
+
+        return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
+    }
+
+    @PutMapping(path = "/carrinho/{idCarrinho}/obs")
+    public ResponseEntity<CarrinhoDto> atualizarObservacoes(@PathVariable("idCarrinho") Integer idCarrinho,
+                                                            @RequestBody CarrinhoObservacoesDto param) {
+        Carrinho carrinho;
+        try {
+            if (idCarrinho == null)
+                throw new IllegalArgumentException("Path param idCarrinho missing");
+            if (param == null)
+                throw new IllegalArgumentException("Request body missing");
+
+            carrinho = transactionManager.runInTransaction(() -> carrinhoServices.setObservacoes(idCarrinho, param.observacoes()));
+        } catch (IllegalArgumentException iae) {
+            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Ocorreu um erro ao atualizar observacoes: {}", e, e);
+            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar observacoes");
         }
 
         return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
