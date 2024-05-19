@@ -80,3 +80,9 @@ Content-Type: application/json
 }
 
 
+### ######### Etapa 4 Acompanhamento e preparação
+###
+# @name Listar pedidos recebidos
+GET http://localhost:8090/pedidos?status=RECEBIDO
+
+

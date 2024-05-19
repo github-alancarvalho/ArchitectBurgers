@@ -72,4 +72,24 @@ class PedidoRepositoryJdbcImplTest {
         var loaded = pedidoRepository.getPedido(2);
         assertThat(loaded).isEqualTo(saved.withItens(List.of()));
     }
+
+    @Test
+    void listPedidosByStatus_found() {
+        var pedidos = pedidoRepository.listPedidos(StatusPedido.RECEBIDO);
+
+        assertThat(pedidos).hasSize(1);
+
+        assertThat(pedidos.getFirst()).isEqualTo(new Pedido(1, null, "Cliente Erasmo",
+                Collections.emptyList(), "Sem cebola", StatusPedido.RECEBIDO,
+                new InfoPagamento(FormaPagamento.DINHEIRO),
+                LocalDateTime.of(2024, 5, 18, 15, 30, 12))
+        );
+    }
+
+    @Test
+    void listPedidosByStatus_notFound() {
+        var pedidos = pedidoRepository.listPedidos(StatusPedido.CANCELADO);
+
+        assertThat(pedidos).hasSize(0);
+    }
 }

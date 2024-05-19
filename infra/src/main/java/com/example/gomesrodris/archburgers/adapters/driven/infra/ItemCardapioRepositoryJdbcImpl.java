@@ -49,6 +49,15 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
                 order by ci.num_sequencia
             """.stripIndent();
 
+    @Language("SQL")
+    private static final String SQL_SELECT_BY_PEDIDO = """
+                select pi.num_sequencia, item.item_cardapio_id, item.tipo, item.nome, item.descricao, item.valor
+                from item_cardapio item
+                inner join pedido_item pi ON pi.item_cardapio_id = item.item_cardapio_id
+                where pi.pedido_id = ?
+                order by pi.num_sequencia
+            """.stripIndent();
+
     private final DatabaseConnection databaseConnection;
 
     @Autowired
@@ -73,6 +82,11 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
     @Override
     public List<ItemPedido> findByCarrinho(int idCarrinho) {
         return getItems(SQL_SELECT_BY_CARRINHO, idCarrinho, ItemPedido.class);
+    }
+
+    @Override
+    public List<ItemPedido> findByPedido(int idPedido) {
+        return getItems(SQL_SELECT_BY_PEDIDO, idPedido, ItemPedido.class);
     }
 
     private <T> @NotNull List<T> getItems(String query, Integer param, Class<T> returnClass) {

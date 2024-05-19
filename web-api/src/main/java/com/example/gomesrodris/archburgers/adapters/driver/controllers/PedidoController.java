@@ -8,14 +8,16 @@ import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.services.CarrinhoServices;
 import com.example.gomesrodris.archburgers.domain.services.PedidoServices;
+import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
+import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class PedidoController {
@@ -44,5 +46,23 @@ public class PedidoController {
         }
 
         return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
+    }
+
+    @GetMapping(path="/pedidos")
+    public ResponseEntity<List<PedidoDto>> listarPedidos(@RequestParam(value = "status", required = false) String filtroStatus) {
+        List<Pedido> result;
+        try {
+            StatusPedido parsedFiltroStatus = StringUtils.isEmpty(filtroStatus)
+                    ? null : StatusPedido.valueOf(filtroStatus);
+            result = pedidoServices.listarPedidos(parsedFiltroStatus);
+
+        } catch (IllegalArgumentException iae) {
+            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Ocorreu um erro ao listar pedidos: {}", e, e);
+            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao listar pedidos");
+        }
+
+        return WebUtils.okResponse(result.stream().map(PedidoDto::fromEntity).toList());
     }
 }

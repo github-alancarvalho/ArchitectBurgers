@@ -105,4 +105,25 @@ class ItemCardapioRepositoryJdbcImplTest {
                 )
         );
     }
+
+    @Test
+    void findByPedido() {
+        List<ItemPedido> itensPedido = repository.findByPedido(1);
+
+        assertThat(itensPedido).hasSize(2);
+
+        assertThat(itensPedido.get(0)).isEqualTo(
+                new ItemPedido(1,
+                        new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
+                                "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90"))
+                )
+        );
+
+        assertThat(itensPedido.get(1)).isEqualTo(
+                new ItemPedido(2,
+                        new ItemCardapio(5, TipoItemCardapio.BEBIDA, "Chá gelado",
+                                "Chá gelado com limão, feito na casa", new ValorMonetario("6.00"))
+                )
+        );
+    }
 }
