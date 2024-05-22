@@ -42,7 +42,7 @@ public class CarrinhoServices {
      * @apiNote Este método executa múltiplas operações nos repositórios. É esperado que seja
      * executado em um contexto transacional a ser fornecido pelos serviços de infraestrutura
      */
-    public Carrinho criarCarrinho(@NotNull CarrinhoParam param) {
+    public Carrinho criarCarrinho(@NotNull CarrinhoServices.CriarCarrinhoParam param) {
         boolean clienteIdentificado = param.isClienteIdentificado();
 
         param.getCpfValidado(); // Throw early if invalid
@@ -164,7 +164,7 @@ public class CarrinhoServices {
      *     <li>nomeCliente, cpf, email: Cadastra o cliente para próximos pedidos</li>
      * </ul>
      */
-    public record CarrinhoParam(
+    public record CriarCarrinhoParam(
             @Nullable Integer idCliente,
 
             @Nullable String nomeCliente,
@@ -207,7 +207,7 @@ public class CarrinhoServices {
      * Política do fluxo de compra: Se foram informados dados completos cadastrar o cliente
      */
     private class SalvarClientePolicy {
-        Cliente salvarClienteSeDadosCompletos(CarrinhoParam param) {
+        Cliente salvarClienteSeDadosCompletos(CriarCarrinhoParam param) {
             Cpf cpf = param.getCpfValidado();
             if (StringUtils.isNotEmpty(param.nomeCliente) && StringUtils.isNotEmpty(param.email) && cpf != null) {
                 Cliente checkExistente = clienteRepository.getClienteByCpf(cpf);

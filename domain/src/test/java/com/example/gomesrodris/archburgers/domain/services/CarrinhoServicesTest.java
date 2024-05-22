@@ -54,7 +54,7 @@ class CarrinhoServicesTest {
                 )
         ));
 
-        var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(123, null, null, null));
+        var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CriarCarrinhoParam(123, null, null, null));
         assertThat(result).isEqualTo(carrinhoSalvoCliente123.withItens(List.of(
                         new ItemPedido(1,
                                 new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
@@ -73,7 +73,7 @@ class CarrinhoServicesTest {
 
         when(clienteRepository.getClienteById(123)).thenReturn(cliente123);
 
-        var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(123, null, null, null));
+        var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CriarCarrinhoParam(123, null, null, null));
         assertThat(result).isEqualTo(carrinhoVazioCliente123.withId(99));
     }
 
@@ -84,7 +84,7 @@ class CarrinhoServicesTest {
         when(carrinhoRepository.salvarCarrinhoVazio(carrinhoNaoIdentificado)).thenReturn(
                 carrinhoNaoIdentificado.withId(101));
 
-        var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(null, "João", null, null));
+        var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CriarCarrinhoParam(null, "João", null, null));
         assertThat(result).isEqualTo(carrinhoNaoIdentificado.withId(101));
     }
 
@@ -97,7 +97,7 @@ class CarrinhoServicesTest {
         when(carrinhoRepository.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
                 carrinhoVazioCliente123.withId(102));
 
-        var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CarrinhoParam(null, "Cliente", "12332112340", "cliente123@example.com"));
+        var result = carrinhoServices.criarCarrinho(new CarrinhoServices.CriarCarrinhoParam(null, "Cliente", "12332112340", "cliente123@example.com"));
         assertThat(result).isEqualTo(carrinhoVazioCliente123.withId(102));
     }
 

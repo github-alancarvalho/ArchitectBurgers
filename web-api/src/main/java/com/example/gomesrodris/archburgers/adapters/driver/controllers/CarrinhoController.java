@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Métodos para manipulação do carrinho de compras
+ */
 @RestController
 public class CarrinhoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarrinhoController.class);
@@ -27,6 +30,9 @@ public class CarrinhoController {
         this.transactionManager = transactionManager;
     }
 
+    /**
+     * Obtém dados do carrinho a partir de seu ID
+     */
     @GetMapping(path = "/carrinho/{idCarrinho}")
     public ResponseEntity<CarrinhoDto> findCarrinho(@PathVariable("idCarrinho") Integer idCarrinho) {
 
@@ -44,8 +50,10 @@ public class CarrinhoController {
         }
     }
 
+
     @PostMapping(path = "/carrinho")
-    public ResponseEntity<CarrinhoDto> iniciarCarrinho(@RequestBody CarrinhoServices.CarrinhoParam param) {
+    public ResponseEntity<CarrinhoDto> iniciarCarrinho(
+            @RequestBody CarrinhoServices.CriarCarrinhoParam param) {
 
         Carrinho carrinho;
         try {

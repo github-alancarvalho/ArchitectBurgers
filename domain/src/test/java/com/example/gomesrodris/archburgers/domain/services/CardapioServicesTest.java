@@ -38,7 +38,7 @@ class CardapioServicesTest {
                         new ValorMonetario("25.00"))
         ));
 
-        var result = cardapioServices.listarItensCardapio();
+        var result = cardapioServices.listarItensCardapio(null);
 
         assertThat(result).containsExactly(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
