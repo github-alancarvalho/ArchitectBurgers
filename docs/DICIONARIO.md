@@ -15,12 +15,13 @@ Dicionario de linguagem ubíqua do dominio
 
 - Cliente: Representação dos dados do "Cliente" descrito anteriormente
 - Item do Cardapio: Representação de cada item disponível para venda. Podem ser dos tipos: Lanche, Acompanhamento, Bebida ou Sobremesa
-- Carrinho de compras: Armazenamento temporário dos Combos selecionados pelo cliente. Ao fechar a compra o Carrinho dá origem a um novo Pedido.
-- Pagamento: Informação de pagamento realizado pelo cliente. Para cada meio de pagamento existem informações específicas a serem armazenadas nos dados de Pagamento
+- Carrinho de compras: Armazenamento temporário dos produtos selecionados pelo cliente. Ao fechar a compra o Carrinho dá origem a um novo Pedido.
+- Pagamento: Informação de pagamento realizado pelo cliente. Para cada forma de pagamento existem informações específicas a serem armazenadas nos dados de Pagamento. 
+Na versão inicial DINHEIRO será a única forma de pagamento suportada.
 
 
 - Pedido: É o registro de cada compra solicitada pelos clientes. Estas são suas informações principais:
-  - Itens que fazem parte do pedido (lista de Combos)
+  - Itens que fazem parte do pedido
   - Dados de Pagamento associados
   - Acompanhamento de Status
 
@@ -28,7 +29,7 @@ Dicionario de linguagem ubíqua do dominio
 
 - Identificação do cliente
 
-- Confirmação de compra
+- Seleção de produtos
 
 - Pagamento
 
