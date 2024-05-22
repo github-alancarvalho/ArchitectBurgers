@@ -3,6 +3,7 @@ package com.example.gomesrodris.archburgers.adapters.driver.controllers;
 import com.example.gomesrodris.archburgers.adapters.dto.ItemCardapioDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
+import com.example.gomesrodris.archburgers.domain.serviceports.CardapioServicesPort;
 import com.example.gomesrodris.archburgers.domain.services.CardapioServices;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
@@ -19,10 +20,10 @@ import java.util.List;
 
 @RestController
 public class CardapioController {
-    private final CardapioServices cardapioServices;
+    private final CardapioServicesPort cardapioServices;
 
     @Autowired
-    public CardapioController(CardapioServices cardapioServices) {
+    public CardapioController(CardapioServicesPort cardapioServices) {
         this.cardapioServices = cardapioServices;
     }
 

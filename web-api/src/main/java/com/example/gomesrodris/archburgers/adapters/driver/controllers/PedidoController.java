@@ -4,6 +4,7 @@ import com.example.gomesrodris.archburgers.adapters.driven.infra.TransactionMana
 import com.example.gomesrodris.archburgers.adapters.dto.PedidoDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
+import com.example.gomesrodris.archburgers.domain.serviceports.PedidoServicesPort;
 import com.example.gomesrodris.archburgers.domain.services.PedidoServices;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
@@ -20,11 +21,11 @@ import java.util.List;
 public class PedidoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PedidoController.class);
 
-    private final PedidoServices pedidoServices;
+    private final PedidoServicesPort pedidoServices;
     private final TransactionManager transactionManager;
 
     @Autowired
-    public PedidoController(PedidoServices pedidoServices, TransactionManager transactionManager) {
+    public PedidoController(PedidoServicesPort pedidoServices, TransactionManager transactionManager) {
         this.pedidoServices = pedidoServices;
         this.transactionManager = transactionManager;
     }

@@ -6,16 +6,16 @@ import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
+import com.example.gomesrodris.archburgers.domain.serviceports.CarrinhoServicesPort;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class CarrinhoServices {
+public class CarrinhoServices implements CarrinhoServicesPort {
 
     private final CarrinhoRepository carrinhoRepository;
     private final ClienteRepository clienteRepository;
@@ -38,18 +38,15 @@ public class CarrinhoServices {
         this.salvarClientePolicy = new SalvarClientePolicy();
     }
 
-    /**
-     * @apiNote Este método executa múltiplas operações nos repositórios. É esperado que seja
-     * executado em um contexto transacional a ser fornecido pelos serviços de infraestrutura
-     */
-    public Carrinho criarCarrinho(@NotNull CarrinhoServices.CriarCarrinhoParam param) {
+    @Override
+    public Carrinho criarCarrinho(@NotNull CarrinhoServicesPort.CriarCarrinhoParam param) {
         boolean clienteIdentificado = param.isClienteIdentificado();
 
         param.getCpfValidado(); // Throw early if invalid
 
         if (clienteIdentificado) {
             var carrinhoSalvo = recuperarCarrinhoPolicy.tryRecuperarCarrinho(
-                    new IdCliente(Objects.requireNonNull(param.idCliente, "Unexpected state: idCliente is null")));
+                    new IdCliente(Objects.requireNonNull(param.idCliente(), "Unexpected state: idCliente is null")));
             if (carrinhoSalvo != null) {
                 var itens = itemCardapioRepository.findByCarrinho(Objects.requireNonNull(carrinhoSalvo.id(), "Object from database should have ID"));
                 return carrinhoSalvo.withItens(itens);
@@ -58,9 +55,9 @@ public class CarrinhoServices {
 
         Carrinho newCarrinho;
         if (clienteIdentificado) {
-            var cliente = clienteRepository.getClienteById(param.idCliente);
+            var cliente = clienteRepository.getClienteById(param.idCliente());
             if (cliente == null) {
-                throw new IllegalArgumentException("Cliente invalido! " + param.idCliente);
+                throw new IllegalArgumentException("Cliente invalido! " + param.idCliente());
             }
 
             newCarrinho = Carrinho.newCarrinhoVazioClienteIdentificado(
@@ -70,7 +67,7 @@ public class CarrinhoServices {
 
             if (novoCliente == null) {
                 newCarrinho = Carrinho.newCarrinhoVazioClienteNaoIdentificado(
-                        Objects.requireNonNull(param.nomeCliente, "Unexpected state: nomeCliente is null"), clock.localDateTime());
+                        Objects.requireNonNull(param.nomeCliente(), "Unexpected state: nomeCliente is null"), clock.localDateTime());
             } else {
                 newCarrinho = Carrinho.newCarrinhoVazioClienteIdentificado(
                         Objects.requireNonNull(novoCliente.id(), "Unexpected state: novoCliente.id() is null"), clock.localDateTime());
@@ -80,9 +77,7 @@ public class CarrinhoServices {
         return carrinhoRepository.salvarCarrinhoVazio(newCarrinho);
     }
 
-    /**
-     *
-     */
+    @Override
     public Carrinho addItem(int idCarrinho, int idItemCardapio) {
         var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
         if (carrinho == null) {
@@ -108,6 +103,7 @@ public class CarrinhoServices {
         return newCarrinho;
     }
 
+    @Override
     public Carrinho deleteItem(int idCarrinho, int numSequencia) {
         var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
         if (carrinho == null) {
@@ -127,9 +123,7 @@ public class CarrinhoServices {
         return carrinho;
     }
 
-    /**
-     *
-     */
+    @Override
     public Carrinho setObservacoes(int idCarrinho, String textoObservacao) {
         var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
         if (carrinho == null) {
@@ -146,6 +140,7 @@ public class CarrinhoServices {
         return newCarrinho;
     }
 
+    @Override
     public Carrinho findCarrinho(int idCarrinho) {
         var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
         if (carrinho == null) {
@@ -154,43 +149,6 @@ public class CarrinhoServices {
 
         var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
         return carrinho.withItens(currentItens);
-    }
-
-    /**
-     * Parâmetros para criação de carrinho. Oferece tres possíveis combinações de atributos:
-     * <ul>
-     *     <li>idCliente: Para associar o carrinho a um cliente cadastrado</li>
-     *     <li>Apenas nomeCliente: Cliente não identificado, chamar pelo nome apenas para este pedido</li>
-     *     <li>nomeCliente, cpf, email: Cadastra o cliente para próximos pedidos</li>
-     * </ul>
-     */
-    public record CriarCarrinhoParam(
-            @Nullable Integer idCliente,
-
-            @Nullable String nomeCliente,
-
-            @Nullable String cpf,
-            @Nullable String email
-    ) {
-        private boolean isClienteIdentificado() {
-            if (idCliente != null && StringUtils.isEmpty(nomeCliente) && StringUtils.isEmpty(cpf) && StringUtils.isEmpty(email)) {
-                return true;
-            } else if (idCliente == null && StringUtils.isNotEmpty(nomeCliente)) {
-                return false;
-            } else {
-                throw new IllegalArgumentException("Combinação de parâmetros inválidos. Usar {idCliente} " +
-                        "ou {nomeCliente} ou {nomeCliente, cpf, email}");
-            }
-        }
-
-        @Nullable
-        private Cpf getCpfValidado() {
-            if (StringUtils.isEmpty(cpf)) {
-                return null;
-            } else {
-                return new Cpf(cpf);
-            }
-        }
     }
 
     /**
@@ -209,13 +167,13 @@ public class CarrinhoServices {
     private class SalvarClientePolicy {
         Cliente salvarClienteSeDadosCompletos(CriarCarrinhoParam param) {
             Cpf cpf = param.getCpfValidado();
-            if (StringUtils.isNotEmpty(param.nomeCliente) && StringUtils.isNotEmpty(param.email) && cpf != null) {
+            if (StringUtils.isNotEmpty(param.nomeCliente()) && StringUtils.isNotEmpty(param.email()) && cpf != null) {
                 Cliente checkExistente = clienteRepository.getClienteByCpf(cpf);
                 if (checkExistente != null) {
-                    throw new IllegalArgumentException("Cliente com CPF " + param.cpf + " já cadastrado");
+                    throw new IllegalArgumentException("Cliente com CPF " + param.cpf() + " já cadastrado");
                 }
 
-                Cliente newCliente = new Cliente(null, param.nomeCliente, cpf, param.email);
+                Cliente newCliente = new Cliente(null, param.nomeCliente(), cpf, param.email());
                 return clienteRepository.salvarCliente(newCliente);
             } else {
                 return null;

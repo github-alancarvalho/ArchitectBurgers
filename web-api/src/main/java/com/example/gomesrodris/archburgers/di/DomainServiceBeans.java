@@ -5,6 +5,10 @@ import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepositor
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
+import com.example.gomesrodris.archburgers.domain.serviceports.CardapioServicesPort;
+import com.example.gomesrodris.archburgers.domain.serviceports.CarrinhoServicesPort;
+import com.example.gomesrodris.archburgers.domain.serviceports.ClienteServicesPort;
+import com.example.gomesrodris.archburgers.domain.serviceports.PedidoServicesPort;
 import com.example.gomesrodris.archburgers.domain.services.CardapioServices;
 import com.example.gomesrodris.archburgers.domain.services.CarrinhoServices;
 import com.example.gomesrodris.archburgers.domain.services.ClienteServices;
@@ -22,29 +26,29 @@ public class DomainServiceBeans {
     }
 
     @Bean
-    public CardapioServices cardapioServices(ItemCardapioRepository itemCardapioRepository) {
+    public CardapioServicesPort cardapioServices(ItemCardapioRepository itemCardapioRepository) {
         return new CardapioServices(itemCardapioRepository);
     }
 
     @Bean
-    public ClienteServices clienteServices(ClienteRepository clienteRepository) {
+    public ClienteServicesPort clienteServices(ClienteRepository clienteRepository) {
         return new ClienteServices(clienteRepository);
     }
 
     @Bean
-    public CarrinhoServices carrinhoServices(CarrinhoRepository carrinhoRepository,
-                                             ClienteRepository clienteRepository,
-                                             ItemCardapioRepository itemCardapioRepository,
-                                             Clock clock) {
+    public CarrinhoServicesPort carrinhoServices(CarrinhoRepository carrinhoRepository,
+                                                 ClienteRepository clienteRepository,
+                                                 ItemCardapioRepository itemCardapioRepository,
+                                                 Clock clock) {
         return new CarrinhoServices(carrinhoRepository, clienteRepository, itemCardapioRepository, clock);
     }
 
     @Bean
-    public PedidoServices pedidoServices(CarrinhoRepository carrinhoRepository,
-                                         ItemCardapioRepository itemCardapioRepository,
-                                         PedidoRepository pedidoRepository,
-                                         Clock clock,
-                                         PainelPedidos painelPedidos) {
+    public PedidoServicesPort pedidoServices(CarrinhoRepository carrinhoRepository,
+                                             ItemCardapioRepository itemCardapioRepository,
+                                             PedidoRepository pedidoRepository,
+                                             Clock clock,
+                                             PainelPedidos painelPedidos) {
         return new PedidoServices(pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
     }
 }

@@ -5,6 +5,7 @@ import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
+import com.example.gomesrodris.archburgers.domain.serviceports.PedidoServicesPort;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class PedidoServices {
+public class PedidoServices implements PedidoServicesPort {
     private final PedidoRepository pedidoRepository;
     private final CarrinhoRepository carrinhoRepository;
     private final ItemCardapioRepository itemCardapioRepository;
@@ -33,22 +34,23 @@ public class PedidoServices {
         this.painelPedidos = painelPedidos;
     }
 
+    @Override
     public Pedido criarPedido(CriarPedidoParam param) {
         if (param == null)
             throw new IllegalArgumentException("Parameter missing");
-        if (param.idCarrinho == null)
+        if (param.idCarrinho() == null)
             throw new IllegalArgumentException("idCarrinho missing");
-        if (StringUtils.isEmpty(param.formaPagamento))
+        if (StringUtils.isEmpty(param.formaPagamento()))
             throw new IllegalArgumentException("formaPagamento missing");
 
-        var formaPagamento = FormaPagamento.fromName(param.formaPagamento);
+        var formaPagamento = FormaPagamento.fromName(param.formaPagamento());
 
-        var carrinho = carrinhoRepository.getCarrinho(param.idCarrinho);
+        var carrinho = carrinhoRepository.getCarrinho(param.idCarrinho());
         if (carrinho == null) {
-            throw new IllegalArgumentException("Invalid idCarrinho " + param.idCarrinho);
+            throw new IllegalArgumentException("Invalid idCarrinho " + param.idCarrinho());
         }
 
-        var itens = itemCardapioRepository.findByCarrinho(param.idCarrinho);
+        var itens = itemCardapioRepository.findByCarrinho(param.idCarrinho());
 
         var pedido = new Pedido(null,
                 carrinho.idClienteIdentificado(), carrinho.nomeClienteNaoIdentificado(),
@@ -63,6 +65,7 @@ public class PedidoServices {
         return saved;
     }
 
+    @Override
     public List<Pedido> listarPedidosByStatus(@Nullable StatusPedido filtroStatus) {
         if (filtroStatus == null) {
             throw new IllegalArgumentException("Obrigatório informar um filtro");
@@ -75,6 +78,7 @@ public class PedidoServices {
         }).toList();
     }
 
+    @Override
     public List<Pedido> listarPedidosComAtraso() {
         var now = clock.localDateTime();
         var olderThan = now.minusMinutes(20);
@@ -86,20 +90,24 @@ public class PedidoServices {
         }).toList();
     }
 
+    @Override
     public Pedido validarPedido(Integer idPedido) {
         return loadAndApply(idPedido, Pedido::validar);
     }
 
+    @Override
     public Pedido cancelarPedido(Integer idPedido) {
         return loadAndApply(idPedido, Pedido::cancelar);
     }
 
+    @Override
     public Pedido setPronto(Integer idPedido) {
         Pedido updated = loadAndApply(idPedido, Pedido::setPronto);
         painelPedidos.notificarPedidoPronto(updated);
         return updated;
     }
 
+    @Override
     public Pedido finalizarPedido(Integer idPedido) {
         return loadAndApply(idPedido, Pedido::finalizar);
     }
@@ -117,12 +125,5 @@ public class PedidoServices {
         var itens = itemCardapioRepository.findByPedido(idPedido);
 
         return atualizado.withItens(itens);
-    }
-
-    public record CriarPedidoParam(
-            @Nullable Integer idCarrinho,
-            @Nullable String formaPagamento
-    ) {
-
     }
 }

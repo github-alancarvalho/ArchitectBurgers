@@ -6,6 +6,7 @@ import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoObservacoesDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
+import com.example.gomesrodris.archburgers.domain.serviceports.CarrinhoServicesPort;
 import com.example.gomesrodris.archburgers.domain.services.CarrinhoServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +22,11 @@ import org.springframework.web.bind.annotation.*;
 public class CarrinhoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarrinhoController.class);
 
-    private final CarrinhoServices carrinhoServices;
+    private final CarrinhoServicesPort carrinhoServices;
     private final TransactionManager transactionManager;
 
     @Autowired
-    public CarrinhoController(CarrinhoServices carrinhoServices, TransactionManager transactionManager) {
+    public CarrinhoController(CarrinhoServicesPort carrinhoServices, TransactionManager transactionManager) {
         this.carrinhoServices = carrinhoServices;
         this.transactionManager = transactionManager;
     }
