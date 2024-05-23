@@ -129,5 +129,45 @@ POST http://localhost:8090/pedidos/5/finalizar
 
 
 
+### ######### Serviços administrativos
 
+###
+# @name Listar todos clientes
+GET http://localhost:8090/clientes
+
+###
+# @name Listar itens de cardápio por tipo
+GET http://localhost:8090/cardapio?tipo=ACOMPANHAMENTO
+
+###
+# @name Cadastrar um item no cardápio
+POST http://localhost:8090/cardapio
+Content-Type: application/json
+
+{
+  "tipo": "ACOMPANHAMENTO",
+  "nome": "Onion Rings",
+  "descricao": "Porção de anéis de cebola empanados",
+  "valor": {
+    "raw": "15.00"
+  }
+}
+
+###
+# @name Atualizar um item do cardápio
+PUT http://localhost:8090/cardapio/9
+Content-Type: application/json
+
+{
+  "tipo": "ACOMPANHAMENTO",
+  "nome": "Onion Rings M",
+  "descricao": "Porção de anéis de cebola empanados tamanho médio",
+  "valor": {
+    "raw": "16.00"
+  }
+}
+
+###
+# @name Excluir um item do cardápio
+DELETE http://localhost:8090/cardapio/9
 

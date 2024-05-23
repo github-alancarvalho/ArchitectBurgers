@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Implementation of the Repository based on a relational database via JDBC
@@ -41,6 +42,14 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
             """.stripIndent();
 
     @Language("SQL")
+    private static final String SQL_SELECT_BY_TIPO = """
+                select item_cardapio_id, tipo, nome, descricao, valor
+                from item_cardapio
+                where tipo = ?
+                order by item_cardapio_id asc
+            """.stripIndent();
+
+    @Language("SQL")
     private static final String SQL_SELECT_BY_CARRINHO = """
                 select ci.num_sequencia, item.item_cardapio_id, item.tipo, item.nome, item.descricao, item.valor
                 from item_cardapio item 
@@ -56,6 +65,24 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
                 inner join pedido_item pi ON pi.item_cardapio_id = item.item_cardapio_id
                 where pi.pedido_id = ?
                 order by pi.num_sequencia
+            """.stripIndent();
+
+    @Language("SQL")
+    private static final String SQL_INSERT = """
+                insert into item_cardapio (tipo, nome, descricao, valor)
+                values (?,?,?,?)
+                returning item_cardapio_id;
+            """.stripIndent();
+
+    @Language("SQL")
+    private static final String SQL_UPDATE = """
+                update item_cardapio set tipo = ?, nome = ?, descricao = ?, valor = ?
+                where item_cardapio_id = ?
+            """.stripIndent();
+
+    @Language("SQL")
+    private static final String SQL_DELETE = """
+                delete from item_cardapio where item_cardapio_id = ?
             """.stripIndent();
 
     private final DatabaseConnection databaseConnection;
@@ -89,12 +116,83 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
         return getItems(SQL_SELECT_BY_PEDIDO, idPedido, ItemPedido.class);
     }
 
-    private <T> @NotNull List<T> getItems(String query, Integer param, Class<T> returnClass) {
+    @Override
+    public List<ItemCardapio> findByTipo(TipoItemCardapio filtroTipo) {
+        return getItems(SQL_SELECT_BY_TIPO, filtroTipo.getAbreviacao(), ItemCardapio.class);
+    }
+
+    @Override
+    public ItemCardapio salvarNovo(ItemCardapio itemCardapio) {
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_INSERT)) {
+
+            stmt.setString(1, itemCardapio.tipo().getAbreviacao());
+            stmt.setString(2, itemCardapio.nome());
+            stmt.setString(3, itemCardapio.descricao());
+            stmt.setBigDecimal(4, itemCardapio.valor().asBigDecimal());
+
+            var rs = stmt.executeQuery();
+
+            if (!rs.next()) {
+                throw new IllegalStateException("Modification query expected return");
+            }
+
+            return itemCardapio.withId(rs.getInt(1));
+
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void atualizar(ItemCardapio itemCardapio) {
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_UPDATE)) {
+
+            stmt.setString(1, itemCardapio.tipo().getAbreviacao());
+            stmt.setString(2, itemCardapio.nome());
+            stmt.setString(3, itemCardapio.descricao());
+            stmt.setBigDecimal(4, itemCardapio.valor().asBigDecimal());
+
+            stmt.setInt(5, Objects.requireNonNull(itemCardapio.id(), "Saved item is expected in Update"));
+
+            var result = stmt.executeUpdate();
+
+            if (result == 0) {
+                throw new IllegalStateException("Nenhum registro encontrado");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void excluir(int idItemCardapio) {
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_DELETE)) {
+
+            stmt.setInt(1, idItemCardapio);
+
+            var result = stmt.executeUpdate();
+
+            if (result == 0) {
+                throw new IllegalStateException("Nenhum registro encontrado");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+    }
+
+    private <T> @NotNull List<T> getItems(String query, Object param, Class<T> returnClass) {
         try (var connection = databaseConnection.getConnection();
              var stmt = connection.prepareStatement(query)) {
 
-            if (param != null) {
-                stmt.setInt(1, param);
+            if (param instanceof Integer) {
+                stmt.setInt(1, (Integer) param);
+            } else if (param instanceof String) {
+                stmt.setString(1, (String) param);
+            } else if (param != null) {
+                throw new IllegalArgumentException("Invalid parameter type: " + param);
             }
 
             ResultSet rs = stmt.executeQuery();
@@ -128,7 +226,6 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
             throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
         }
     }
-
 
 
 }
