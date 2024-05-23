@@ -7,6 +7,8 @@ import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
 import org.junit.jupiter.api.*;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ClienteRepositoryJdbcImplTest {
@@ -43,6 +45,18 @@ class ClienteRepositoryJdbcImplTest {
 
         assertThat(cliente).isEqualTo(new Cliente(new IdCliente(1), "Roberto Carlos",
                 new Cpf("12332112340"), "roberto.carlos@example.com"));
+    }
+
+    @Test
+    void listarTodosClientes() {
+        var clientes = repository.listarTodosClientes();
+
+        assertThat(clientes).containsAll(List.of(
+                new Cliente(new IdCliente(1), "Roberto Carlos",
+                        new Cpf("12332112340"), "roberto.carlos@example.com"),
+                new Cliente(new IdCliente(2), "Wanderleia",
+                        new Cpf("99988877714"), "wanderleia@example.com")
+        ));
     }
 
     @Test

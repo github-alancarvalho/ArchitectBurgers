@@ -5,6 +5,8 @@ import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository
 import com.example.gomesrodris.archburgers.domain.serviceports.ClienteServicesPort;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 
+import java.util.List;
+
 public class ClienteServices implements ClienteServicesPort {
     private final ClienteRepository clienteRepository;
 
@@ -15,5 +17,10 @@ public class ClienteServices implements ClienteServicesPort {
     @Override
     public Cliente getClienteByCpf(Cpf cpf) {
         return clienteRepository.getClienteByCpf(cpf);
+    }
+
+    @Override
+    public List<Cliente> listTodosClientes() {
+        return clienteRepository.listarTodosClientes();
     }
 }

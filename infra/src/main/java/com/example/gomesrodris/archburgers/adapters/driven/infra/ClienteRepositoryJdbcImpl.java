@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class ClienteRepositoryJdbcImpl implements ClienteRepository {
@@ -19,6 +21,9 @@ public class ClienteRepositoryJdbcImpl implements ClienteRepository {
 
     @Language("SQL")
     private final static String SQL_SELECT_CLIENTE_BY_ID = "select cliente_id, nome, cpf, email from cliente where cliente_id = ?";
+
+    @Language("SQL")
+    private final static String SQL_SELECT_ALL_CLIENTES = "select cliente_id, nome, cpf, email from cliente";
 
     @Language("SQL")
     private final static String SQL_INSERT_CLIENTE = "insert into cliente (nome, cpf, email) values (?, ?, ?) returning cliente_id";
@@ -90,6 +95,30 @@ public class ClienteRepositoryJdbcImpl implements ClienteRepository {
                     cliente.cpf(),
                     cliente.email());
 
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<Cliente> listarTodosClientes() {
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_SELECT_ALL_CLIENTES)) {
+
+            ResultSet rs = stmt.executeQuery();
+
+            List<Cliente> result = new ArrayList<>();
+
+            while (rs.next()) {
+                result.add(new Cliente(
+                        new IdCliente(rs.getInt("cliente_id")),
+                        rs.getString("nome"),
+                        new Cpf(rs.getString("cpf")),
+                        rs.getString("email"))
+                );
+            }
+
+            return result;
         } catch (SQLException e) {
             throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
         }
