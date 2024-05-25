@@ -8,6 +8,9 @@ import com.example.gomesrodris.archburgers.domain.serviceports.PedidoServicesPor
 import com.example.gomesrodris.archburgers.domain.services.PedidoServices;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,8 @@ public class PedidoController {
         this.transactionManager = transactionManager;
     }
 
+    @Operation(summary = "Cria um pedido a partir do carrinho informado",
+            description = "O pedido recebe todos os itens do carrinho, e após a criação do pedido o carrinho é excluído")
     @PostMapping(path = "/pedidos")
     public ResponseEntity<PedidoDto> criarPedido(@RequestBody PedidoServices.CriarPedidoParam param) {
 
@@ -46,6 +51,11 @@ public class PedidoController {
         return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
     }
 
+    @Operation(summary = "Lista os pedidos conforme critério informado",
+            parameters = {
+                    @Parameter(name = "status", description = "Filtra por status do pedido"),
+                    @Parameter(name = "atraso", description = "Filtra pedidos em atraso (RECEBIDO ou EM PREPARAÇÃO criados há mais de 20 minutos)")
+            })
     @GetMapping(path = "/pedidos")
     public ResponseEntity<List<PedidoDto>> listarPedidos(
             @RequestParam(value = "status", required = false) String filtroStatus,

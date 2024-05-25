@@ -8,6 +8,7 @@ import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.serviceports.CarrinhoServicesPort;
 import com.example.gomesrodris.archburgers.domain.services.CarrinhoServices;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,7 @@ public class CarrinhoController {
         this.transactionManager = transactionManager;
     }
 
-    /**
-     * Obtém dados do carrinho a partir de seu ID
-     */
+    @Operation(summary = "Obtém dados do carrinho a partir de seu ID")
     @GetMapping(path = "/carrinho/{idCarrinho}")
     public ResponseEntity<CarrinhoDto> findCarrinho(@PathVariable("idCarrinho") Integer idCarrinho) {
 
@@ -51,7 +50,13 @@ public class CarrinhoController {
         }
     }
 
-
+    @Operation(summary = "Inicia um novo carrinho de compra",
+    description = """
+     Oferece tres possíveis combinações de atributos na requisição:
+      - idCliente: Para associar o carrinho a um cliente cadastrado
+      - Apenas nomeCliente: Cliente não identificado, chamar pelo nome apenas para este pedido
+      - nomeCliente, cpf, email: Cadastra um novo cliente e associa à compra atual
+    """)
     @PostMapping(path = "/carrinho")
     public ResponseEntity<CarrinhoDto> iniciarCarrinho(
             @RequestBody CarrinhoServices.CriarCarrinhoParam param) {
@@ -69,6 +74,7 @@ public class CarrinhoController {
         return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
     }
 
+    @Operation(summary = "Adiciona um item ao carrinho")
     @PostMapping(path = "/carrinho/{idCarrinho}")
     public ResponseEntity<CarrinhoDto> addItemCarrinho(@PathVariable("idCarrinho") Integer idCarrinho, @RequestBody AddItemCarrinhoDto param) {
 
@@ -91,6 +97,7 @@ public class CarrinhoController {
         return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
     }
 
+    @Operation(summary = "Exclui um item do carrinho")
     @DeleteMapping(path = "/carrinho/{idCarrinho}/itens/{numSequencia}")
     public ResponseEntity<CarrinhoDto> deleteItemCarrinho(
             @PathVariable("idCarrinho") Integer idCarrinho,
@@ -115,6 +122,7 @@ public class CarrinhoController {
         return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
     }
 
+    @Operation(summary = "Atribui ou atualiza o campo de observações do pedido")
     @PutMapping(path = "/carrinho/{idCarrinho}/obs")
     public ResponseEntity<CarrinhoDto> atualizarObservacoes(@PathVariable("idCarrinho") Integer idCarrinho,
                                                             @RequestBody CarrinhoObservacoesDto param) {
