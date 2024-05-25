@@ -8,9 +8,11 @@ import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
 import org.junit.jupiter.api.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ItemCardapioRepositoryJdbcImplTest {
     private static RealDatabaseTestHelper realDatabase;
@@ -148,6 +150,44 @@ class ItemCardapioRepositoryJdbcImplTest {
         repository.excluir(saved.id());
 
         assertThat(repository.findById(saved.id())).isNull();
+    }
+
+    @Test
+    void excluir_emUso() throws SQLException {
+        ItemCardapio saved = repository.salvarNovo(new ItemCardapio(null,
+                TipoItemCardapio.BEBIDA,
+                "Suco de limão",
+                "Suco de limão natural",
+                new ValorMonetario("7.50")));
+
+        assertThat(saved.id()).isNotNull();
+
+        try (var conn = databaseConnection.jdbcConnection();
+            var stmt = conn.prepareStatement("INSERT INTO carrinho_item(num_sequencia, carrinho_id, item_cardapio_id) values (?,?,?)")
+        ) {
+            stmt.setInt(1, 5);
+            stmt.setInt(2, 1);
+            stmt.setInt(3, saved.id());
+            stmt.executeUpdate();
+        }
+
+        var byCarrinho = repository.findByCarrinho(1);
+        assertThat(byCarrinho).contains(new ItemPedido(5, saved));
+
+        ///
+        repository.excluir(saved.id());
+
+        assertThat(repository.findById(saved.id())).isNull();
+
+        byCarrinho = repository.findByCarrinho(1);
+        assertThat(byCarrinho).doesNotContain(new ItemPedido(5, saved));
+    }
+
+    @Test
+    void excluir_naoEncontrado() {
+        assertThat(
+                assertThrows(IllegalArgumentException.class, () -> repository.excluir(99))
+        ).hasMessage("Nenhum registro encontrado");
     }
 
     @Test

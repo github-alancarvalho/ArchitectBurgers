@@ -12,7 +12,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="id_cliente_identificado" type="int">
-                <constraints nullable="true" foreignKeyName="fk_pedido_cliente" references="cliente(cliente_id)"/>
+                <constraints nullable="true" foreignKeyName="fk_pedido_cliente" references="cliente(cliente_id)" deleteCascade="true"/>
             </column>
             <column name="nome_cliente_nao_identificado" type="text">
                 <constraints nullable="true" />
@@ -38,7 +38,7 @@
             </column>
             <column name="item_cardapio_id" type="int">
                 <constraints primaryKey="false" nullable="false"
-                             foreignKeyName="fk_pedido_item_cardapio" references="item_cardapio(item_cardapio_id)" />
+                             foreignKeyName="fk_pedido_item_cardapio" references="item_cardapio(item_cardapio_id)" deleteCascade="true"/>
             </column>
             <column name="num_sequencia" type="int">
                 <constraints primaryKey="false" nullable="false" />

@@ -176,7 +176,7 @@ public class ItemCardapioRepositoryJdbcImpl implements ItemCardapioRepository {
             var result = stmt.executeUpdate();
 
             if (result == 0) {
-                throw new IllegalStateException("Nenhum registro encontrado");
+                throw new IllegalArgumentException("Nenhum registro encontrado");
             }
         } catch (SQLException e) {
             throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
