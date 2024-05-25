@@ -47,7 +47,8 @@ public class CardapioController {
         return WebUtils.okResponse(result.stream().map(ItemCardapioDto::fromEntity).toList());
     }
 
-    @Operation(summary = "Grava um novo item no cardápio")
+    @Operation(summary = "Grava um novo item no cardápio",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Não enviar os campos id e valor.formatted"))
     @PostMapping("/cardapio")
     public ResponseEntity<ItemCardapioDto> salvarNovoItem(@RequestBody ItemCardapioDto itemCardapioDto) {
         try {

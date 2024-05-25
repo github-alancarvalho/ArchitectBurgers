@@ -45,7 +45,8 @@ $ ./build.sh
 Execução a partir da imagem docker (não requer instalação do Java)
 ```shell
 $ cd docker/
-$ docker compose up
+$ docker compose up  [-d]
+# ou docker-compose up , se na distribuição utilizada o compose estiver em executável separado 
 ```
 
 ### Documentos:
@@ -60,14 +61,8 @@ $ docker compose up
 
 **Link da documentação Swagger -** Com a aplicação rodando, acessar:
 
-[http://localhost:8090/v3/api-docs (documentação OpenAPI pura em Json)
+Documentação OpenAPI pura em Json: http://localhost:8090/v3/api-docs
 
-http://localhost:8090/swagger-ui.html (UI de documentação e execução de chamadas)
-]([http://localhost:8090/v3/api-docs (documentação OpenAPI pura em Json)
+UI de documentação e execução de chamadas: http://localhost:8090/swagger-ui.html
 
-http://localhost:8090/swagger-ui.html (UI de documentação e execução de chamadas)
-](****http://localhost:8090/v3/api-docs (documentação OpenAPI pura em Json)
-
-http://localhost:8090/swagger-ui.html (UI de documentação e execução de chamadas)****
-))
-
+Exemplos de invocação dos serviços: web-api/src/test/samples/service-samples.http (compatível com HTTP client do IntelliJ IDEA)
