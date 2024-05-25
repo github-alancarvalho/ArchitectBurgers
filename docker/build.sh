@@ -18,5 +18,5 @@ then
 	exit 1
 fi
 
-docker build . -t gomesrodris/architect-burgers:0.0.1
+docker build . -t gomesrodris/architect-burgers:0.0.2
 

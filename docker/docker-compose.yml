@@ -19,7 +19,7 @@ services:
       timeout: 10s
 
   app:
-    image: gomesrodris/architect-burgers:0.0.1
+    image: gomesrodris/architect-burgers:0.0.2
     container_name: archburgers_app
     restart: "no"
     environment:
