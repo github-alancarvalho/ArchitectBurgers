@@ -86,7 +86,7 @@ public class CarrinhoController {
                 throw new IllegalArgumentException("Request body missing");
 
             carrinho = transactionManager.runInTransaction(() -> carrinhoServices.addItem(
-                    idCarrinho, param.getValidIdItemCardapio()));
+                    idCarrinho, param.validarIdItemCardapio()));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {
