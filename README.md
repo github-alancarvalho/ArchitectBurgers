@@ -39,6 +39,7 @@ Empacotamento da imagem docker:
 ```shell
 $ cd docker/
 $ ./build.sh
+# executar docker push se for uma versão release
 ```
 
 Execução a partir da imagem docker (não requer instalação do Java)
