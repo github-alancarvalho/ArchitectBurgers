@@ -10,11 +10,11 @@
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>architect-burgers-domain</artifactId>
+    <artifactId>architect-burgers-entities</artifactId>
     <version>${project.parent.version}</version>
 
-    <name>architect-burgers-domain</name>
-    <description>Architect Burger - Domain model and services</description>
+    <name>architect-burgers-entities</name>
+    <description>Architect Burger - Entities layer</description>
 
     <dependencies>
     </dependencies>

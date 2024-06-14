@@ -16,7 +16,7 @@
     </properties>
 
     <modules>
-        <module>code/domain</module>
+        <module>code/entities</module>
         <module>code/web-api</module>
         <module>code/infra</module>
     </modules>
