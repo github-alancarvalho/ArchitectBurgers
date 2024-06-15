@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>architect-burgers-domain</artifactId>
+            <artifactId>architect-burgers-usecases</artifactId>
             <version>${parent.version}</version>
         </dependency>
 

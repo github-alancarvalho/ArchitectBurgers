@@ -17,6 +17,7 @@
 
     <modules>
         <module>code/entities</module>
+        <module>code/usecases</module>
         <module>code/web-api</module>
         <module>code/infra</module>
     </modules>
