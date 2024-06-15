@@ -10,7 +10,7 @@
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>architect-burgers-infra</artifactId>
+    <artifactId>architect-burgers-gateways</artifactId>
     <version>${project.parent.version}</version>
 
     <name>architect-burgers-infra</name>
