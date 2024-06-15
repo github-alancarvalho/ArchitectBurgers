@@ -4,7 +4,7 @@ import com.example.gomesrodris.archburgers.adapters.dto.GenericOperationResponse
 import com.example.gomesrodris.archburgers.adapters.dto.ItemCardapioDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
-import com.example.gomesrodris.archburgers.domain.serviceports.CardapioServicesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.CardapioUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,11 +23,11 @@ import java.util.List;
 public class CardapioController {
     private final Logger LOGGER = LoggerFactory.getLogger(CardapioController.class);
 
-    private final CardapioServicesPort cardapioServices;
+    private final CardapioUseCasesPort cardapioUseCases;
 
     @Autowired
-    public CardapioController(CardapioServicesPort cardapioServices) {
-        this.cardapioServices = cardapioServices;
+    public CardapioController(CardapioUseCasesPort cardapioUseCases) {
+        this.cardapioUseCases = cardapioUseCases;
     }
 
     @Operation(summary = "Consulta todos os itens do cardápio. Para uso do frontend de pedidos e também do sistema de administração do cardápio",
@@ -42,7 +42,7 @@ public class CardapioController {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, "Tipo inválido: " + tipo);
         }
 
-        List<ItemCardapio> result = cardapioServices.listarItensCardapio(filtroTipo);
+        List<ItemCardapio> result = cardapioUseCases.listarItensCardapio(filtroTipo);
 
         return WebUtils.okResponse(result.stream().map(ItemCardapioDto::fromEntity).toList());
     }
@@ -58,7 +58,7 @@ public class CardapioController {
             if (item.id() != null)
                 throw new IllegalArgumentException("Novo objeto não pode ter um ID");
 
-            var saved = cardapioServices.salvarItemCardapio(item);
+            var saved = cardapioUseCases.salvarItemCardapio(item);
             return WebUtils.okResponse(ItemCardapioDto.fromEntity(saved));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
@@ -80,7 +80,7 @@ public class CardapioController {
 
             ItemCardapio item = itemCardapioDto.toEntity().withId(idItemCardapio);
 
-            var saved = cardapioServices.salvarItemCardapio(item);
+            var saved = cardapioUseCases.salvarItemCardapio(item);
             return WebUtils.okResponse(ItemCardapioDto.fromEntity(saved));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
@@ -97,7 +97,7 @@ public class CardapioController {
             if (idItemCardapio == null)
                 throw new IllegalArgumentException("Missing idItemCardapio path param");
 
-            cardapioServices.excluirItemCardapio(idItemCardapio);
+            cardapioUseCases.excluirItemCardapio(idItemCardapio);
             return WebUtils.okResponse(new GenericOperationResponse(true));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());

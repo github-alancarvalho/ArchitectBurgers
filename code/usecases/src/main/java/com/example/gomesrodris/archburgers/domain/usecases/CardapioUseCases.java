@@ -1,18 +1,18 @@
-package com.example.gomesrodris.archburgers.domain.services;
+package com.example.gomesrodris.archburgers.domain.usecases;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.serviceports.CardapioServicesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.CardapioUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class CardapioServices implements CardapioServicesPort {
+public class CardapioUseCases implements CardapioUseCasesPort {
     private final ItemCardapioRepository itemCardapioRepository;
 
-    public CardapioServices(ItemCardapioRepository itemCardapioRepository) {
+    public CardapioUseCases(ItemCardapioRepository itemCardapioRepository) {
         this.itemCardapioRepository = itemCardapioRepository;
     }
 

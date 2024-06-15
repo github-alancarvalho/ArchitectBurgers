@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.domain.serviceports;
+package com.example.gomesrodris.archburgers.domain.usecaseports;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface CardapioServicesPort {
+public interface CardapioUseCasesPort {
 
     List<ItemCardapio> listarItensCardapio(@Nullable TipoItemCardapio filtroTipo);
 

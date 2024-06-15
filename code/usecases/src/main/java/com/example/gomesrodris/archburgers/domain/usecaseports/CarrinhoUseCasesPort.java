@@ -1,17 +1,16 @@
-package com.example.gomesrodris.archburgers.domain.serviceports;
+package com.example.gomesrodris.archburgers.domain.usecaseports;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
-import com.example.gomesrodris.archburgers.domain.services.CarrinhoServices;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface CarrinhoServicesPort {
+public interface CarrinhoUseCasesPort {
 
     Carrinho findCarrinho(int idCarrinho);
 
-    Carrinho criarCarrinho(@NotNull CarrinhoServicesPort.CriarCarrinhoParam param);
+    Carrinho criarCarrinho(@NotNull CarrinhoUseCasesPort.CriarCarrinhoParam param);
 
     Carrinho addItem(int idCarrinho, int idItemCardapio);
 

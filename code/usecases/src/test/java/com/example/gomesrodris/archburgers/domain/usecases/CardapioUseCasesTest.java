@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.domain.services;
+package com.example.gomesrodris.archburgers.domain.usecases;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
@@ -16,15 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CardapioServicesTest {
+class CardapioUseCasesTest {
     @Mock
     private ItemCardapioRepository itemCardapioRepository;
 
-    private CardapioServices cardapioServices;
+    private CardapioUseCases cardapioUseCases;
 
     @BeforeEach
     void setUp() {
-        cardapioServices = new CardapioServices(itemCardapioRepository);
+        cardapioUseCases = new CardapioUseCases(itemCardapioRepository);
     }
 
     @Test
@@ -38,7 +38,7 @@ class CardapioServicesTest {
                         new ValorMonetario("25.00"))
         ));
 
-        var result = cardapioServices.listarItensCardapio(null);
+        var result = cardapioUseCases.listarItensCardapio(null);
 
         assertThat(result).containsExactly(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",

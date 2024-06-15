@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.domain.services;//import static org.junit.jupiter.api.Assertions.*;
+package com.example.gomesrodris.archburgers.domain.usecases;//import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PedidoServicesTest {
+class PedidoUseCasesTest {
     @Mock
     private PedidoRepository pedidoRepository;
     @Mock
@@ -37,27 +37,27 @@ class PedidoServicesTest {
     @Mock
     private PainelPedidos painelPedidos;
 
-    private PedidoServices pedidoServices;
+    private PedidoUseCases pedidoUseCases;
 
     @BeforeEach
     void setUp() {
-        pedidoServices = new PedidoServices(
+        pedidoUseCases = new PedidoUseCases(
                 pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
     }
 
     @Test
     void criarPedido_missingParam() {
-        assertThrows(IllegalArgumentException.class, () -> pedidoServices.criarPedido(null));
-        assertThrows(IllegalArgumentException.class, () -> pedidoServices.criarPedido(
-                new PedidoServices.CriarPedidoParam(null, "DINHEIRO")));
-        assertThrows(IllegalArgumentException.class, () -> pedidoServices.criarPedido(
-                new PedidoServices.CriarPedidoParam(12, "")));
+        assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(null));
+        assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(
+                new PedidoUseCases.CriarPedidoParam(null, "DINHEIRO")));
+        assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(
+                new PedidoUseCases.CriarPedidoParam(12, "")));
     }
 
     @Test
     void criarPedido_invalidPagamento() {
-        assertThat(assertThrows(IllegalArgumentException.class, () -> pedidoServices.criarPedido(
-                new PedidoServices.CriarPedidoParam(12, "Cheque")))
+        assertThat(assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(
+                new PedidoUseCases.CriarPedidoParam(12, "Cheque")))
         ).hasMessage("Forma de pagamento inválida: Cheque");
     }
 
@@ -90,8 +90,8 @@ class PedidoServicesTest {
 
         when(pedidoRepository.savePedido(expectedPedido)).thenReturn(expectedPedido.withId(33));
 
-        var result = pedidoServices.criarPedido(
-                new PedidoServices.CriarPedidoParam(12, "DINHEIRO"));
+        var result = pedidoUseCases.criarPedido(
+                new PedidoUseCases.CriarPedidoParam(12, "DINHEIRO"));
 
         assertThat(result).isEqualTo(expectedPedido.withId(33));
     }
@@ -113,7 +113,7 @@ class PedidoServicesTest {
                 new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
 
         ///
-        var newPedido = pedidoServices.validarPedido(42);
+        var newPedido = pedidoUseCases.validarPedido(42);
 
         assertThat(newPedido).isEqualTo(expectedNewPedido.withItens(List.of(
                 new ItemPedido(1,
@@ -148,7 +148,7 @@ class PedidoServicesTest {
         ));
 
         ///
-        var newPedido = pedidoServices.setPronto(45);
+        var newPedido = pedidoUseCases.setPronto(45);
 
         assertThat(newPedido).isEqualTo(expectedNewPedidoWithItens);
 
@@ -167,7 +167,7 @@ class PedidoServicesTest {
                         new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
         ));
 
-        var result = pedidoServices.listarPedidosByStatus(StatusPedido.RECEBIDO);
+        var result = pedidoUseCases.listarPedidosByStatus(StatusPedido.RECEBIDO);
 
         assertThat(result).containsExactly(
                 new Pedido(42, new IdCliente(25), null,
@@ -199,7 +199,7 @@ class PedidoServicesTest {
                         new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
         ));
 
-        var result = pedidoServices.listarPedidosComAtraso();
+        var result = pedidoUseCases.listarPedidosComAtraso();
 
         assertThat(result).containsExactly(
                 new Pedido(42, new IdCliente(25), null,

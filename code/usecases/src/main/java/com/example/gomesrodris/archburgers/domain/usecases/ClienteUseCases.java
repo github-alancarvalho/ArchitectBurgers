@@ -1,16 +1,16 @@
-package com.example.gomesrodris.archburgers.domain.services;
+package com.example.gomesrodris.archburgers.domain.usecases;
 
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
-import com.example.gomesrodris.archburgers.domain.serviceports.ClienteServicesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.ClienteUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 
 import java.util.List;
 
-public class ClienteServices implements ClienteServicesPort {
+public class ClienteUseCases implements ClienteUseCasesPort {
     private final ClienteRepository clienteRepository;
 
-    public ClienteServices(ClienteRepository clienteRepository) {
+    public ClienteUseCases(ClienteRepository clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
 

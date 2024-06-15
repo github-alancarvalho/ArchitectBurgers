@@ -1,11 +1,11 @@
-package com.example.gomesrodris.archburgers.domain.services;
+package com.example.gomesrodris.archburgers.domain.usecases;
 
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
-import com.example.gomesrodris.archburgers.domain.serviceports.PedidoServicesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.PedidoUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class PedidoServices implements PedidoServicesPort {
+public class PedidoUseCases implements PedidoUseCasesPort {
     private final PedidoRepository pedidoRepository;
     private final CarrinhoRepository carrinhoRepository;
     private final ItemCardapioRepository itemCardapioRepository;
     private final Clock clock;
     private final PainelPedidos painelPedidos;
 
-    public PedidoServices(PedidoRepository pedidoRepository, CarrinhoRepository carrinhoRepository, ItemCardapioRepository itemCardapioRepository,
+    public PedidoUseCases(PedidoRepository pedidoRepository, CarrinhoRepository carrinhoRepository, ItemCardapioRepository itemCardapioRepository,
                           Clock clock, PainelPedidos painelPedidos) {
         this.pedidoRepository = pedidoRepository;
         this.carrinhoRepository = carrinhoRepository;

@@ -1,14 +1,14 @@
-package com.example.gomesrodris.archburgers.domain.serviceports;
+package com.example.gomesrodris.archburgers.domain.usecaseports;
 
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
-import com.example.gomesrodris.archburgers.domain.services.PedidoServices;
+import com.example.gomesrodris.archburgers.domain.usecases.PedidoUseCases;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface PedidoServicesPort {
-    Pedido criarPedido(PedidoServices.CriarPedidoParam param);
+public interface PedidoUseCasesPort {
+    Pedido criarPedido(PedidoUseCases.CriarPedidoParam param);
 
     List<Pedido> listarPedidosByStatus(@Nullable StatusPedido filtroStatus);
 

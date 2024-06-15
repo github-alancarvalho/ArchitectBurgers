@@ -3,7 +3,7 @@ package com.example.gomesrodris.archburgers.adapters.driver.controllers;
 import com.example.gomesrodris.archburgers.adapters.dto.ClienteDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
-import com.example.gomesrodris.archburgers.domain.serviceports.ClienteServicesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.ClienteUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,11 +18,11 @@ import java.util.List;
 
 @RestController
 public class ClienteController {
-    private final ClienteServicesPort clienteServices;
+    private final ClienteUseCasesPort clienteUseCases;
 
     @Autowired
-    public ClienteController(ClienteServicesPort clienteServices) {
-        this.clienteServices = clienteServices;
+    public ClienteController(ClienteUseCasesPort clienteUseCases) {
+        this.clienteUseCases = clienteUseCases;
     }
 
     @Operation(description = "Busca um cliente por CPF, para identificação no início da compra",
@@ -40,7 +40,7 @@ public class ClienteController {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         }
 
-        Cliente cliente = clienteServices.getClienteByCpf(cpf);
+        Cliente cliente = clienteUseCases.getClienteByCpf(cpf);
 
         if (cliente == null) {
             return WebUtils.errorResponse(HttpStatus.NOT_FOUND, "Cliente com CPF [" + cpfParam + "] não encontrado");
@@ -52,7 +52,7 @@ public class ClienteController {
     @Operation(description = "Lista todos os clientes")
     @GetMapping(path = "/clientes")
     public ResponseEntity<List<ClienteDto>> getClientes() {
-        var clientes = clienteServices.listTodosClientes();
+        var clientes = clienteUseCases.listTodosClientes();
         return WebUtils.okResponse(clientes.stream().map(ClienteDto::fromEntity).toList());
     }
 }

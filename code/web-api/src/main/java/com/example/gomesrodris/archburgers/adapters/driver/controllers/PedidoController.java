@@ -4,13 +4,12 @@ import com.example.gomesrodris.archburgers.adapters.driven.infra.TransactionMana
 import com.example.gomesrodris.archburgers.adapters.dto.PedidoDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
-import com.example.gomesrodris.archburgers.domain.serviceports.PedidoServicesPort;
-import com.example.gomesrodris.archburgers.domain.services.PedidoServices;
+import com.example.gomesrodris.archburgers.domain.usecaseports.PedidoUseCasesPort;
+import com.example.gomesrodris.archburgers.domain.usecases.PedidoUseCases;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,23 +23,23 @@ import java.util.List;
 public class PedidoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PedidoController.class);
 
-    private final PedidoServicesPort pedidoServices;
+    private final PedidoUseCasesPort pedidoUseCases;
     private final TransactionManager transactionManager;
 
     @Autowired
-    public PedidoController(PedidoServicesPort pedidoServices, TransactionManager transactionManager) {
-        this.pedidoServices = pedidoServices;
+    public PedidoController(PedidoUseCasesPort pedidoUseCases, TransactionManager transactionManager) {
+        this.pedidoUseCases = pedidoUseCases;
         this.transactionManager = transactionManager;
     }
 
     @Operation(summary = "Cria um pedido a partir do carrinho informado",
             description = "O pedido recebe todos os itens do carrinho, e após a criação do pedido o carrinho é excluído")
     @PostMapping(path = "/pedidos")
-    public ResponseEntity<PedidoDto> criarPedido(@RequestBody PedidoServices.CriarPedidoParam param) {
+    public ResponseEntity<PedidoDto> criarPedido(@RequestBody PedidoUseCases.CriarPedidoParam param) {
 
         Pedido pedido;
         try {
-            pedido = transactionManager.runInTransaction(() -> pedidoServices.criarPedido(param));
+            pedido = transactionManager.runInTransaction(() -> pedidoUseCases.criarPedido(param));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {
@@ -68,9 +67,9 @@ public class PedidoController {
             boolean isFiltroAtraso = Boolean.parseBoolean(filtroAtraso);
 
             if (isFiltroAtraso) {
-                result = pedidoServices.listarPedidosComAtraso();
+                result = pedidoUseCases.listarPedidosComAtraso();
             } else {
-                result = pedidoServices.listarPedidosByStatus(parsedFiltroStatus);
+                result = pedidoUseCases.listarPedidosByStatus(parsedFiltroStatus);
             }
 
         } catch (IllegalArgumentException iae) {
@@ -87,7 +86,7 @@ public class PedidoController {
     public ResponseEntity<PedidoDto> validarPedido(@PathVariable("idPedido") Integer idPedido) {
         Pedido pedido;
         try {
-            pedido = transactionManager.runInTransaction(() -> pedidoServices.validarPedido(idPedido));
+            pedido = transactionManager.runInTransaction(() -> pedidoUseCases.validarPedido(idPedido));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {
@@ -102,7 +101,7 @@ public class PedidoController {
     public ResponseEntity<PedidoDto> cancelarPedido(@PathVariable("idPedido") Integer idPedido) {
         Pedido pedido;
         try {
-            pedido = transactionManager.runInTransaction(() -> pedidoServices.cancelarPedido(idPedido));
+            pedido = transactionManager.runInTransaction(() -> pedidoUseCases.cancelarPedido(idPedido));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {
@@ -117,7 +116,7 @@ public class PedidoController {
     public ResponseEntity<PedidoDto> setPedidoPronto(@PathVariable("idPedido") Integer idPedido) {
         Pedido pedido;
         try {
-            pedido = transactionManager.runInTransaction(() -> pedidoServices.setPronto(idPedido));
+            pedido = transactionManager.runInTransaction(() -> pedidoUseCases.setPronto(idPedido));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {
@@ -132,7 +131,7 @@ public class PedidoController {
     public ResponseEntity<PedidoDto> finalizarPedido(@PathVariable("idPedido") Integer idPedido) {
         Pedido pedido;
         try {
-            pedido = transactionManager.runInTransaction(() -> pedidoServices.finalizarPedido(idPedido));
+            pedido = transactionManager.runInTransaction(() -> pedidoUseCases.finalizarPedido(idPedido));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.domain.services;
+package com.example.gomesrodris.archburgers.domain.usecases;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
@@ -6,7 +6,7 @@ import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.serviceports.CarrinhoServicesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.CarrinhoUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class CarrinhoServices implements CarrinhoServicesPort {
+public class CarrinhoUseCases implements CarrinhoUseCasesPort {
 
     private final CarrinhoRepository carrinhoRepository;
     private final ClienteRepository clienteRepository;
@@ -25,7 +25,7 @@ public class CarrinhoServices implements CarrinhoServicesPort {
     private final RecuperarCarrinhoPolicy recuperarCarrinhoPolicy;
     private final SalvarClientePolicy salvarClientePolicy;
 
-    public CarrinhoServices(CarrinhoRepository carrinhoRepository,
+    public CarrinhoUseCases(CarrinhoRepository carrinhoRepository,
                             ClienteRepository clienteRepository,
                             ItemCardapioRepository itemCardapioRepository,
                             Clock clock) {
@@ -39,7 +39,7 @@ public class CarrinhoServices implements CarrinhoServicesPort {
     }
 
     @Override
-    public Carrinho criarCarrinho(@NotNull CarrinhoServicesPort.CriarCarrinhoParam param) {
+    public Carrinho criarCarrinho(@NotNull CarrinhoUseCasesPort.CriarCarrinhoParam param) {
         boolean clienteIdentificado = param.isClienteIdentificado();
 
         param.getCpfValidado(); // Throw early if invalid

@@ -5,14 +5,14 @@ import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepositor
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
-import com.example.gomesrodris.archburgers.domain.serviceports.CardapioServicesPort;
-import com.example.gomesrodris.archburgers.domain.serviceports.CarrinhoServicesPort;
-import com.example.gomesrodris.archburgers.domain.serviceports.ClienteServicesPort;
-import com.example.gomesrodris.archburgers.domain.serviceports.PedidoServicesPort;
-import com.example.gomesrodris.archburgers.domain.services.CardapioServices;
-import com.example.gomesrodris.archburgers.domain.services.CarrinhoServices;
-import com.example.gomesrodris.archburgers.domain.services.ClienteServices;
-import com.example.gomesrodris.archburgers.domain.services.PedidoServices;
+import com.example.gomesrodris.archburgers.domain.usecaseports.CardapioUseCasesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.CarrinhoUseCasesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.ClienteUseCasesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseports.PedidoUseCasesPort;
+import com.example.gomesrodris.archburgers.domain.usecases.CardapioUseCases;
+import com.example.gomesrodris.archburgers.domain.usecases.CarrinhoUseCases;
+import com.example.gomesrodris.archburgers.domain.usecases.ClienteUseCases;
+import com.example.gomesrodris.archburgers.domain.usecases.PedidoUseCases;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,29 +26,29 @@ public class DomainServiceBeans {
     }
 
     @Bean
-    public CardapioServicesPort cardapioServices(ItemCardapioRepository itemCardapioRepository) {
-        return new CardapioServices(itemCardapioRepository);
+    public CardapioUseCasesPort cardapioUseCases(ItemCardapioRepository itemCardapioRepository) {
+        return new CardapioUseCases(itemCardapioRepository);
     }
 
     @Bean
-    public ClienteServicesPort clienteServices(ClienteRepository clienteRepository) {
-        return new ClienteServices(clienteRepository);
+    public ClienteUseCasesPort clienteUseCases(ClienteRepository clienteRepository) {
+        return new ClienteUseCases(clienteRepository);
     }
 
     @Bean
-    public CarrinhoServicesPort carrinhoServices(CarrinhoRepository carrinhoRepository,
+    public CarrinhoUseCasesPort carrinhoUseCases(CarrinhoRepository carrinhoRepository,
                                                  ClienteRepository clienteRepository,
                                                  ItemCardapioRepository itemCardapioRepository,
                                                  Clock clock) {
-        return new CarrinhoServices(carrinhoRepository, clienteRepository, itemCardapioRepository, clock);
+        return new CarrinhoUseCases(carrinhoRepository, clienteRepository, itemCardapioRepository, clock);
     }
 
     @Bean
-    public PedidoServicesPort pedidoServices(CarrinhoRepository carrinhoRepository,
+    public PedidoUseCasesPort pedidoUseCases(CarrinhoRepository carrinhoRepository,
                                              ItemCardapioRepository itemCardapioRepository,
                                              PedidoRepository pedidoRepository,
                                              Clock clock,
                                              PainelPedidos painelPedidos) {
-        return new PedidoServices(pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
+        return new PedidoUseCases(pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
     }
 }
