@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.driven.infra;
+package com.example.gomesrodris.archburgers.adapters.database;
 
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;

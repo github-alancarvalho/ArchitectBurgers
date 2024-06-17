@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.driven.infra;
+package com.example.gomesrodris.archburgers.adapters.database;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.intellij.lang.annotations.Language;

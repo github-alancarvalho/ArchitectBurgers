@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.driven.notifications;
+package com.example.gomesrodris.archburgers.adapters.externalsystem;
 
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;

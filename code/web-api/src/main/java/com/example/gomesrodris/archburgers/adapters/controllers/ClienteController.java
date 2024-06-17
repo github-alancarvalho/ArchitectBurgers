@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.driver.controllers;
+package com.example.gomesrodris.archburgers.adapters.controllers;
 
 import com.example.gomesrodris.archburgers.adapters.dto.ClienteDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;

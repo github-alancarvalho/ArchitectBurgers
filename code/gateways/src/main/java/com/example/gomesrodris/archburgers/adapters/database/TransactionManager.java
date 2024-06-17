@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.driven.infra;
+package com.example.gomesrodris.archburgers.adapters.database;
 
 import java.util.function.Supplier;
 

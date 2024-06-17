@@ -1,5 +1,7 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;//import static org.junit.jupiter.api.Assertions.*;
 
+import com.example.gomesrodris.archburgers.adapters.database.DatabaseConnection;
+import com.example.gomesrodris.archburgers.adapters.database.PedidoRepositoryJdbcImpl;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;

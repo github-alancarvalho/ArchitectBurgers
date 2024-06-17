@@ -1,5 +1,7 @@
 package com.example.gomesrodris.archburgers.adapters.driven.infra;
 
+import com.example.gomesrodris.archburgers.adapters.database.ClienteRepositoryJdbcImpl;
+import com.example.gomesrodris.archburgers.adapters.database.DatabaseConnection;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
