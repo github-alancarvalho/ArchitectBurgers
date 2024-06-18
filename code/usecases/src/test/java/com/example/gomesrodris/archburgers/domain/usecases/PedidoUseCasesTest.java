@@ -78,15 +78,14 @@ class PedidoUseCasesTest {
         ));
         when(clock.localDateTime()).thenReturn(dateTime);
 
-        var expectedPedido = new Pedido(null, new IdCliente(25), null, List.of(
+        var expectedPedido = Pedido.novoPedido(new IdCliente(25), null, List.of(
                 new ItemPedido(1,
                         new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
                 ),
                 new ItemPedido(2,
                         new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
                 )
-        ), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+        ), "Lanche sem cebola", FormaPagamento.DINHEIRO, dateTime);
 
         when(pedidoRepository.savePedido(expectedPedido)).thenReturn(expectedPedido.withId(33));
 
@@ -98,9 +97,9 @@ class PedidoUseCasesTest {
 
     @Test
     void validarPedido() {
-        var pedido = new Pedido(42, new IdCliente(25), null,
+        var pedido = Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                 List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+                FormaPagamento.DINHEIRO, 444, dateTime);
 
         when(pedidoRepository.getPedido(42)).thenReturn(pedido);
         when(itemCardapioRepository.findByPedido(42)).thenReturn(List.of(
@@ -109,8 +108,9 @@ class PedidoUseCasesTest {
                 )
         ));
 
-        var expectedNewPedido = new Pedido(42, new IdCliente(25), null, List.of(), "Lanche sem cebola", StatusPedido.PREPARACAO,
-                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+        var expectedNewPedido = Pedido.pedidoRecuperado(42, new IdCliente(25), null, List.of(),
+                "Lanche sem cebola", StatusPedido.PREPARACAO,
+                FormaPagamento.DINHEIRO, 444, dateTime);
 
         ///
         var newPedido = pedidoUseCases.validarPedido(42);
@@ -126,9 +126,9 @@ class PedidoUseCasesTest {
 
     @Test
     void setPedidoPronto() {
-        var pedido = new Pedido(45, new IdCliente(25), null,
+        var pedido = Pedido.pedidoRecuperado(45, new IdCliente(25), null,
                 List.of(), "Lanche sem cebola", StatusPedido.PREPARACAO,
-                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+                FormaPagamento.DINHEIRO, 444, dateTime);
 
         when(pedidoRepository.getPedido(45)).thenReturn(pedido);
         when(itemCardapioRepository.findByPedido(45)).thenReturn(List.of(
@@ -137,9 +137,9 @@ class PedidoUseCasesTest {
                 )
         ));
 
-        var expectedNewPedido = new Pedido(45, new IdCliente(25), null, List.of(), "Lanche sem cebola",
+        var expectedNewPedido = Pedido.pedidoRecuperado(45, new IdCliente(25), null, List.of(), "Lanche sem cebola",
                 StatusPedido.PRONTO,
-                new InfoPagamento(FormaPagamento.DINHEIRO), dateTime);
+                FormaPagamento.DINHEIRO, 444, dateTime);
 
         Pedido expectedNewPedidoWithItens = expectedNewPedido.withItens(List.of(
                 new ItemPedido(1,
@@ -159,30 +159,30 @@ class PedidoUseCasesTest {
     @Test
     void listarPedidos_byStatus() {
         when(pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO), null)).thenReturn(List.of(
-                new Pedido(42, new IdCliente(25), null,
+                Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime),
-                new Pedido(43, null, "Cliente Maria",
+                        FormaPagamento.DINHEIRO, 555, dateTime),
+                Pedido.pedidoRecuperado(43, null, "Cliente Maria",
                         List.of(), null, StatusPedido.RECEBIDO,
-                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
+                        FormaPagamento.DINHEIRO, 556, dateTime)
         ));
 
         var result = pedidoUseCases.listarPedidosByStatus(StatusPedido.RECEBIDO);
 
         assertThat(result).containsExactly(
-                new Pedido(42, new IdCliente(25), null,
+                Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime),
-                new Pedido(43, null, "Cliente Maria",
+                        FormaPagamento.DINHEIRO, 555, dateTime),
+                Pedido.pedidoRecuperado(43, null, "Cliente Maria",
                         List.of(), null, StatusPedido.RECEBIDO,
-                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
+                        FormaPagamento.DINHEIRO, 556, dateTime)
         );
     }
 
     @Test
     void listarPedidos_comAtraso() {
         when(clock.localDateTime()).thenReturn(LocalDateTime.of(
-           2024, 5, 18, 10, 40, 28
+                2024, 5, 18, 10, 40, 28
         ));
 
         var expectedLimitTime = LocalDateTime.of(
@@ -191,23 +191,23 @@ class PedidoUseCasesTest {
 
         when(pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO, StatusPedido.PREPARACAO), expectedLimitTime)).thenReturn(List.of(
 
-                new Pedido(42, new IdCliente(25), null,
+                Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime),
-                new Pedido(43, null, "Cliente Maria",
+                        FormaPagamento.DINHEIRO, 555, dateTime),
+                Pedido.pedidoRecuperado(43, null, "Cliente Maria",
                         List.of(), null, StatusPedido.PREPARACAO,
-                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
+                        FormaPagamento.DINHEIRO, 556, dateTime)
         ));
 
         var result = pedidoUseCases.listarPedidosComAtraso();
 
         assertThat(result).containsExactly(
-                new Pedido(42, new IdCliente(25), null,
+                Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime),
-                new Pedido(43, null, "Cliente Maria",
+                        FormaPagamento.DINHEIRO, 555, dateTime),
+                Pedido.pedidoRecuperado(43, null, "Cliente Maria",
                         List.of(), null, StatusPedido.PREPARACAO,
-                        new InfoPagamento(FormaPagamento.DINHEIRO), dateTime)
+                        FormaPagamento.DINHEIRO, 556, dateTime)
         );
     }
 

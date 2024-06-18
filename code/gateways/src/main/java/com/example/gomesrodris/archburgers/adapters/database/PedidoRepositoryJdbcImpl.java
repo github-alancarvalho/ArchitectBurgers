@@ -94,7 +94,7 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             stmt.setString(2, pedido.nomeClienteNaoIdentificado());
             stmt.setString(3, pedido.observacoes());
             stmt.setString(4, pedido.status().name());
-            stmt.setString(5, pedido.infoPagamento().formaPagamento().name());
+            stmt.setString(5, pedido.formaPagamento().name());
             stmt.setObject(6, pedido.dataHoraPedido());
 
             var rs = stmt.executeQuery();
@@ -185,14 +185,15 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             throw new RuntimeException("Registro inconsistente! status=" + rs.getString("status"));
         }
 
-        return new Pedido(
+        return Pedido.pedidoRecuperado(
                 rs.getInt("pedido_id"),
                 idClienteIdentificado > 0 ? new IdCliente(idClienteIdentificado) : null,
                 rs.getString("nome_cliente_nao_identificado"),
                 Collections.emptyList(),
                 rs.getString("observacoes"),
                 status,
-                new InfoPagamento(formaPagamento),
+                formaPagamento,
+                null,
                 rs.getTimestamp("data_hora_pedido").toLocalDateTime()
         );
     }

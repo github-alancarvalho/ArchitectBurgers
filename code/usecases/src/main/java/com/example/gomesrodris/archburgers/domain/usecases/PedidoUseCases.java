@@ -9,7 +9,6 @@ import com.example.gomesrodris.archburgers.domain.usecaseports.PedidoUseCasesPor
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
-import com.example.gomesrodris.archburgers.domain.valueobjects.InfoPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,11 +51,9 @@ public class PedidoUseCases implements PedidoUseCasesPort {
 
         var itens = itemCardapioRepository.findByCarrinho(param.idCarrinho());
 
-        var pedido = new Pedido(null,
-                carrinho.idClienteIdentificado(), carrinho.nomeClienteNaoIdentificado(),
+        var pedido = Pedido.novoPedido(carrinho.idClienteIdentificado(), carrinho.nomeClienteNaoIdentificado(),
                 itens, carrinho.observacoes(),
-                StatusPedido.RECEBIDO, new InfoPagamento(formaPagamento),
-                clock.localDateTime());
+                formaPagamento, clock.localDateTime());
 
         Pedido saved = pedidoRepository.savePedido(pedido);
 

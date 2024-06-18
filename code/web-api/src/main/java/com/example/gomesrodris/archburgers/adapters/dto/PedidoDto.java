@@ -13,6 +13,7 @@ public record PedidoDto(
         String observacoes,
         String status,
         String formaPagamento,
+        Integer idConfirmacaoPagamento,
         ValorMonetarioDto valorTotal,
         Long dataHoraCarrinhoCriado
 ) {
@@ -30,7 +31,8 @@ public record PedidoDto(
                 dtoItens,
                 pedido.observacoes(),
                 pedido.status().name(),
-                pedido.infoPagamento().formaPagamento().name(),
+                pedido.formaPagamento().name(),
+                pedido.idConfirmacaoPagamento(),
                 ValorMonetarioDto.from(pedido.getValorTotal()),
                 DateUtils.toTimestamp(pedido.dataHoraPedido()));
     }
