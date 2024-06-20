@@ -63,7 +63,7 @@ POST http://localhost:8090/carrinho/4
 Content-Type: application/json
 
 {
-    "idItemCardapio": 1
+    "idItemCardapio": 2
 }
 
 ###
@@ -86,7 +86,6 @@ Content-Type: application/json
 # @name Listar formas pagamento
 GET http://localhost:8090/pagamento/opcoes
 
-
 ###
 # @name Criar pedido
 POST http://localhost:8090/pedidos
@@ -95,6 +94,17 @@ Content-Type: application/json
 {
   "idCarrinho": 4,
   "formaPagamento": "DINHEIRO"
+}
+
+###
+# Confirmação de pagamento
+POST http://localhost:8090/pagamento/confirmacao
+Content-Type: application/json
+
+{
+  "idPedido": 4,
+  "formaPagamento": "DINHEIRO",
+  "infoAdicional": "Teste DEV"
 }
 
 

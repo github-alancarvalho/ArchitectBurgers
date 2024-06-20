@@ -117,7 +117,7 @@ public class PedidoUseCases implements PedidoUseCasesPort {
         }
 
         var atualizado = update.apply(pedido);
-        pedidoRepository.updateStatus(atualizado);
+        pedidoRepository.updateStatusEPagamento(atualizado);
 
         var itens = itemCardapioRepository.findByPedido(idPedido);
 

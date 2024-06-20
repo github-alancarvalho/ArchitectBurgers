@@ -1,0 +1,39 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="05_pagamento" author="rodrigo">
+        <createTable tableName="confirmacao_pagamento">
+            <column name="pagamento_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="forma_pagamento" type="text">
+                <constraints nullable="false" />
+            </column>
+            <column name="data_hora_pagamento" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="info_adicional" type="text">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+
+        <addColumn tableName="pedido">
+            <column name="id_confirmacao_pagamento" type="int">
+                <constraints nullable="true" foreignKeyName="fk_pedido_pagamento" references="confirmacao_pagamento(pagamento_id)"/>
+            </column>
+        </addColumn>
+
+        <insert tableName="confirmacao_pagamento">
+            <column name="forma_pagamento" value="DINHEIRO" />
+            <column name="info_adicional" value="Recebido por: Atendente" />
+            <column name="data_hora_pagamento" value="2024-05-18T15:30:12" />
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

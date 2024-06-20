@@ -52,8 +52,8 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             """;
 
     @Language("SQL")
-    private static final String SQL_UPDATE_STATUS = """
-            update pedido set status = ? where pedido_id = ?;
+    private static final String SQL_UPDATE_STATUS_AND_PAGAMENTO = """
+            update pedido set status = ?, id_confirmacao_pagamento = ? where pedido_id = ?;
             """;
 
     private final DatabaseConnection databaseConnection;
@@ -155,12 +155,17 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
     }
 
     @Override
-    public void updateStatus(Pedido pedido) {
+    public void updateStatusEPagamento(Pedido pedido) {
         try (var connection = databaseConnection.getConnection();
-             var stmt = connection.prepareStatement(SQL_UPDATE_STATUS)) {
+             var stmt = connection.prepareStatement(SQL_UPDATE_STATUS_AND_PAGAMENTO)) {
 
             stmt.setString(1, pedido.status().name());
-            stmt.setInt(2, Objects.requireNonNull(pedido.id(), "Must have ID to update"));
+            if (pedido.idConfirmacaoPagamento() == null) {
+                stmt.setNull(2, Types.INTEGER);
+            } else {
+                stmt.setInt(2, pedido.idConfirmacaoPagamento());
+            }
+            stmt.setInt(3, Objects.requireNonNull(pedido.id(), "Must have ID to update"));
 
             stmt.executeUpdate();
         } catch (SQLException e) {

@@ -2,6 +2,7 @@ package com.example.gomesrodris.archburgers.adapters.driven.infra;//import stati
 
 import com.example.gomesrodris.archburgers.adapters.database.DatabaseConnection;
 import com.example.gomesrodris.archburgers.adapters.database.PedidoRepositoryJdbcImpl;
+import com.example.gomesrodris.archburgers.domain.entities.ConfirmacaoPagamento;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
@@ -147,7 +148,7 @@ class PedidoRepositoryJdbcImplTest {
     }
 
     @Test
-    void updateStatus() throws SQLException {
+    void updateStatus_withoutIdPagamento() throws SQLException {
         var pedido = Pedido.novoPedido(null, "Wanderley", sampleItens, "Lanche sem cebola",
                 FormaPagamento.DINHEIRO, LocalDateTime.of(2024, 5, 18, 15, 30, 12));
 
@@ -156,23 +157,51 @@ class PedidoRepositoryJdbcImplTest {
         assertThat(saved.id()).isNotNull();
         assertThat(saved.id()).isGreaterThan(1);
 
-        assertThat(readStatusFromDb(saved.id())).isEqualTo("PAGAMENTO");
+        StatusEIdPagamento statusBefore = readStatusFromDb(saved.id());
+        assertThat(statusBefore.status).isEqualTo("PAGAMENTO");
+        assertThat(statusBefore.idPagamento).isNull();
 
-        pedidoRepository.updateStatus(saved.cancelar());
+        pedidoRepository.updateStatusEPagamento(saved.cancelar());
 
-        assertThat(readStatusFromDb(saved.id())).isEqualTo("CANCELADO");
+        StatusEIdPagamento statusAfter = readStatusFromDb(saved.id());
+        assertThat(statusAfter.status).isEqualTo("CANCELADO");
+        assertThat(statusAfter.idPagamento).isNull();
     }
 
-    private String readStatusFromDb(int idPedido) throws SQLException {
+    @Test
+    void updateStatus_withIdPagamento() throws SQLException {
+        var pedido = Pedido.novoPedido(null, "Wanderley2", sampleItens, "Lanche sem cebola",
+                FormaPagamento.DINHEIRO, LocalDateTime.of(2024, 5, 18, 15, 30, 12));
+
+        var saved = pedidoRepository.savePedido(pedido);
+
+        assertThat(saved.id()).isNotNull();
+        assertThat(saved.id()).isGreaterThan(1);
+
+        StatusEIdPagamento statusBefore = readStatusFromDb(saved.id());
+        assertThat(statusBefore.status).isEqualTo("PAGAMENTO");
+        assertThat(statusBefore.idPagamento).isNull();
+
+        var pago = saved.confirmarPagamento(new ConfirmacaoPagamento(1, FormaPagamento.DINHEIRO,
+                "Recebido por: Atendente",
+                LocalDateTime.of(2024, 5, 18, 15, 30, 12)));
+        pedidoRepository.updateStatusEPagamento(pago);
+
+        StatusEIdPagamento statusAfter = readStatusFromDb(saved.id());
+        assertThat(statusAfter.status).isEqualTo("RECEBIDO");
+        assertThat(statusAfter.idPagamento).isEqualTo(1);
+    }
+
+    private StatusEIdPagamento readStatusFromDb(int idPedido) throws SQLException {
         try (var conn = databaseConnection.jdbcConnection();
-             var stmt = conn.prepareStatement("select status from pedido where pedido_id = ?")) {
+             var stmt = conn.prepareStatement("select status, id_confirmacao_pagamento from pedido where pedido_id = ?")) {
 
             stmt.setInt(1, idPedido);
             var rs = stmt.executeQuery();
 
             assertThat(rs.next()).isTrue();
 
-            return rs.getString(1);
+            return new StatusEIdPagamento(rs.getString(1), rs.getObject(2, Integer.class));
         }
     }
 
@@ -181,4 +210,6 @@ class PedidoRepositoryJdbcImplTest {
                     "Hamburger de ervilha com queijo prato", new ValorMonetario("22.90"))
             )
     );
+
+    private record StatusEIdPagamento(String status, Integer idPagamento) {}
 }

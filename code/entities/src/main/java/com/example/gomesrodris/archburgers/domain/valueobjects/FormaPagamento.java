@@ -1,5 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.valueobjects;
 
+import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
+
 public enum FormaPagamento {
     DINHEIRO("Pagamento em dinheiro direto ao caixa");
 
@@ -19,7 +21,7 @@ public enum FormaPagamento {
                 return value;
         }
 
-        throw new IllegalArgumentException("Forma de pagamento inválida: " + formaPagamento);
+        throw new DomainArgumentException("Forma de pagamento inválida: " + formaPagamento);
     }
 
     public String getDescricao() {

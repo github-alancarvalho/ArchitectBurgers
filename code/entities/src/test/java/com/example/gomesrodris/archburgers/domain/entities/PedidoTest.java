@@ -7,7 +7,6 @@ import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PedidoTest {
 
-    private List<ItemPedido> sampleItens = List.of(
+    private final List<ItemPedido> sampleItens = List.of(
             new ItemPedido(1, new ItemCardapio(9, TipoItemCardapio.LANCHE,
                     "Cheeseburger", "Hamburger com queijo", new ValorMonetario("19.90")))
     );
@@ -62,5 +61,18 @@ class PedidoTest {
         var newP = p.setPronto();
 
         assertThat(newP.status()).isEqualTo(StatusPedido.PRONTO);
+    }
+
+    @Test
+    void confirmarPagamento() {
+        var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
+                sampleItens, null, StatusPedido.PAGAMENTO,
+                FormaPagamento.DINHEIRO, null, LocalDateTime.now());
+
+        var newP = p.confirmarPagamento(new ConfirmacaoPagamento(77,
+                FormaPagamento.DINHEIRO,"-", LocalDateTime.now()));
+
+        assertThat(newP.status()).isEqualTo(StatusPedido.RECEBIDO);
+        assertThat(newP.idConfirmacaoPagamento()).isEqualTo(77);
     }
 }

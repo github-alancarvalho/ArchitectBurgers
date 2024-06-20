@@ -9,5 +9,6 @@
     <include file="/liquibase/02_cliente.xml" />
     <include file="/liquibase/03_carrinho.xml" />
     <include file="/liquibase/04_pedido.xml" />
+    <include file="/liquibase/05_pagamento.xml" />
 
 </databaseChangeLog>

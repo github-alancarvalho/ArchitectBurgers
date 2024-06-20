@@ -113,9 +113,27 @@ public final class Pedido {
         this.dataHoraPedido = dataHoraPedido;
     }
 
+    public Pedido confirmarPagamento(ConfirmacaoPagamento confirmacaoPagamento) {
+        if (confirmacaoPagamento == null) {
+            throw new DomainArgumentException("ConfirmacaoPagamento nula");
+        }
+        if (confirmacaoPagamento.id() == null) {
+            throw new DomainArgumentException("ConfirmacaoPagamento deve estar gravada");
+        }
+        if (status != StatusPedido.PAGAMENTO) {
+            throw new DomainArgumentException("Status invalido para pagamento: " + status);
+        }
+        if (idConfirmacaoPagamento != null) {
+            throw new DomainArgumentException("Pedido ja associado com uma ConfirmacaoPagamento");
+        }
+
+        return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
+                itens, observacoes, StatusPedido.RECEBIDO, formaPagamento, confirmacaoPagamento.id(), dataHoraPedido);
+    }
+
     public Pedido validar() {
         if (status != StatusPedido.RECEBIDO) {
-            throw new IllegalArgumentException("Status invalido para validação do pedido: " + status);
+            throw new DomainArgumentException("Status invalido para validação do pedido: " + status);
         }
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
                 itens, observacoes, StatusPedido.PREPARACAO, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
@@ -123,7 +141,7 @@ public final class Pedido {
 
     public Pedido setPronto() {
         if (status != StatusPedido.PREPARACAO) {
-            throw new IllegalArgumentException("Status invalido para mudar para Pronto: " + status);
+            throw new DomainArgumentException("Status invalido para mudar para Pronto: " + status);
         }
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
                 itens, observacoes, StatusPedido.PRONTO, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
@@ -131,7 +149,7 @@ public final class Pedido {
 
     public Pedido finalizar() {
         if (status != StatusPedido.PRONTO) {
-            throw new IllegalArgumentException("Status invalido para finalizar: " + status);
+            throw new DomainArgumentException("Status invalido para finalizar: " + status);
         }
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
                 itens, observacoes, StatusPedido.FINALIZADO, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);

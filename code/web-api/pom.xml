@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>architect-burgers-infra</artifactId>
+            <artifactId>architect-burgers-gateways</artifactId>
             <version>${parent.version}</version>
         </dependency>
 

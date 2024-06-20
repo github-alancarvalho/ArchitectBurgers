@@ -121,7 +121,7 @@ class PedidoUseCasesTest {
                 )
         )));
 
-        verify(pedidoRepository).updateStatus(expectedNewPedido);
+        verify(pedidoRepository).updateStatusEPagamento(expectedNewPedido);
     }
 
     @Test
@@ -152,7 +152,7 @@ class PedidoUseCasesTest {
 
         assertThat(newPedido).isEqualTo(expectedNewPedidoWithItens);
 
-        verify(pedidoRepository).updateStatus(expectedNewPedido);
+        verify(pedidoRepository).updateStatusEPagamento(expectedNewPedido);
         verify(painelPedidos).notificarPedidoPronto(expectedNewPedidoWithItens);
     }
 

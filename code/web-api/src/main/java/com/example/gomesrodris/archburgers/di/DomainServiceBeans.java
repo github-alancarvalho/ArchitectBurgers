@@ -1,18 +1,9 @@
 package com.example.gomesrodris.archburgers.di;
 
 import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
-import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
-import com.example.gomesrodris.archburgers.domain.usecaseports.CardapioUseCasesPort;
-import com.example.gomesrodris.archburgers.domain.usecaseports.CarrinhoUseCasesPort;
-import com.example.gomesrodris.archburgers.domain.usecaseports.ClienteUseCasesPort;
-import com.example.gomesrodris.archburgers.domain.usecaseports.PedidoUseCasesPort;
-import com.example.gomesrodris.archburgers.domain.usecases.CardapioUseCases;
-import com.example.gomesrodris.archburgers.domain.usecases.CarrinhoUseCases;
-import com.example.gomesrodris.archburgers.domain.usecases.ClienteUseCases;
-import com.example.gomesrodris.archburgers.domain.usecases.PedidoUseCases;
+import com.example.gomesrodris.archburgers.domain.repositories.*;
+import com.example.gomesrodris.archburgers.domain.usecaseports.*;
+import com.example.gomesrodris.archburgers.domain.usecases.*;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,5 +41,12 @@ public class DomainServiceBeans {
                                              Clock clock,
                                              PainelPedidos painelPedidos) {
         return new PedidoUseCases(pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
+    }
+
+    @Bean
+    public PagamentoUseCasesPort pagamentoUseCases(PagamentoRepository pagamentoRepository,
+                                                   PedidoRepository pedidoRepository,
+                                                   Clock clock) {
+        return new PagamentoUseCases(pagamentoRepository, pedidoRepository, clock);
     }
 }

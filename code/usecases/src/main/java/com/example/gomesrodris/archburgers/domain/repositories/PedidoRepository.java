@@ -15,5 +15,5 @@ public interface PedidoRepository {
     List<Pedido> listPedidos(List<StatusPedido> filtroStatus,
                              @Nullable LocalDateTime olderThan);
 
-    void updateStatus(Pedido pedido);
+    void updateStatusEPagamento(Pedido pedido);
 }
