@@ -88,6 +88,17 @@ public class PedidoUseCases implements PedidoUseCasesPort {
     }
 
     @Override
+    public List<Pedido> listarPedidosAtivos() {
+        var pedidos = pedidoRepository.listPedidos(List.of(
+                StatusPedido.PAGAMENTO, StatusPedido.RECEBIDO, StatusPedido.PREPARACAO, StatusPedido.PRONTO
+        ), null);
+        return pedidos.stream().map(p -> {
+            var itens = itemCardapioRepository.findByPedido(Objects.requireNonNull(p.id(), "Expected pedidos to have ID"));
+            return p.withItens(itens);
+        }).toList();
+    }
+
+    @Override
     public Pedido validarPedido(Integer idPedido) {
         return loadAndApply(idPedido, Pedido::validar);
     }

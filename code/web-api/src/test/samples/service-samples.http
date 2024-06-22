@@ -141,6 +141,9 @@ POST http://localhost:8090/pedidos/5/finalizar
 
 ### ######### Serviços administrativos
 
+# @name Listar todos os pedidos ativos
+GET http://localhost:8090/pedidos
+
 ###
 # @name Listar todos clientes
 GET http://localhost:8090/clientes

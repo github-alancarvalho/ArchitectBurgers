@@ -5,7 +5,6 @@ import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
 import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
-import com.example.gomesrodris.archburgers.domain.valueobjects.InfoPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +15,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -31,11 +33,25 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             from pedido where pedido_id = ?
             """;
 
+    /*
+     *  Regras de ordenação:
+     *  Pronto > Em Preparação > Recebido > Em Pagamento
+     *  Mais antigos primeiro
+     */
     @Language("SQL")
     private static final String SQL_SELECT_PEDIDOS_BY_STATUS = """
             select pedido_id,id_cliente_identificado,nome_cliente_nao_identificado,
                observacoes,status,forma_pagamento,data_hora_pedido
-            from pedido where status IN (_PARAM_PLACEHOLDERS_)
+            from pedido where status IN (/*PARAM_PLACEHOLDERS*/)
+                        /*FILTRO_DATA_HORA_OPCIONAL*/
+            order by
+                case WHEN status = 'PRONTO' then 0
+                     WHEN status = 'PREPARACAO' then 1
+                     WHEN status = 'RECEBIDO' then 2
+                     WHEN status = 'PAGAMENTO' then 3
+                     WHEN status = 'FINALIZADO' then 4
+                else 5 END asc,
+                data_hora_pedido asc
             """;
 
     @Language("SQL")
@@ -123,11 +139,11 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
     @Override
     public List<Pedido> listPedidos(List<StatusPedido> filtroStatus,
                                     @Nullable LocalDateTime olderThan) {
-        var sql =  SQL_SELECT_PEDIDOS_BY_STATUS.replace("_PARAM_PLACEHOLDERS_",
+        var sql =  SQL_SELECT_PEDIDOS_BY_STATUS.replace("/*PARAM_PLACEHOLDERS*/",
                 filtroStatus.stream().map(s -> "?").collect(Collectors.joining(",")));
 
         if (olderThan != null) {
-            sql = sql + " and data_hora_pedido <= ?";
+            sql = sql.replace("/*FILTRO_DATA_HORA_OPCIONAL*/", " and data_hora_pedido <= ?");
         }
 
         try (var connection = databaseConnection.getConnection();

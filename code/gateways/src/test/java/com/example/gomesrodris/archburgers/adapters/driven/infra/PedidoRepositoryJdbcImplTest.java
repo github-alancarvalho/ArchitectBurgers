@@ -120,6 +120,50 @@ class PedidoRepositoryJdbcImplTest {
     }
 
     @Test
+    void listPedidosByStatus_verificaOrdem() {
+        var pedidos = pedidoRepository.listPedidos(List.of(
+                StatusPedido.PREPARACAO, StatusPedido.RECEBIDO, StatusPedido.PRONTO, StatusPedido.PAGAMENTO), null);
+
+        assertThat(pedidos.size()).isGreaterThanOrEqualTo(3);
+
+        var indexRecebido = pedidos.indexOf(Pedido.pedidoRecuperado(1, null, "Cliente Erasmo",
+                Collections.emptyList(), "Sem cebola", StatusPedido.RECEBIDO,
+                FormaPagamento.DINHEIRO, null,
+                LocalDateTime.of(2024, 5, 18, 15, 30, 12))
+        );
+        assertThat(indexRecebido).isGreaterThanOrEqualTo(0);
+
+        var indexProntoNewer = pedidos.indexOf(Pedido.pedidoRecuperado(2, null, "Paulo Sérgio",
+                Collections.emptyList(), null, StatusPedido.PRONTO,
+                FormaPagamento.DINHEIRO, null,
+                LocalDateTime.of(2024, 5, 18, 15, 30, 12))
+        );
+        assertThat(indexProntoNewer).isGreaterThanOrEqualTo(0);
+
+        var indexEmPreparacao = pedidos.indexOf(Pedido.pedidoRecuperado(3, null, "Vanusa",
+                Collections.emptyList(), null, StatusPedido.PREPARACAO,
+                FormaPagamento.DINHEIRO, null,
+                LocalDateTime.of(2024, 5, 17, 15, 30, 12))
+        );
+        assertThat(indexEmPreparacao).isGreaterThanOrEqualTo(0);
+
+        var indexProntoOlder = pedidos.indexOf(Pedido.pedidoRecuperado(4, null, "Ronnie",
+                Collections.emptyList(), null, StatusPedido.PRONTO,
+                FormaPagamento.DINHEIRO, null,
+                LocalDateTime.of(2024, 5, 17, 14, 30, 12))
+        );
+        assertThat(indexProntoOlder).isGreaterThanOrEqualTo(0);
+
+        // Regras de ordenação:
+        // Pronto > Em Preparação > Recebido > Em Pagamento
+        // Mais antigos primeiro
+        assertThat(indexProntoOlder).isLessThan(indexProntoNewer);
+        assertThat(indexProntoNewer).isLessThan(indexEmPreparacao);
+        assertThat(indexEmPreparacao).isLessThan(indexRecebido);
+    }
+
+
+    @Test
     void listPedidosByStatusAndOlderThanTime() {
         // NOT older than ref time
         var p1 = pedidoRepository.savePedido(Pedido.novoPedido(null, "Wanderley",
@@ -142,7 +186,7 @@ class PedidoRepositoryJdbcImplTest {
 
     @Test
     void listPedidosByStatus_notFound() {
-        var pedidos = pedidoRepository.listPedidos(List.of(StatusPedido.FINALIZADO), null);
+        var pedidos = pedidoRepository.listPedidos(List.of(StatusPedido.CANCELADO), null);
 
         assertThat(pedidos).hasSize(0);
     }
@@ -166,6 +210,8 @@ class PedidoRepositoryJdbcImplTest {
         StatusEIdPagamento statusAfter = readStatusFromDb(saved.id());
         assertThat(statusAfter.status).isEqualTo("CANCELADO");
         assertThat(statusAfter.idPagamento).isNull();
+
+        delete(saved.id());
     }
 
     @Test
@@ -202,6 +248,22 @@ class PedidoRepositoryJdbcImplTest {
             assertThat(rs.next()).isTrue();
 
             return new StatusEIdPagamento(rs.getString(1), rs.getObject(2, Integer.class));
+        }
+    }
+
+    /**
+     * Deleta registros criados em testes quando os mesmos possam interferir em outros testes
+     */
+    private void delete(int idPedido) throws SQLException {
+        try (var conn = databaseConnection.jdbcConnection();
+             var stmt1 = conn.prepareStatement("delete from pedido_item where pedido_id = ?");
+             var stmt2 = conn.prepareStatement("delete from pedido where pedido_id = ?")) {
+
+            stmt1.setInt(1, idPedido);
+            stmt1.executeUpdate();
+
+            stmt2.setInt(1, idPedido);
+            stmt2.executeUpdate();
         }
     }
 

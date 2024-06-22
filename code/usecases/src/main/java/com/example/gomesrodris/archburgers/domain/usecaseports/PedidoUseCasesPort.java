@@ -14,6 +14,11 @@ public interface PedidoUseCasesPort {
 
     List<Pedido> listarPedidosComAtraso();
 
+    /**
+     * Lista com todos os status exceto Finalizado e Cancelado
+     */
+    List<Pedido> listarPedidosAtivos();
+
     Pedido validarPedido(Integer idPedido);
 
     Pedido cancelarPedido(Integer idPedido);

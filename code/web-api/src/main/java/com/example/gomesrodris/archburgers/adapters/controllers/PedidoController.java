@@ -51,9 +51,10 @@ public class PedidoController {
     }
 
     @Operation(summary = "Lista os pedidos conforme critério informado",
+            description = "Se não for informado nenhum dos filtros será feita busca de todos os pedidos ativos (excluindo Finalizado e Cancelado) seguindo ordenação padrão",
             parameters = {
-                    @Parameter(name = "status", description = "Filtra por status do pedido"),
-                    @Parameter(name = "atraso", description = "Filtra pedidos em atraso (RECEBIDO ou EM PREPARAÇÃO criados há mais de 20 minutos)")
+                    @Parameter(name = "status", description = "Filtra por um status de pedido específico"),
+                    @Parameter(name = "atraso (boolean)", description = "Filtra pedidos em atraso (RECEBIDO ou EM PREPARAÇÃO criados há mais de 20 minutos)")
             })
     @GetMapping(path = "/pedidos")
     public ResponseEntity<List<PedidoDto>> listarPedidos(
@@ -68,8 +69,10 @@ public class PedidoController {
 
             if (isFiltroAtraso) {
                 result = pedidoUseCases.listarPedidosComAtraso();
-            } else {
+            } else if (parsedFiltroStatus != null) {
                 result = pedidoUseCases.listarPedidosByStatus(parsedFiltroStatus);
+            } else {
+                result = pedidoUseCases.listarPedidosAtivos();
             }
 
         } catch (IllegalArgumentException iae) {

@@ -80,6 +80,29 @@
             <column name="num_sequencia" value="2"/>
         </insert>
 
+        <insert tableName="pedido">
+            <column name="nome_cliente_nao_identificado" value="Vanusa" />
+            <column name="status" value="PREPARACAO" />
+            <column name="forma_pagamento" value="DINHEIRO" />
+            <column name="data_hora_pedido" value="2024-05-17T15:30:12" />
+        </insert>
+        <insert tableName="pedido_item">
+            <column name="pedido_id" value="3"/>
+            <column name="item_cardapio_id" value="2"/>
+            <column name="num_sequencia" value="1"/>
+        </insert>
+
+        <insert tableName="pedido">
+            <column name="nome_cliente_nao_identificado" value="Ronnie" />
+            <column name="status" value="PRONTO" />
+            <column name="forma_pagamento" value="DINHEIRO" />
+            <column name="data_hora_pedido" value="2024-05-17T14:30:12" />
+        </insert>
+        <insert tableName="pedido_item">
+            <column name="pedido_id" value="1"/>
+            <column name="item_cardapio_id" value="1"/>
+            <column name="num_sequencia" value="1"/>
+        </insert>
     </changeSet>
 
 </databaseChangeLog>
