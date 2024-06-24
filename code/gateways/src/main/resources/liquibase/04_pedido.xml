@@ -99,7 +99,7 @@
             <column name="data_hora_pedido" value="2024-05-17T14:30:12" />
         </insert>
         <insert tableName="pedido_item">
-            <column name="pedido_id" value="1"/>
+            <column name="pedido_id" value="4"/>
             <column name="item_cardapio_id" value="1"/>
             <column name="num_sequencia" value="1"/>
         </insert>
