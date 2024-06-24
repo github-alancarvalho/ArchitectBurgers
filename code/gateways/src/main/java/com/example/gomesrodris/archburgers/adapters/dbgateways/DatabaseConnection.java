@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.database;
+package com.example.gomesrodris.archburgers.adapters.dbgateways;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.intellij.lang.annotations.Language;

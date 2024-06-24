@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.database;
+package com.example.gomesrodris.archburgers.adapters.dbgateways;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;

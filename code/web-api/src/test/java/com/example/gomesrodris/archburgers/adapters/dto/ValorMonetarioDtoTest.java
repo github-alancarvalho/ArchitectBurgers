@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.dto;//import static org.junit.jupiter.api.Assertions.*;
+package com.example.gomesrodris.archburgers.adapters.dto;
 
 import com.example.gomesrodris.archburgers.adapters.testUtils.TestLocale;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;

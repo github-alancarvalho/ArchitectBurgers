@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.domain.entities;//import static org.junit.jupiter.api.Assertions.*;
+package com.example.gomesrodris.archburgers.domain.entities;
 
 import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;

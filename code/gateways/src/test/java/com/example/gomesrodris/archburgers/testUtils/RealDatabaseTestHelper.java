@@ -1,6 +1,6 @@
 package com.example.gomesrodris.archburgers.testUtils;
 
-import com.example.gomesrodris.archburgers.adapters.database.DatabaseConnection;
+import com.example.gomesrodris.archburgers.adapters.dbgateways.DatabaseConnection;
 import com.example.gomesrodris.archburgers.tools.migration.DatabaseMigration;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.testcontainers.containers.PostgreSQLContainer;

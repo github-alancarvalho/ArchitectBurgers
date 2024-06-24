@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.database;
+package com.example.gomesrodris.archburgers.adapters.dbgateways;
 
 import java.util.function.Supplier;
 

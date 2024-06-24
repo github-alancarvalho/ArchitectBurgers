@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.adapters.database;//import static org.junit.jupiter.api.Assertions.*;
+package com.example.gomesrodris.archburgers.adapters.dbgateways;
 
 import com.example.gomesrodris.archburgers.domain.entities.ConfirmacaoPagamento;
 import com.example.gomesrodris.archburgers.domain.repositories.PagamentoRepository;

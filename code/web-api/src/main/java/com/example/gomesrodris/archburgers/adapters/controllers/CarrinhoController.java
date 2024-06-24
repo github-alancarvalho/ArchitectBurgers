@@ -1,6 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.controllers;
 
-import com.example.gomesrodris.archburgers.adapters.database.TransactionManager;
+import com.example.gomesrodris.archburgers.adapters.dbgateways.TransactionManager;
 import com.example.gomesrodris.archburgers.adapters.dto.AddItemCarrinhoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoObservacoesDto;

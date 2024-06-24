@@ -1,6 +1,5 @@
-package com.example.gomesrodris.archburgers.adapters.driven.infra;
+package com.example.gomesrodris.archburgers.adapters.dbgateways;
 
-import com.example.gomesrodris.archburgers.adapters.database.DatabaseConnection;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
 import org.junit.jupiter.api.*;
 
