@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: archburgers-app-container
-          image: gomesrodris/architect-burgers:0.0.2
+          image: gomesrodris/architect-burgers:0.0.3-beta
           ports:
             - containerPort: 8090
           env:

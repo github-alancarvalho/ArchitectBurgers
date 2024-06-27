@@ -1,11 +1,22 @@
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine as builder
+
+WORKDIR /build
+COPY . /build/
+
+RUN ls ./mvnw || (echo Precondition check: docker build deve ser executado na raiz do projeto && false)
+
+RUN ./mvnw -DskipTests install dependency:copy-dependencies
+
+##########################################
+FROM eclipse-temurin:21-jdk-alpine as final
 
 RUN adduser apprunner -D
 
 RUN mkdir /app
 
-COPY ./temp_libs/* /app/
-COPY ./entrypoint.sh /app/
+COPY --from=builder /build/code/web-api/target/architect-burgers-webapi-*.jar /app/
+COPY --from=builder /build/code/web-api/target/lib/* /app/
+COPY ./docker/entrypoint.sh /app/
 
 RUN chown -R apprunner /app
 RUN chmod a+x /app/entrypoint.sh
