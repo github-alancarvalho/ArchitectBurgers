@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: archburgers-app
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
@@ -38,5 +38,27 @@ spec:
                 configMapKeyRef:
                   name: "archburgers-db-access-config"
                   key: "archburgers.datasource.dbPass"
+          readinessProbe:
+            httpGet:
+              port: 8090
+              path: /healthcheck
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              port: 8090
+              path: /healthcheck
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+            # A common pattern for liveness probes is to use the same low-cost HTTP endpoint as for readiness probes,
+            # but with a higher failureThreshold
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 500m
 
 

@@ -5,5 +5,5 @@ O Database utiliza um volume Local do cluster. Para que funcione e necessario cr
 
 Se estiver rodando em minikube:
 
-	minikube ssh -- mkdir -p /data/pg-data-volume
+	minikube ssh -- sudo mkdir -p /data/pg-data-volume
 

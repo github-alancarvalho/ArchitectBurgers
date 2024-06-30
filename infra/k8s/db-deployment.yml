@@ -37,6 +37,20 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: "pg-data-volume"
+          livenessProbe:
+            exec:
+              command:
+                - psql
+                - -U
+                - pguser
+                - -d
+                - archburgers
+                - -c
+                - "select 1"
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
       volumes:
         - name: "pg-data-volume"
           persistentVolumeClaim:
