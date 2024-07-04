@@ -1,0 +1,84 @@
+# Referencia
+# https://www.mercadopago.com.br/developers/es/reference/qr-dynamic/_instore_orders_qr_seller_collectors_user_id_pos_external_pos_id_qrs/post
+#
+# Validação do webhook:
+# https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
+#
+# external_pos_id: ?   SUC001POS001
+
+# Gerar URL de notificação de teste: https://requestcatcher.com/
+
+### Criar pedido
+POST https://api.mercadopago.com/instore/orders/qr/seller/collectors/{{user_id}}/pos/LOJA1POS1/qrs
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Pedido 005",
+  "description": "Pedido 005",
+  "expiration_date": "2024-07-05T16:34:56.559-04:00",
+  "external_reference": "ord5",
+  "notification_url": "https://gomesrodris-mplabs.requestcatcher.com/mercadopagohook",
+  "total_amount": 25.80,
+  "items": [
+    {
+      "sku_number": "ItemCardapio1",
+      "category": "food",
+      "title": "Hamburger",
+      "description": "Hamburger",
+      "unit_price": 25.80,
+      "quantity": 1,
+      "unit_measure": "unit",
+      "total_amount": 25.80
+    }
+  ]
+}
+
+###
+# Response:
+#{
+#  "in_store_order_id": "a6039ee2-49b3-43f1-b927-4aeab27cbdd2",
+#  "qr_data": "00020101021226940014BR.GOV.BCB.PIX2572pix-qr.mercadopago.com/instore/o/v2/a6039ee2-49b3-43f1-b927-4aeab27cbdd25204000053039865802BR5913Rodrigo Gomes6009SAO PAULO62070503***6304763E"
+#}
+#
+# --- SENT TO THE CALLBACK
+
+
+
+### Get pedido
+GET https://api.mercadolibre.com/merchant_orders/20387889166
+Authorization: Bearer {{access_token}}
+
+
+### Pre requisito - Ter uma Loja e PDV criados
+###
+POST https://api.mercadopago.com/users/{{user_id}}/stores
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Burgers Loja Fisica",
+  "external_id": "LOJA1",
+  "location": {
+    "street_number": "1",
+    "street_name": "Praça SantAnna",
+    "city_name": "Vinhedo",
+    "state_name": "São Paulo",
+    "latitude": -23.0294279,
+    "longitude": -46.9743178,
+    "reference": "Centro"
+  }
+}
+
+###
+POST https://api.mercadopago.com/pos
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Caixa Loja",
+  "category": 5611203,
+  "external_id": "LOJA1POS1",
+  "external_store_id": "LOJA1",
+  "fixed_amount": false
+}
