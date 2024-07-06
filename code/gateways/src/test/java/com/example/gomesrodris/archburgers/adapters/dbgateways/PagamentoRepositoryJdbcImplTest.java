@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PagamentoRepositoryJdbcImpl2Test {
+class PagamentoRepositoryJdbcImplTest {
     private static RealDatabaseTestHelper realDatabase;
     private DatabaseConnection databaseConnection;
 
@@ -34,7 +34,7 @@ class PagamentoRepositoryJdbcImpl2Test {
     @BeforeEach
     void setUp() {
         databaseConnection = realDatabase.getConnectionPool();
-        repository = new PagamentoRepositoryJdbcImpl2(databaseConnection);
+        repository = new PagamentoRepositoryJdbcImpl(databaseConnection);
     }
 
     @AfterEach

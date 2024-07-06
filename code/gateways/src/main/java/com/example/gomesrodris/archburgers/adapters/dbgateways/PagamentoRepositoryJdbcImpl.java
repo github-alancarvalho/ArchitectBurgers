@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * Implementation of the Repository based on a relational database via JDBC
  */
 @Repository
-public class PagamentoRepositoryJdbcImpl2 implements PagamentoRepository {
+public class PagamentoRepositoryJdbcImpl implements PagamentoRepository {
     @Language("SQL")
     private static final String SQL_INSERT = """
                 insert into pagamento (id_pedido,forma_pagamento,valor,
@@ -24,7 +24,7 @@ public class PagamentoRepositoryJdbcImpl2 implements PagamentoRepository {
     private final DatabaseConnection databaseConnection;
 
     @Autowired
-    public PagamentoRepositoryJdbcImpl2(DatabaseConnection databaseConnection) {
+    public PagamentoRepositoryJdbcImpl(DatabaseConnection databaseConnection) {
         this.databaseConnection = databaseConnection;
     }
 
