@@ -1,0 +1,173 @@
+# Referencia
+# https://www.mercadopago.com.br/developers/es/reference/qr-dynamic/_instore_orders_qr_seller_collectors_user_id_pos_external_pos_id_qrs/post
+#
+# Validação do webhook:
+# https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
+#
+# external_pos_id: ?   SUC001POS001
+
+# Gerar URL de notificação de teste: https://requestcatcher.com/
+
+### Criar pedido
+POST https://api.mercadopago.com/instore/orders/qr/seller/collectors/{{user_id}}/pos/LOJA1POS1/qrs
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "Pedido 003",
+  "description": "Pedido 003",
+  "expiration_date": "2024-07-06T16:35:56.559-04:00",
+  "external_reference": "ord3",
+  "notification_url": "https://gomesrodris-mplabs.requestcatcher.com/payment-hooks/mercadopago",
+  "total_amount": 25.81,
+  "items": [
+    {
+      "sku_number": "ItemCardapio1",
+      "category": "food",
+      "title": "Hamburger",
+      "description": "Hamburger",
+      "unit_price": 25.81,
+      "quantity": 1,
+      "unit_measure": "unit",
+      "total_amount": 25.81
+    }
+  ]
+}
+###
+# Response:
+#{
+#  "in_store_order_id": "787e9685-7de5-43f1-b09a-6d70f6f6c1e4",
+#  "qr_data": "00020101021243650016COM.MERCADOLIBRE020130636787e9685-7de5-43f1-b09a-6d70f6f6c1e45204000053039865802BR5909Test Test6009SAO PAULO62070503***63043962"
+#}
+
+###
+# --- SENT TO THE CALLBACK
+POST /payment-hooks/mercadopago?id=20458280838&topic=merchant_order HTTP/1.1
+Host: gomesrodris-mplabs.requestcatcher.com
+Accept: application/json
+Accept-Encoding: gzip
+Connection: keep-alive
+Content-Length: 96
+Content-Type: application/json
+Referer: https://mercadopago.com.ar
+Traceparent: 00-61b19407000ea3ad39ec66bd084b5e0f-7d22c29f90f06c40-00
+User-Agent: MercadoPago Feed v2.0 merchant_order
+X-B3-Parentspanid: cb3bc0035433e332
+X-B3-Sampled: 0
+X-B3-Spanid: 7d22c29f90f06c40
+X-B3-Traceid: 61b19407000ea3ad39ec66bd084b5e0f
+X-Request-Id: 4ca0df47-0897-47c9-8014-5dd586b543a6
+X-Rest-Pool-Name: pool_unknown
+X-Signature: ts=1720099615,v1=7885dc138f91dc56cc4131378eb9f7a9faf36cdc89cf152ffd5ea304328a6c7f
+X-Socket-Timeout: 25000
+X-Trace-Digest-72: 2pyUdP76L7BLiOuXrHv5grT/36W6Kei4byHycnfW5wCbzW0pMWj7XthaHZIshwgOEX18wzlyN9k3OvK8CDX6QeBTXnGvoFys2U2sOvvkkOdAeT21IbSREcJVHovTtDGi8osQLRKH+nD/yip6Fw4gUD8Q9dBirxn9Kuy5xuj1v0c=
+
+{"resource":"https://api.mercadolibre.com/merchant_orders/20458280838","topic":"merchant_order"}
+
+
+### Get pedido - Obter external reference
+GET https://api.mercadolibre.com/merchant_orders/20458280838
+Authorization: Bearer {{access_token}}
+
+
+###################################
+### Sent to callback after payment
+
+POST /payment-hooks/mercadopago?id=82056525764&topic=payment HTTP/1.1
+Host: gomesrodris-mplabs.requestcatcher.com
+Accept: application/json
+Accept-Encoding: gzip
+Connection: keep-alive
+Content-Length: 99
+Content-Type: application/json
+Referer: https://mercadopago.com.ar
+Traceparent: 00-000000000000000050607fe629a14d5b-bb0f4c98d98cc862-00
+User-Agent: MercadoPago Feed v2.0 payment
+X-B3-Sampled: 0
+X-B3-Spanid: bb0f4c98d98cc862
+X-B3-Traceid: 000000000000000050607fe629a14d5b
+X-Request-Id: f5429866-c03b-4aa2-b6a4-3e917780c457
+X-Rest-Pool-Name: pool_unknown
+X-Signature: ts=1720099640,v1=9d6c93051c3d085035dc79395c89eb0acad12220dbbaee2d03cb931e8131b893
+X-Socket-Timeout: 25000
+X-Trace-Digest-98: 2AMILnQbFHviJnvuXHB2niyZQvGU7AX2w2R2E1kN/ZQOIV3rMMpgFPIoNSgji2Yj0T2qHUojHfkv63LvXD9vYKUhEx7UnDoTIa+3Fiihkw1i0R0izbIqkpBviVmyO1Io
+
+{"resource":"https://api.mercadolibre.com/collections/notifications/82056525764","topic":"payment"}
+
+###
+POST /payment-hooks/mercadopago?data.id=82056525764&type=payment HTTP/1.1
+Host: gomesrodris-mplabs.requestcatcher.com
+Accept: application/json
+Accept-Encoding: gzip
+Connection: keep-alive
+Content-Length: 188
+Content-Type: application/json
+Referer: https://mercadopago.com.ar
+Traceparent: 00-00000000000000002eb150304c69c5c8-600ea9d8b49fac3f-00
+User-Agent: MercadoPago WebHook v1.0 payment
+X-B3-Sampled: 0
+X-B3-Spanid: 600ea9d8b49fac3f
+X-B3-Traceid: 00000000000000002eb150304c69c5c8
+X-Request-Id: f5429866-c03b-4aa2-b6a4-3e917780c457
+X-Rest-Pool-Name: pool_unknown
+X-Signature: ts=1720096643,v1=1f0f173a48af652831c21fb1d0f10ed95d0c32a6be5ace0d1d18161b175cb563
+X-Socket-Timeout: 25000
+X-Trace-Digest-17: cAlVbVCV3MmzcU/PLjQm6f3LEs5S735BOCEKbu4BzWhxx2wmwUJGZ3RrR8os49rOlBc2L3JGWh8x/XXZVCO+jiV9XusUz5UG0i5ktBPgWQUYfGxWJKwGh04Ur2e4Kmsz
+
+{"action":"payment.created","api_version":"v1","data":{"id":"82056525764"},"date_created":"2024-07-04T23:52:48Z","id":114471513424,"live_mode":true,"type":"payment","user_id":"1887951604"}
+
+###
+POST /payment-hooks/mercadopago?id=20458280838&topic=merchant_order HTTP/1.1
+Host: gomesrodris-mplabs.requestcatcher.com
+Accept: application/json
+Accept-Encoding: gzip
+Connection: keep-alive
+Content-Length: 96
+Content-Type: application/json
+Referer: https://mercadopago.com.ar
+Traceparent: 00-0000000000000000b83757af2a8c1bc1-4acbec093242fb27-00
+User-Agent: MercadoPago Feed v2.0 merchant_order
+X-B3-Sampled: 0
+X-B3-Spanid: 4acbec093242fb27
+X-B3-Traceid: 0000000000000000b83757af2a8c1bc1
+X-Request-Id: 5a742cb0-7d90-4a5e-9d7f-cc2768b04da6
+X-Rest-Pool-Name: pool_unknown
+X-Signature: ts=1720017386,v1=44ab829a10dd51e2885a7e11c77563be63701020932d23e71385a72985b25bd5
+X-Socket-Timeout: 25000
+X-Trace-Digest-65: R37iIkHUNLRc0oKE6rHeT9j28vtm6qZgGjSo5+QL6HdJlsXopSD6kD6qW1CA1sNLSiMuo1OZ8sFeNYdOaHFCjpUfGE3KwwWLhHcHZ+2zvg9+sryLWdB2cJaPXMYU2qFT
+
+{"resource":"https://api.mercadolibre.com/merchant_orders/20458280838","topic":"merchant_order"}
+
+
+### Pre requisito - Ter uma Loja e PDV criados
+###
+POST https://api.mercadopago.com/users/{{user_id}}/stores
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Burgers Loja Fisica",
+  "external_id": "LOJA1",
+  "location": {
+    "street_number": "1",
+    "street_name": "Praça SantAnna",
+    "city_name": "Vinhedo",
+    "state_name": "São Paulo",
+    "latitude": -23.0294279,
+    "longitude": -46.9743178,
+    "reference": "Centro"
+  }
+}
+
+###
+POST https://api.mercadopago.com/pos
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Caixa Loja",
+  "category": 5611203,
+  "external_id": "LOJA1POS1",
+  "external_store_id": "LOJA1",
+  "fixed_amount": false
+}

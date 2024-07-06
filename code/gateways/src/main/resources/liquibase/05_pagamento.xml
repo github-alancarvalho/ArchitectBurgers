@@ -7,31 +7,45 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="05_pagamento" author="rodrigo">
-        <createTable tableName="confirmacao_pagamento">
+        <createTable tableName="pagamento">
             <column name="pagamento_id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="id_pedido" type="int">
+                <constraints nullable="false" foreignKeyName="fk_pagamento_pedido" references="pedido(pedido_id)"/>
             </column>
             <column name="forma_pagamento" type="text">
                 <constraints nullable="false" />
             </column>
-            <column name="data_hora_pagamento" type="timestamp">
+            <column name="valor" type="numeric(7,2)">
                 <constraints nullable="false" />
             </column>
-            <column name="info_adicional" type="text">
+            <column name="status" type="text">
+                <constraints nullable="false" />
+            </column>
+            <column name="data_hora_criacao" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="data_hora_atualizacao" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="codigo_pagamento_cliente" type="text">
+                <constraints nullable="true" />
+            </column>
+            <column name="id_pedido_sistema_externo" type="text">
                 <constraints nullable="true" />
             </column>
         </createTable>
 
-        <addColumn tableName="pedido">
-            <column name="id_confirmacao_pagamento" type="int">
-                <constraints nullable="true" foreignKeyName="fk_pedido_pagamento" references="confirmacao_pagamento(pagamento_id)"/>
-            </column>
-        </addColumn>
-
-        <insert tableName="confirmacao_pagamento">
-            <column name="forma_pagamento" value="DINHEIRO" />
-            <column name="info_adicional" value="Recebido por: Atendente" />
-            <column name="data_hora_pagamento" value="2024-05-18T15:30:12" />
+        <insert tableName="pagamento">
+            <column name="id_pedido" value="1" />
+            <column name="forma_pagamento" value="Integracao_GatewayX" />
+            <column name="valor" value="28.90" />
+            <column name="status" value="FINALIZADO" />
+            <column name="data_hora_criacao" value="2024-05-18T15:30:12" />
+            <column name="data_hora_atualizacao" value="2024-05-18T15:31:12" />
+            <column name="codigo_pagamento_cliente" value="barcode_data:1234567890" />
+            <column name="id_pedido_sistema_externo" value="2024-9988" />
         </insert>
 
     </changeSet>

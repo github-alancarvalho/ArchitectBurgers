@@ -8,7 +8,6 @@ import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
 import com.example.gomesrodris.archburgers.domain.usecaseports.PedidoUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
-import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,24 +41,25 @@ public class PedidoUseCases implements PedidoUseCasesPort {
         if (StringUtils.isEmpty(param.formaPagamento()))
             throw new IllegalArgumentException("formaPagamento missing");
 
-        var formaPagamento = FormaPagamento.fromName(param.formaPagamento());
-
-        var carrinho = carrinhoRepository.getCarrinho(param.idCarrinho());
-        if (carrinho == null) {
-            throw new IllegalArgumentException("Invalid idCarrinho " + param.idCarrinho());
-        }
-
-        var itens = itemCardapioRepository.findByCarrinho(param.idCarrinho());
-
-        var pedido = Pedido.novoPedido(carrinho.idClienteIdentificado(), carrinho.nomeClienteNaoIdentificado(),
-                itens, carrinho.observacoes(),
-                formaPagamento, clock.localDateTime());
-
-        Pedido saved = pedidoRepository.savePedido(pedido);
-
-        carrinhoRepository.deleteCarrinho(carrinho);
-
-        return saved;
+        throw new UnsupportedOperationException("formaPagamento not supported, refactor in progress");
+//        var formaPagamento = FormaPagamento.fromName(param.formaPagamento());
+//
+//        var carrinho = carrinhoRepository.getCarrinho(param.idCarrinho());
+//        if (carrinho == null) {
+//            throw new IllegalArgumentException("Invalid idCarrinho " + param.idCarrinho());
+//        }
+//
+//        var itens = itemCardapioRepository.findByCarrinho(param.idCarrinho());
+//
+//        var pedido = Pedido.novoPedido(carrinho.idClienteIdentificado(), carrinho.nomeClienteNaoIdentificado(),
+//                itens, carrinho.observacoes(),
+//                formaPagamento, clock.localDateTime());
+//
+//        Pedido saved = pedidoRepository.savePedido(pedido);
+//
+//        carrinhoRepository.deleteCarrinho(carrinho);
+//
+//        return saved;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class PedidoUseCases implements PedidoUseCasesPort {
         }
 
         var atualizado = update.apply(pedido);
-        pedidoRepository.updateStatusEPagamento(atualizado);
+        pedidoRepository.updateStatus(atualizado);
 
         var itens = itemCardapioRepository.findByPedido(idPedido);
 

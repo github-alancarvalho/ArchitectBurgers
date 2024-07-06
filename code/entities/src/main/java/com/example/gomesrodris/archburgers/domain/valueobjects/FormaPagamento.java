@@ -1,30 +1,15 @@
 package com.example.gomesrodris.archburgers.domain.valueobjects;
 
-import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
+public record FormaPagamento(
+        IdFormaPagamento id,
+        String descricao,
+        Boolean integracaoExterna
+) {
+    public static final FormaPagamento DINHEIRO = new FormaPagamento(
+            new IdFormaPagamento("DINHEIRO"),
+            "Pagamento em dinheiro direto ao caixa", false);
 
-public enum FormaPagamento {
-    DINHEIRO("Pagamento em dinheiro direto ao caixa");
-
-    private final String descricao;
-
-    FormaPagamento(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public static FormaPagamento fromName(String formaPagamento) {
-        if (formaPagamento == null) {
-            return null;
-        }
-
-        for (FormaPagamento value : values()) {
-            if (value.name().equalsIgnoreCase(formaPagamento))
-                return value;
-        }
-
-        throw new DomainArgumentException("Forma de pagamento inválida: " + formaPagamento);
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
+    public static final FormaPagamento CARTAO_MAQUINA = new FormaPagamento(
+            new IdFormaPagamento("CARTAO_MAQUINA"),
+            "Pagamento em cartão em máquina simples sem integração", false);
 }

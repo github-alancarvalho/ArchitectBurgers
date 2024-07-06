@@ -3,7 +3,7 @@ package com.example.gomesrodris.archburgers.adapters.dbgateways;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
-import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
+import com.example.gomesrodris.archburgers.domain.valueobjects.IdFormaPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import org.intellij.lang.annotations.Language;
@@ -68,8 +68,8 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             """;
 
     @Language("SQL")
-    private static final String SQL_UPDATE_STATUS_AND_PAGAMENTO = """
-            update pedido set status = ?, id_confirmacao_pagamento = ? where pedido_id = ?;
+    private static final String SQL_UPDATE_STATUS = """
+            update pedido set status = ? where pedido_id = ?;
             """;
 
     private final DatabaseConnection databaseConnection;
@@ -110,7 +110,7 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
             stmt.setString(2, pedido.nomeClienteNaoIdentificado());
             stmt.setString(3, pedido.observacoes());
             stmt.setString(4, pedido.status().name());
-            stmt.setString(5, pedido.formaPagamento().name());
+            stmt.setString(5, pedido.formaPagamento().codigo());
             stmt.setObject(6, pedido.dataHoraPedido());
 
             var rs = stmt.executeQuery();
@@ -171,17 +171,12 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
     }
 
     @Override
-    public void updateStatusEPagamento(Pedido pedido) {
+    public void updateStatus(Pedido pedido) {
         try (var connection = databaseConnection.getConnection();
-             var stmt = connection.prepareStatement(SQL_UPDATE_STATUS_AND_PAGAMENTO)) {
+             var stmt = connection.prepareStatement(SQL_UPDATE_STATUS)) {
 
             stmt.setString(1, pedido.status().name());
-            if (pedido.idConfirmacaoPagamento() == null) {
-                stmt.setNull(2, Types.INTEGER);
-            } else {
-                stmt.setInt(2, pedido.idConfirmacaoPagamento());
-            }
-            stmt.setInt(3, Objects.requireNonNull(pedido.id(), "Must have ID to update"));
+            stmt.setInt(2, Objects.requireNonNull(pedido.id(), "Must have ID to update"));
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -192,9 +187,9 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
     private static @NotNull Pedido pedidoFromResultSet(ResultSet rs) throws SQLException {
         var idClienteIdentificado = rs.getInt("id_cliente_identificado");
 
-        FormaPagamento formaPagamento = null;
+        IdFormaPagamento formaPagamento;
         try {
-            formaPagamento = FormaPagamento.fromName(rs.getString("forma_pagamento"));
+            formaPagamento = new IdFormaPagamento(rs.getString("forma_pagamento"));
         } catch (SQLException e) {
             throw new RuntimeException("Registro inconsistente! formaPagamento=" + rs.getString("forma_pagamento"));
         }
@@ -214,7 +209,6 @@ public class PedidoRepositoryJdbcImpl implements PedidoRepository {
                 rs.getString("observacoes"),
                 status,
                 formaPagamento,
-                null,
                 rs.getTimestamp("data_hora_pedido").toLocalDateTime()
         );
     }

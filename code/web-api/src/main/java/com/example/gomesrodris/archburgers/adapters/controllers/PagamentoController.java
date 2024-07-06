@@ -1,7 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.controllers;
 
 import com.example.gomesrodris.archburgers.adapters.dbgateways.TransactionManager;
-import com.example.gomesrodris.archburgers.adapters.dto.ConfirmacaoPagamentoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.FormaPagamentoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.PedidoDto;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
@@ -34,32 +33,34 @@ public class PagamentoController {
         this.transactionManager = transactionManager;
     }
 
-    @Operation(summary = "Lista opcoes de pagamento disponiveis")
-    @GetMapping("/pagamento/opcoes")
-    public List<FormaPagamentoDto> listFormasPagamento() {
-        return Arrays.stream(FormaPagamento.values()).map(
-                        formaPagamento -> new FormaPagamentoDto(formaPagamento.name(), formaPagamento.getDescricao()))
-                .toList();
-    }
+    // Refactor in progress , servicos de pagamento serao refeitos
+//    @Operation(summary = "Lista opcoes de pagamento disponiveis")
+//    @GetMapping("/pagamento/opcoes")
+//    public List<FormaPagamentoDto> listFormasPagamento() {
+//        return Arrays.stream(FormaPagamento.values()).map(
+//                        formaPagamento -> new FormaPagamentoDto(formaPagamento.name(), formaPagamento.getDescricao()))
+//                .toList();
+//    }
 
-    @Operation(summary = "Grava confirmação de pagamento para o pedido, movendo o mesmo para status RECEBIDO")
-    @PostMapping("/pagamento/confirmacao")
-    public ResponseEntity<PedidoDto> confirmacaoPagamento(@RequestBody ConfirmacaoPagamentoDto param) {
-        Pedido pedidoUpdated;
-        try {
-            if (param == null)
-                throw new DomainArgumentException("Request obj deve ser informado");
-
-            pedidoUpdated = transactionManager.runInTransaction(() -> pagamentoUseCases.confirmarPagamento(
-                    param.validarIdPedido(), param.validarFormaPagamento(), param.infoAdicional()
-            ));
-        } catch (DomainArgumentException ae) {
-            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, ae.getMessage());
-        } catch (Exception e) {
-            LOGGER.error("Ocorreu um erro ao salvar confirmacao de pagamento: {}", e, e);
-            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao salvar confirmacao de pagamento");
-        }
-
-        return WebUtils.okResponse(PedidoDto.fromEntity(pedidoUpdated));
-    }
+    // Refactor in progress , servicos de pagamento serao refeitos
+//    @Operation(summary = "Grava confirmação de pagamento para o pedido, movendo o mesmo para status RECEBIDO")
+//    @PostMapping("/pagamento/confirmacao")
+//    public ResponseEntity<PedidoDto> confirmacaoPagamento(@RequestBody ConfirmacaoPagamentoDto param) {
+//        Pedido pedidoUpdated;
+//        try {
+//            if (param == null)
+//                throw new DomainArgumentException("Request obj deve ser informado");
+//
+//            pedidoUpdated = transactionManager.runInTransaction(() -> pagamentoUseCases.confirmarPagamento(
+//                    param.validarIdPedido(), param.validarFormaPagamento(), param.infoAdicional()
+//            ));
+//        } catch (DomainArgumentException ae) {
+//            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, ae.getMessage());
+//        } catch (Exception e) {
+//            LOGGER.error("Ocorreu um erro ao salvar confirmacao de pagamento: {}", e, e);
+//            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao salvar confirmacao de pagamento");
+//        }
+//
+//        return WebUtils.okResponse(PedidoDto.fromEntity(pedidoUpdated));
+//    }
 }

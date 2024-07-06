@@ -1,10 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.entities;
 
 import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
-import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
-import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
-import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
-import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
+import com.example.gomesrodris.archburgers.domain.valueobjects.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,8 +16,7 @@ public final class Pedido {
     private final @NotNull List<ItemPedido> itens;
     private final @Nullable String observacoes;
     private final @NotNull StatusPedido status;
-    private final @NotNull FormaPagamento formaPagamento;
-    private final @Nullable Integer idConfirmacaoPagamento;
+    private final @NotNull IdFormaPagamento formaPagamento;
     private final @NotNull LocalDateTime dataHoraPedido;
 
     public static Pedido novoPedido(
@@ -30,7 +26,7 @@ public final class Pedido {
             List<ItemPedido> itens,
             String observacoes,
 
-            FormaPagamento formaPagamento,
+            IdFormaPagamento formaPagamento,
             LocalDateTime dataHoraPedido) {
 
         if (itens == null || itens.isEmpty()) {
@@ -38,7 +34,7 @@ public final class Pedido {
         }
 
         return new Pedido(null, idClienteIdentificado, nomeClienteNaoIdentificado,
-                itens, observacoes, StatusPedido.PAGAMENTO, formaPagamento, null, dataHoraPedido);
+                itens, observacoes, StatusPedido.PAGAMENTO, formaPagamento, dataHoraPedido);
     }
 
     public static Pedido pedidoRecuperado(
@@ -53,8 +49,7 @@ public final class Pedido {
 
             @Nullable StatusPedido status,
 
-            @Nullable FormaPagamento formaPagamento,
-            @Nullable Integer idConfirmacaoPagamento,
+            @Nullable IdFormaPagamento formaPagamento,
 
             @Nullable LocalDateTime dataHoraPedido
     ) {
@@ -63,7 +58,7 @@ public final class Pedido {
         }
 
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado, itens, observacoes,
-                status, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
+                status, formaPagamento, dataHoraPedido);
     }
 
     private Pedido(
@@ -78,8 +73,7 @@ public final class Pedido {
 
             @Nullable StatusPedido status,
 
-            @Nullable FormaPagamento formaPagamento,
-            @Nullable Integer idConfirmacaoPagamento,
+            @Nullable IdFormaPagamento formaPagamento,
 
             @Nullable LocalDateTime dataHoraPedido
     ) {
@@ -109,26 +103,31 @@ public final class Pedido {
         this.observacoes = observacoes;
         this.status = status;
         this.formaPagamento = formaPagamento;
-        this.idConfirmacaoPagamento = idConfirmacaoPagamento;
         this.dataHoraPedido = dataHoraPedido;
     }
 
-    public Pedido confirmarPagamento(ConfirmacaoPagamento confirmacaoPagamento) {
-        if (confirmacaoPagamento == null) {
-            throw new DomainArgumentException("ConfirmacaoPagamento nula");
+    public Pedido confirmarPagamento(Pagamento pagamento) {
+        if (pagamento == null) {
+            throw new DomainArgumentException("Pagamento nulo");
         }
-        if (confirmacaoPagamento.id() == null) {
-            throw new DomainArgumentException("ConfirmacaoPagamento deve estar gravada");
+        if (pagamento.id() == null) {
+            throw new DomainArgumentException("Pagamento deve estar gravado");
         }
         if (status != StatusPedido.PAGAMENTO) {
             throw new DomainArgumentException("Status invalido para pagamento: " + status);
         }
-        if (idConfirmacaoPagamento != null) {
-            throw new DomainArgumentException("Pedido ja associado com uma ConfirmacaoPagamento");
+        if (pagamento.status() != StatusPagamento.FINALIZADO) {
+            throw new DomainArgumentException("Pagamento nao esta finalizado");
+        }
+
+        var valorTotalItens = ItemCardapio.somarValores(itens.stream().map(ItemPedido::itemCardapio).toList());
+        if (!pagamento.valor().equals(valorTotalItens)) {
+            throw new DomainArgumentException("Valor do pagamento não corresponde aos itens do pedido. Pedido="
+                    + valorTotalItens + ", Pago=" + pagamento.valor());
         }
 
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
-                itens, observacoes, StatusPedido.RECEBIDO, formaPagamento, confirmacaoPagamento.id(), dataHoraPedido);
+                itens, observacoes, StatusPedido.RECEBIDO, formaPagamento, dataHoraPedido);
     }
 
     public Pedido validar() {
@@ -136,7 +135,7 @@ public final class Pedido {
             throw new DomainArgumentException("Status invalido para validação do pedido: " + status);
         }
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
-                itens, observacoes, StatusPedido.PREPARACAO, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
+                itens, observacoes, StatusPedido.PREPARACAO, formaPagamento, dataHoraPedido);
     }
 
     public Pedido setPronto() {
@@ -144,7 +143,7 @@ public final class Pedido {
             throw new DomainArgumentException("Status invalido para mudar para Pronto: " + status);
         }
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
-                itens, observacoes, StatusPedido.PRONTO, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
+                itens, observacoes, StatusPedido.PRONTO, formaPagamento, dataHoraPedido);
     }
 
     public Pedido finalizar() {
@@ -152,12 +151,12 @@ public final class Pedido {
             throw new DomainArgumentException("Status invalido para finalizar: " + status);
         }
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
-                itens, observacoes, StatusPedido.FINALIZADO, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
+                itens, observacoes, StatusPedido.FINALIZADO, formaPagamento, dataHoraPedido);
     }
 
     public Pedido cancelar() {
         return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado,
-                itens, observacoes, StatusPedido.CANCELADO, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
+                itens, observacoes, StatusPedido.CANCELADO, formaPagamento, dataHoraPedido);
     }
 
     public ValorMonetario getValorTotal() {
@@ -165,11 +164,11 @@ public final class Pedido {
     }
 
     public Pedido withId(int newId) {
-        return new Pedido(newId, idClienteIdentificado, nomeClienteNaoIdentificado, itens, observacoes, status, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
+        return new Pedido(newId, idClienteIdentificado, nomeClienteNaoIdentificado, itens, observacoes, status, formaPagamento, dataHoraPedido);
     }
 
     public Pedido withItens(List<ItemPedido> newItens) {
-        return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado, newItens, observacoes, status, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
+        return new Pedido(id, idClienteIdentificado, nomeClienteNaoIdentificado, newItens, observacoes, status, formaPagamento, dataHoraPedido);
     }
 
     public @Nullable Integer id() {
@@ -196,12 +195,8 @@ public final class Pedido {
         return status;
     }
 
-    public @NotNull FormaPagamento formaPagamento() {
+    public @NotNull IdFormaPagamento formaPagamento() {
         return formaPagamento;
-    }
-
-    public @Nullable Integer idConfirmacaoPagamento() {
-        return idConfirmacaoPagamento;
     }
 
     public @NotNull LocalDateTime dataHoraPedido() {
@@ -220,13 +215,12 @@ public final class Pedido {
                 Objects.equals(this.observacoes, that.observacoes) &&
                 Objects.equals(this.status, that.status) &&
                 Objects.equals(this.formaPagamento, that.formaPagamento) &&
-                Objects.equals(this.idConfirmacaoPagamento, that.idConfirmacaoPagamento) &&
                 Objects.equals(this.dataHoraPedido, that.dataHoraPedido);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, idClienteIdentificado, nomeClienteNaoIdentificado, itens, observacoes, status, formaPagamento, idConfirmacaoPagamento, dataHoraPedido);
+        return Objects.hash(id, idClienteIdentificado, nomeClienteNaoIdentificado, itens, observacoes, status, formaPagamento, dataHoraPedido);
     }
 
     @Override
@@ -239,7 +233,6 @@ public final class Pedido {
                 "observacoes=" + observacoes + ", " +
                 "status=" + status + ", " +
                 "formaPagamento=" + formaPagamento + ", " +
-                "idConfirmacaoPagamento=" + idConfirmacaoPagamento + ", " +
                 "dataHoraPedido=" + dataHoraPedido + ']';
     }
 

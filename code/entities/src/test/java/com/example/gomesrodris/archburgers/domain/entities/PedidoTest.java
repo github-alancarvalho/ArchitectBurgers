@@ -1,9 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.entities;
 
-import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
-import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
-import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
-import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
+import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
+import com.example.gomesrodris.archburgers.domain.valueobjects.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -23,7 +21,7 @@ class PedidoTest {
     void validar() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO, 444, LocalDateTime.now());
+                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
 
         var newP = p.validar();
 
@@ -34,7 +32,7 @@ class PedidoTest {
     void validar_statusInvalido() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.PRONTO,
-                FormaPagamento.DINHEIRO, 444, LocalDateTime.now());
+                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
 
         assertThat(
                 assertThrows(IllegalArgumentException.class, p::validar)
@@ -45,7 +43,7 @@ class PedidoTest {
     void cancelar() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO, 444, LocalDateTime.now());
+                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
 
         var newP = p.cancelar();
 
@@ -56,7 +54,7 @@ class PedidoTest {
     void setPronto() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.PREPARACAO,
-                FormaPagamento.DINHEIRO, 444, LocalDateTime.now());
+                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
 
         var newP = p.setPronto();
 
@@ -67,12 +65,30 @@ class PedidoTest {
     void confirmarPagamento() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.PAGAMENTO,
-                FormaPagamento.DINHEIRO, null, LocalDateTime.now());
+                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
 
-        var newP = p.confirmarPagamento(new ConfirmacaoPagamento(77,
-                FormaPagamento.DINHEIRO,"-", LocalDateTime.now()));
+        var pagamento = new Pagamento(44, 123,
+                FormaPagamento.DINHEIRO.id(), StatusPagamento.FINALIZADO,
+                new ValorMonetario("19.90"), LocalDateTime.now(),
+                LocalDateTime.now(), null, null);
+
+        var newP = p.confirmarPagamento(pagamento);
 
         assertThat(newP.status()).isEqualTo(StatusPedido.RECEBIDO);
-        assertThat(newP.idConfirmacaoPagamento()).isEqualTo(77);
+    }
+
+    @Test
+    void confirmarPagamento_erroValor() {
+        var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
+                sampleItens, null, StatusPedido.PAGAMENTO,
+                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
+
+        var pagamento = new Pagamento(44, 123,
+                FormaPagamento.DINHEIRO.id(), StatusPagamento.FINALIZADO,
+                new ValorMonetario("25"), LocalDateTime.now(),
+                LocalDateTime.now(), null, null);
+
+        var e = assertThrows(DomainArgumentException.class,() -> p.confirmarPagamento(pagamento));
+        assertThat(e).hasMessage("Valor do pagamento não corresponde aos itens do pedido. Pedido=R$19.90, Pago=R$25.00");
     }
 }

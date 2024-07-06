@@ -29,7 +29,7 @@ class PedidoDtoTest {
                         new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
                 )
         ), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO, 88, LocalDateTime.of(2024, 5, 18, 15, 30, 12));
+                FormaPagamento.DINHEIRO.id(), LocalDateTime.of(2024, 5, 18, 15, 30, 12));
 
         var dto = PedidoDto.fromEntity(pedidoEntity);
 
@@ -38,7 +38,7 @@ class PedidoDtoTest {
                         new ItemPedidoDto(1, 1000, "LANCHE", "Hamburger", "Hamburger", new ValorMonetarioDto("25.90", "R$ 25,90")),
                         new ItemPedidoDto(2, 1001, "BEBIDA", "Refrigerante", "Refrigerante", new ValorMonetarioDto("5.00", "R$ 5,00"))
                 ), "Lanche sem cebola",
-                "RECEBIDO", "DINHEIRO", 88, new ValorMonetarioDto("30.90", "R$ 30,90"), 1716057012000L
+                "RECEBIDO", "DINHEIRO", new ValorMonetarioDto("30.90", "R$ 30,90"), 1716057012000L
         ));
     }
 }
