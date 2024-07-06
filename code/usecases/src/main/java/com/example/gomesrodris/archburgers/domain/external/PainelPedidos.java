@@ -1,4 +1,4 @@
-package com.example.gomesrodris.archburgers.domain.notifications;
+package com.example.gomesrodris.archburgers.domain.external;
 
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 

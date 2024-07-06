@@ -1,7 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
-import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
+import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;

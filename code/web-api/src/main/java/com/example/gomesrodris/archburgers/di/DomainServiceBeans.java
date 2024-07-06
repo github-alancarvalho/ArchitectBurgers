@@ -1,6 +1,6 @@
 package com.example.gomesrodris.archburgers.di;
 
-import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
+import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.*;
 import com.example.gomesrodris.archburgers.domain.usecaseports.*;
 import com.example.gomesrodris.archburgers.domain.usecases.*;

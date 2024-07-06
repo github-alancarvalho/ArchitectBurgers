@@ -1,7 +1,7 @@
 package com.example.gomesrodris.archburgers.adapters.externalsystem;
 
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
-import com.example.gomesrodris.archburgers.domain.notifications.PainelPedidos;
+import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import org.springframework.stereotype.Service;
 
 /**
