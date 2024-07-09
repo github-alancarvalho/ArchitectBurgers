@@ -107,7 +107,7 @@
         <insert tableName="pedido">
             <column name="nome_cliente_nao_identificado" value="JAdriani" />
             <column name="status" value="PAGAMENTO" />
-            <column name="forma_pagamento" value="CARTAO_MAQUINA" />
+            <column name="forma_pagamento" value="Integracao_GatewayPay" />
             <column name="data_hora_pedido" value="2024-05-17T14:30:12" />
         </insert>
         <insert tableName="pedido_item">

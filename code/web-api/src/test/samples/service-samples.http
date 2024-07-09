@@ -97,13 +97,22 @@ Content-Type: application/json
 }
 
 ###
-# Confirmação de pagamento (pagamento interno sem integracao)
+# @name Confirmação de pagamento
+# (pagamento interno sem integracao)
 POST http://localhost:8090/pagamento/confirmacao
 Content-Type: application/json
 
 {
   "idPedido": 5
 }
+
+###
+# @name Consulta status pagamento
+GET http://localhost:8090/pagamento/consulta/1
+
+###
+# @name Consulta QRCode pagamento
+http://localhost:8090/pagamento/consulta/5/qrcode
 
 
 ### ######### Etapa 4 Acompanhamento e preparação

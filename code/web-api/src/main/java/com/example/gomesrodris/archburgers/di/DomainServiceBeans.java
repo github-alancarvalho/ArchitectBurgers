@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.di;
 
+import com.example.gomesrodris.archburgers.adapters.presenters.QrCodePresenter;
 import com.example.gomesrodris.archburgers.domain.external.FormaPagamentoRegistry;
 import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.*;
@@ -63,5 +64,10 @@ public class DomainServiceBeans {
                                                    Clock clock) {
         return new PagamentoUseCases(formaPagamentoRegistry, pagamentoRepository,
                 pedidoRepository, itemCardapioRepository, clock);
+    }
+
+    @Bean
+    public QrCodePresenter qrCodePresenter() {
+        return new QrCodePresenter();
     }
 }

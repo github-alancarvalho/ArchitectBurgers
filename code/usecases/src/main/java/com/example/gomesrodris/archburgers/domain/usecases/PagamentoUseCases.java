@@ -104,4 +104,9 @@ public class PagamentoUseCases implements PagamentoUseCasesPort {
                 .stream().map(formaPagamento -> new DescricaoFormaPagamento(formaPagamento.id(), formaPagamento.descricao()))
                 .toList();
     }
+
+    @Override
+    public Pagamento consultarPagamento(int idPedido) {
+        return pagamentoRepository.findPagamentoByPedido(idPedido);
+    }
 }

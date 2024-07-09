@@ -15,6 +15,8 @@ public interface PagamentoUseCasesPort {
 
     List<DescricaoFormaPagamento> listarFormasPagamento();
 
+    Pagamento consultarPagamento(int idPedido);
+
     record DescricaoFormaPagamento(IdFormaPagamento id, String descricao) {
     }
 }

@@ -50,11 +50,13 @@
 
         <insert tableName="pagamento">
             <column name="id_pedido" value="5" />
-            <column name="forma_pagamento" value="CARTAO_MAQUINA" />
+            <column name="forma_pagamento" value="Integracao_GatewayPay" />
             <column name="valor" value="22.90" />
             <column name="status" value="PENDENTE" />
             <column name="data_hora_criacao" value="2024-05-17T14:30:12" />
             <column name="data_hora_atualizacao" value="2024-05-17T14:30:12" />
+            <column name="codigo_pagamento_cliente" value="00020101021243650016COM.MERCADOLIBRE020130636787e9685-7de5-43f1-b09a-6d70f6f6c1e45204000053039865802BR5909Test Test6009SAO PAULO62070503***63043962" />
+            <column name="id_pedido_sistema_externo" value="98-7654-321" />
         </insert>
 
     </changeSet>
