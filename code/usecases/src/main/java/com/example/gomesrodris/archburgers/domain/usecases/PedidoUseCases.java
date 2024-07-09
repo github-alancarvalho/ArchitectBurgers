@@ -5,6 +5,7 @@ import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
+import com.example.gomesrodris.archburgers.domain.usecaseports.PagamentoUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.usecaseports.PedidoUseCasesPort;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
@@ -20,14 +21,19 @@ public class PedidoUseCases implements PedidoUseCasesPort {
     private final PedidoRepository pedidoRepository;
     private final CarrinhoRepository carrinhoRepository;
     private final ItemCardapioRepository itemCardapioRepository;
+    private final PagamentoUseCasesPort pagamentoUseCases;
     private final Clock clock;
     private final PainelPedidos painelPedidos;
 
-    public PedidoUseCases(PedidoRepository pedidoRepository, CarrinhoRepository carrinhoRepository, ItemCardapioRepository itemCardapioRepository,
+    public PedidoUseCases(PedidoRepository pedidoRepository, CarrinhoRepository carrinhoRepository,
+                          ItemCardapioRepository itemCardapioRepository,
+                          PagamentoUseCasesPort pagamentoUseCases,
                           Clock clock, PainelPedidos painelPedidos) {
         this.pedidoRepository = pedidoRepository;
         this.carrinhoRepository = carrinhoRepository;
         this.itemCardapioRepository = itemCardapioRepository;
+        this.pagamentoUseCases = pagamentoUseCases;
+
         this.clock = clock;
         this.painelPedidos = painelPedidos;
     }
@@ -41,25 +47,26 @@ public class PedidoUseCases implements PedidoUseCasesPort {
         if (StringUtils.isEmpty(param.formaPagamento()))
             throw new IllegalArgumentException("formaPagamento missing");
 
-        throw new UnsupportedOperationException("formaPagamento not supported, refactor in progress");
-//        var formaPagamento = FormaPagamento.fromName(param.formaPagamento());
-//
-//        var carrinho = carrinhoRepository.getCarrinho(param.idCarrinho());
-//        if (carrinho == null) {
-//            throw new IllegalArgumentException("Invalid idCarrinho " + param.idCarrinho());
-//        }
-//
-//        var itens = itemCardapioRepository.findByCarrinho(param.idCarrinho());
-//
-//        var pedido = Pedido.novoPedido(carrinho.idClienteIdentificado(), carrinho.nomeClienteNaoIdentificado(),
-//                itens, carrinho.observacoes(),
-//                formaPagamento, clock.localDateTime());
-//
-//        Pedido saved = pedidoRepository.savePedido(pedido);
-//
-//        carrinhoRepository.deleteCarrinho(carrinho);
-//
-//        return saved;
+        var formaPagamento = pagamentoUseCases.validarFormaPagamento(param.formaPagamento());
+
+        var carrinho = carrinhoRepository.getCarrinho(param.idCarrinho());
+        if (carrinho == null) {
+            throw new IllegalArgumentException("Invalid idCarrinho " + param.idCarrinho());
+        }
+
+        var itens = itemCardapioRepository.findByCarrinho(param.idCarrinho());
+
+        var pedido = Pedido.novoPedido(carrinho.idClienteIdentificado(), carrinho.nomeClienteNaoIdentificado(),
+                itens, carrinho.observacoes(),
+                formaPagamento, clock.localDateTime());
+
+        Pedido saved = pedidoRepository.savePedido(pedido);
+
+        pagamentoUseCases.iniciarPagamento(saved);
+
+        carrinhoRepository.deleteCarrinho(carrinho);
+
+        return saved;
     }
 
     @Override

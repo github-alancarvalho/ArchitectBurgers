@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.di;
 
+import com.example.gomesrodris.archburgers.domain.external.FormaPagamentoRegistry;
 import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.*;
 import com.example.gomesrodris.archburgers.domain.usecaseports.*;
@@ -7,6 +8,8 @@ import com.example.gomesrodris.archburgers.domain.usecases.*;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class DomainServiceBeans {
@@ -27,6 +30,13 @@ public class DomainServiceBeans {
     }
 
     @Bean
+    public FormaPagamentoRegistry formaPagamentoRegistry() {
+        return new FormaPagamentoRegistry(
+                List.of()
+        );
+    }
+
+    @Bean
     public CarrinhoUseCasesPort carrinhoUseCases(CarrinhoRepository carrinhoRepository,
                                                  ClienteRepository clienteRepository,
                                                  ItemCardapioRepository itemCardapioRepository,
@@ -38,15 +48,20 @@ public class DomainServiceBeans {
     public PedidoUseCasesPort pedidoUseCases(CarrinhoRepository carrinhoRepository,
                                              ItemCardapioRepository itemCardapioRepository,
                                              PedidoRepository pedidoRepository,
+                                             PagamentoUseCasesPort pagamentoUseCases,
                                              Clock clock,
                                              PainelPedidos painelPedidos) {
-        return new PedidoUseCases(pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
+        return new PedidoUseCases(pedidoRepository, carrinhoRepository, itemCardapioRepository,
+                pagamentoUseCases, clock, painelPedidos);
     }
 
     @Bean
-    public PagamentoUseCasesPort pagamentoUseCases(PagamentoRepository pagamentoRepository,
+    public PagamentoUseCasesPort pagamentoUseCases(FormaPagamentoRegistry formaPagamentoRegistry,
+                                                   PagamentoRepository pagamentoRepository,
                                                    PedidoRepository pedidoRepository,
+                                                   ItemCardapioRepository itemCardapioRepository,
                                                    Clock clock) {
-        return new PagamentoUseCases(pagamentoRepository, pedidoRepository, clock);
+        return new PagamentoUseCases(formaPagamentoRegistry, pagamentoRepository,
+                pedidoRepository, itemCardapioRepository, clock);
     }
 }

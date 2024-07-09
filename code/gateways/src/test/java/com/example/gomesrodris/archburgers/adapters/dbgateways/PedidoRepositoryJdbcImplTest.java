@@ -4,7 +4,7 @@ import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
-import com.example.gomesrodris.archburgers.domain.valueobjects.FormaPagamento;
+import com.example.gomesrodris.archburgers.domain.valueobjects.IdFormaPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
@@ -52,7 +52,7 @@ class PedidoRepositoryJdbcImplTest {
 
         assertThat(pedido).isEqualTo(Pedido.pedidoRecuperado(1, null, "Cliente Erasmo",
                 Collections.emptyList(), "Sem cebola", StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 18, 15, 30, 12))
         );
     }
@@ -67,7 +67,7 @@ class PedidoRepositoryJdbcImplTest {
                                 new ItemCardapio(6, TipoItemCardapio.BEBIDA, "Chá gelado", "Chá gelado com limão, feito na casa", new ValorMonetario("6.00"))
                         )
                 ), "Batatas com muito sal",
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.of(2024, 5, 18, 15, 30, 12));
+                IdFormaPagamento.DINHEIRO, LocalDateTime.of(2024, 5, 18, 15, 30, 12));
 
         var saved = pedidoRepository.savePedido(pedido);
 
@@ -105,13 +105,13 @@ class PedidoRepositoryJdbcImplTest {
 
         assertThat(pedidos).contains(Pedido.pedidoRecuperado(1, null, "Cliente Erasmo",
                 Collections.emptyList(), "Sem cebola", StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 18, 15, 30, 12))
         );
 
         assertThat(pedidos).contains(Pedido.pedidoRecuperado(2, null, "Paulo Sérgio",
                 Collections.emptyList(), null, StatusPedido.PRONTO,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 18, 15, 30, 12))
         );
     }
@@ -125,28 +125,28 @@ class PedidoRepositoryJdbcImplTest {
 
         var indexRecebido = pedidos.indexOf(Pedido.pedidoRecuperado(1, null, "Cliente Erasmo",
                 Collections.emptyList(), "Sem cebola", StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 18, 15, 30, 12))
         );
         assertThat(indexRecebido).isGreaterThanOrEqualTo(0);
 
         var indexProntoNewer = pedidos.indexOf(Pedido.pedidoRecuperado(2, null, "Paulo Sérgio",
                 Collections.emptyList(), null, StatusPedido.PRONTO,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 18, 15, 30, 12))
         );
         assertThat(indexProntoNewer).isGreaterThanOrEqualTo(0);
 
         var indexEmPreparacao = pedidos.indexOf(Pedido.pedidoRecuperado(3, null, "Vanusa",
                 Collections.emptyList(), null, StatusPedido.PREPARACAO,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 17, 15, 30, 12))
         );
         assertThat(indexEmPreparacao).isGreaterThanOrEqualTo(0);
 
         var indexProntoOlder = pedidos.indexOf(Pedido.pedidoRecuperado(4, null, "Ronnie",
                 Collections.emptyList(), null, StatusPedido.PRONTO,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 17, 14, 30, 12))
         );
         assertThat(indexProntoOlder).isGreaterThanOrEqualTo(0);
@@ -165,13 +165,13 @@ class PedidoRepositoryJdbcImplTest {
         // NOT older than ref time
         var p1 = pedidoRepository.savePedido(Pedido.novoPedido(null, "Wanderley",
                 sampleItens, null,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 19, 10, 30, 12)));
 
         // OLDER than ref time
         var p2 = pedidoRepository.savePedido(Pedido.novoPedido(null, "Carlinhos",
                 sampleItens, null,
-                FormaPagamento.DINHEIRO.id(),
+                IdFormaPagamento.DINHEIRO,
                 LocalDateTime.of(2024, 5, 19, 10, 5, 10)));
 
         var pedidos = pedidoRepository.listPedidos(List.of(StatusPedido.PAGAMENTO),
@@ -191,7 +191,7 @@ class PedidoRepositoryJdbcImplTest {
     @Test
     void updateStatus_withoutIdPagamento() throws SQLException {
         var pedido = Pedido.novoPedido(null, "Wanderley", sampleItens, "Lanche sem cebola",
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.of(2024, 5, 18, 15, 30, 12));
+                IdFormaPagamento.DINHEIRO, LocalDateTime.of(2024, 5, 18, 15, 30, 12));
 
         var saved = pedidoRepository.savePedido(pedido);
 

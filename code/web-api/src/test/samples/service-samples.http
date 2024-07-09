@@ -97,14 +97,12 @@ Content-Type: application/json
 }
 
 ###
-# Confirmação de pagamento
+# Confirmação de pagamento (pagamento interno sem integracao)
 POST http://localhost:8090/pagamento/confirmacao
 Content-Type: application/json
 
 {
-  "idPedido": 4,
-  "formaPagamento": "DINHEIRO",
-  "infoAdicional": "Teste DEV"
+  "idPedido": 5
 }
 
 

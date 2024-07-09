@@ -4,6 +4,7 @@ import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
+import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
 import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
@@ -11,7 +12,6 @@ import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -34,6 +34,8 @@ class PedidoUseCasesTest {
     @Mock
     private ItemCardapioRepository itemCardapioRepository;
     @Mock
+    private PagamentoUseCases pagamentoUseCases;
+    @Mock
     private Clock clock;
     @Mock
     private PainelPedidos painelPedidos;
@@ -43,10 +45,11 @@ class PedidoUseCasesTest {
     @BeforeEach
     void setUp() {
         pedidoUseCases = new PedidoUseCases(
-                pedidoRepository, carrinhoRepository, itemCardapioRepository, clock, painelPedidos);
+                pedidoRepository, carrinhoRepository, itemCardapioRepository,
+                pagamentoUseCases,
+                clock, painelPedidos);
     }
 
-    @Disabled("Refactor in progress, uses unimplemented method")
     @Test
     void criarPedido_missingParam() {
         assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(null));
@@ -56,15 +59,16 @@ class PedidoUseCasesTest {
                 new PedidoUseCases.CriarPedidoParam(12, "")));
     }
 
-    @Disabled("Refactor in progress, uses unimplemented method")
     @Test
     void criarPedido_invalidPagamento() {
-        assertThat(assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(
+        when(pagamentoUseCases.validarFormaPagamento("Cheque")).thenThrow(
+                new DomainArgumentException("Forma de pagamento inválida: Cheque"));
+
+        assertThat(assertThrows(DomainArgumentException.class, () -> pedidoUseCases.criarPedido(
                 new PedidoUseCases.CriarPedidoParam(12, "Cheque")))
         ).hasMessage("Forma de pagamento inválida: Cheque");
     }
 
-    @Disabled("Refactor in progress, uses unimplemented method")
     @Test
     void criarPedido_ok() {
         when(carrinhoRepository.getCarrinho(12)).thenReturn(
@@ -81,6 +85,7 @@ class PedidoUseCasesTest {
                 )
         ));
         when(clock.localDateTime()).thenReturn(dateTime);
+        when(pagamentoUseCases.validarFormaPagamento("DINHEIRO")).thenReturn(IdFormaPagamento.DINHEIRO);
 
         var expectedPedido = Pedido.novoPedido(new IdCliente(25), null, List.of(
                 new ItemPedido(1,
@@ -89,7 +94,7 @@ class PedidoUseCasesTest {
                 new ItemPedido(2,
                         new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
                 )
-        ), "Lanche sem cebola", FormaPagamento.DINHEIRO.id(), dateTime);
+        ), "Lanche sem cebola", IdFormaPagamento.DINHEIRO, dateTime);
 
         when(pedidoRepository.savePedido(expectedPedido)).thenReturn(expectedPedido.withId(33));
 
@@ -97,13 +102,15 @@ class PedidoUseCasesTest {
                 new PedidoUseCases.CriarPedidoParam(12, "DINHEIRO"));
 
         assertThat(result).isEqualTo(expectedPedido.withId(33));
+
+        verify(pagamentoUseCases).iniciarPagamento(expectedPedido.withId(33));
     }
 
     @Test
     void validarPedido() {
         var pedido = Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                 List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO.id(), dateTime);
+                IdFormaPagamento.DINHEIRO, dateTime);
 
         when(pedidoRepository.getPedido(42)).thenReturn(pedido);
         when(itemCardapioRepository.findByPedido(42)).thenReturn(List.of(
@@ -114,7 +121,7 @@ class PedidoUseCasesTest {
 
         var expectedNewPedido = Pedido.pedidoRecuperado(42, new IdCliente(25), null, List.of(),
                 "Lanche sem cebola", StatusPedido.PREPARACAO,
-                FormaPagamento.DINHEIRO.id(), dateTime);
+                IdFormaPagamento.DINHEIRO, dateTime);
 
         ///
         var newPedido = pedidoUseCases.validarPedido(42);
@@ -132,7 +139,7 @@ class PedidoUseCasesTest {
     void setPedidoPronto() {
         var pedido = Pedido.pedidoRecuperado(45, new IdCliente(25), null,
                 List.of(), "Lanche sem cebola", StatusPedido.PREPARACAO,
-                FormaPagamento.DINHEIRO.id(), dateTime);
+                IdFormaPagamento.DINHEIRO, dateTime);
 
         when(pedidoRepository.getPedido(45)).thenReturn(pedido);
         when(itemCardapioRepository.findByPedido(45)).thenReturn(List.of(
@@ -143,7 +150,7 @@ class PedidoUseCasesTest {
 
         var expectedNewPedido = Pedido.pedidoRecuperado(45, new IdCliente(25), null, List.of(), "Lanche sem cebola",
                 StatusPedido.PRONTO,
-                FormaPagamento.DINHEIRO.id(), dateTime);
+                IdFormaPagamento.DINHEIRO, dateTime);
 
         Pedido expectedNewPedidoWithItens = expectedNewPedido.withItens(List.of(
                 new ItemPedido(1,
@@ -165,10 +172,10 @@ class PedidoUseCasesTest {
         when(pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO), null)).thenReturn(List.of(
                 Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                        FormaPagamento.DINHEIRO.id(), dateTime),
+                        IdFormaPagamento.DINHEIRO, dateTime),
                 Pedido.pedidoRecuperado(43, null, "Cliente Maria",
                         List.of(), null, StatusPedido.RECEBIDO,
-                        FormaPagamento.DINHEIRO.id(), dateTime)
+                        IdFormaPagamento.DINHEIRO, dateTime)
         ));
 
         var result = pedidoUseCases.listarPedidosByStatus(StatusPedido.RECEBIDO);
@@ -176,10 +183,10 @@ class PedidoUseCasesTest {
         assertThat(result).containsExactly(
                 Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                        FormaPagamento.DINHEIRO.id(), dateTime),
+                        IdFormaPagamento.DINHEIRO, dateTime),
                 Pedido.pedidoRecuperado(43, null, "Cliente Maria",
                         List.of(), null, StatusPedido.RECEBIDO,
-                        FormaPagamento.DINHEIRO.id(), dateTime)
+                        IdFormaPagamento.DINHEIRO, dateTime)
         );
     }
 
@@ -197,10 +204,10 @@ class PedidoUseCasesTest {
 
                 Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                        FormaPagamento.DINHEIRO.id(), dateTime),
+                        IdFormaPagamento.DINHEIRO, dateTime),
                 Pedido.pedidoRecuperado(43, null, "Cliente Maria",
                         List.of(), null, StatusPedido.PREPARACAO,
-                        FormaPagamento.DINHEIRO.id(), dateTime)
+                        IdFormaPagamento.DINHEIRO, dateTime)
         ));
 
         var result = pedidoUseCases.listarPedidosComAtraso();
@@ -208,10 +215,10 @@ class PedidoUseCasesTest {
         assertThat(result).containsExactly(
                 Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                        FormaPagamento.DINHEIRO.id(), dateTime),
+                        IdFormaPagamento.DINHEIRO, dateTime),
                 Pedido.pedidoRecuperado(43, null, "Cliente Maria",
                         List.of(), null, StatusPedido.PREPARACAO,
-                        FormaPagamento.DINHEIRO.id(), dateTime)
+                        IdFormaPagamento.DINHEIRO, dateTime)
         );
     }
 

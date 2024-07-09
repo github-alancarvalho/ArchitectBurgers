@@ -29,7 +29,7 @@ class PedidoDtoTest {
                         new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
                 )
         ), "Lanche sem cebola", StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.of(2024, 5, 18, 15, 30, 12));
+                IdFormaPagamento.DINHEIRO, LocalDateTime.of(2024, 5, 18, 15, 30, 12));
 
         var dto = PedidoDto.fromEntity(pedidoEntity);
 

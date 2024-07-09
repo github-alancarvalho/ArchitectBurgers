@@ -21,7 +21,7 @@ class PedidoTest {
     void validar() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
+                IdFormaPagamento.DINHEIRO, LocalDateTime.now());
 
         var newP = p.validar();
 
@@ -32,7 +32,7 @@ class PedidoTest {
     void validar_statusInvalido() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.PRONTO,
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
+                IdFormaPagamento.DINHEIRO, LocalDateTime.now());
 
         assertThat(
                 assertThrows(IllegalArgumentException.class, p::validar)
@@ -43,7 +43,7 @@ class PedidoTest {
     void cancelar() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.RECEBIDO,
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
+                IdFormaPagamento.DINHEIRO, LocalDateTime.now());
 
         var newP = p.cancelar();
 
@@ -54,7 +54,7 @@ class PedidoTest {
     void setPronto() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.PREPARACAO,
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
+                IdFormaPagamento.DINHEIRO, LocalDateTime.now());
 
         var newP = p.setPronto();
 
@@ -65,10 +65,10 @@ class PedidoTest {
     void confirmarPagamento() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.PAGAMENTO,
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
+                IdFormaPagamento.DINHEIRO, LocalDateTime.now());
 
         var pagamento = new Pagamento(44, 123,
-                FormaPagamento.DINHEIRO.id(), StatusPagamento.FINALIZADO,
+                IdFormaPagamento.DINHEIRO, StatusPagamento.FINALIZADO,
                 new ValorMonetario("19.90"), LocalDateTime.now(),
                 LocalDateTime.now(), null, null);
 
@@ -81,10 +81,10 @@ class PedidoTest {
     void confirmarPagamento_erroValor() {
         var p = Pedido.pedidoRecuperado(123, null, "Cliente José",
                 sampleItens, null, StatusPedido.PAGAMENTO,
-                FormaPagamento.DINHEIRO.id(), LocalDateTime.now());
+                IdFormaPagamento.DINHEIRO, LocalDateTime.now());
 
         var pagamento = new Pagamento(44, 123,
-                FormaPagamento.DINHEIRO.id(), StatusPagamento.FINALIZADO,
+                IdFormaPagamento.DINHEIRO, StatusPagamento.FINALIZADO,
                 new ValorMonetario("25"), LocalDateTime.now(),
                 LocalDateTime.now(), null, null);
 
