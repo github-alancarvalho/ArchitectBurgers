@@ -1,0 +1,14 @@
+{
+  "name": "dummy-jira-server",
+  "version": "1.0.0",
+  "description": "A dummy server to emulate the Jira endpoints for plugin integration test",
+  "main": "dummy-mercadopago-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Intelie",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
