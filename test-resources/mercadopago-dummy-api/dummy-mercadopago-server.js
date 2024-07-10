@@ -11,7 +11,7 @@ app.post('/rest/api/3/issue', (req, res) => {
 
     const title = body?.fields?.title ?? "Title not available"
     res.json({
-        
+
     })
 })
 
