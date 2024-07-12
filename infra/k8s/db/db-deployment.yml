@@ -34,9 +34,9 @@ spec:
                   key: "archburgers.datasource.dbPass"
             - name: "TZ"
               value: "America/Sao_Paulo"
-          volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: "pg-data-volume"
+#          volumeMounts:
+#            - mountPath: /var/lib/postgresql/data
+#              name: "pg-data-volume"
           livenessProbe:
             exec:
               command:
@@ -51,8 +51,8 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 3
-      volumes:
-        - name: "pg-data-volume"
-          persistentVolumeClaim:
-            claimName: "data-volume-claim"
-            readOnly: false
+#      volumes:
+#        - name: "pg-data-volume"
+#          persistentVolumeClaim:
+#            claimName: "data-volume-claim"
+#            readOnly: false
