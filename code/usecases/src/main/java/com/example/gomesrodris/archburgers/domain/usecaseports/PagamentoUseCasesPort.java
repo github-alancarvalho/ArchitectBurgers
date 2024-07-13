@@ -11,7 +11,11 @@ public interface PagamentoUseCasesPort {
 
     Pagamento iniciarPagamento(Pedido pedido);
 
-    Pedido finalizarPagamento(int idPedido);
+    /**
+     * @param idPedido
+     * @param idPedidoSistemaExterno Opcional, caso a forma de pagamento utilizada forneça esta informação no final
+     */
+    Pedido finalizarPagamento(int idPedido, String idPedidoSistemaExterno);
 
     List<DescricaoFormaPagamento> listarFormasPagamento();
 

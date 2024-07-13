@@ -37,7 +37,7 @@ public class PagamentoRepositoryJdbcImpl implements PagamentoRepository {
 
     @Language("SQL")
     private static final String SQL_UPDATE_STATUS = """
-                update pagamento set status = ?, data_hora_atualizacao = ?
+                update pagamento set status = ?, data_hora_atualizacao = ?, id_pedido_sistema_externo = ?
                      where pagamento_id = ?
             """;
 
@@ -113,7 +113,8 @@ public class PagamentoRepositoryJdbcImpl implements PagamentoRepository {
 
             stmt.setString(1, status);
             stmt.setObject(2, pagamento.dataHoraAtualizacao());
-            stmt.setInt(3, id);
+            stmt.setString(3, pagamento.idPedidoSistemaExterno());
+            stmt.setInt(4, id);
 
             stmt.executeUpdate();
         } catch (SQLException e) {

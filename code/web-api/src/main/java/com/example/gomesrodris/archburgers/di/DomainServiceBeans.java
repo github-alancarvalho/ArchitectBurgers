@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.di;
 
+import com.example.gomesrodris.archburgers.adapters.pagamento.MercadoPagoApi;
 import com.example.gomesrodris.archburgers.adapters.pagamento.MercadoPagoGateway;
 import com.example.gomesrodris.archburgers.adapters.presenters.QrCodePresenter;
 import com.example.gomesrodris.archburgers.domain.external.FormaPagamentoRegistry;
@@ -32,9 +33,9 @@ public class DomainServiceBeans {
     }
 
     @Bean
-    public FormaPagamentoRegistry formaPagamentoRegistry() {
+    public FormaPagamentoRegistry formaPagamentoRegistry(MercadoPagoGateway mercadoPagoGateway) {
         return new FormaPagamentoRegistry(List.of(
-                new MercadoPagoGateway()
+                mercadoPagoGateway
         ));
     }
 

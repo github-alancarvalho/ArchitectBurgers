@@ -59,11 +59,11 @@ GET http://localhost:8090/cardapio
 
 ###
 # @name Add Item to Carrinho
-POST http://localhost:8090/carrinho/4
+POST http://localhost:8090/carrinho/3
 Content-Type: application/json
 
 {
-    "idItemCardapio": 2
+    "idItemCardapio": 6
 }
 
 ###
@@ -92,8 +92,8 @@ POST http://localhost:8090/pedidos
 Content-Type: application/json
 
 {
-  "idCarrinho": 4,
-  "formaPagamento": "DINHEIRO"
+  "idCarrinho": 3,
+  "formaPagamento": "MercadoPago"
 }
 
 ###

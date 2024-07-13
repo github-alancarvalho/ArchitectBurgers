@@ -43,7 +43,7 @@ public class PagamentoController {
         return pagamentoUseCases.listarFormasPagamento();
     }
 
-    @Operation(summary = "Grava confirmação de pagamento para o pedido, movendo o mesmo para status RECEBIDO")
+    @Operation(summary = "Grava confirmação de pagamento para o pedido, movendo o mesmo para status RECEBIDO. Para formas de pagamento sem integração externa")
     @PostMapping("/pagamento/confirmacao")
     public ResponseEntity<PedidoDto> confirmacaoPagamento(@RequestBody ConfirmacaoPagamentoDto param) {
         Pedido pedidoUpdated;
@@ -53,7 +53,7 @@ public class PagamentoController {
             if (param.idPedido() == null)
                 throw new DomainArgumentException("idPedido deve ser informado");
 
-            pedidoUpdated = transactionManager.runInTransaction(() -> pagamentoUseCases.finalizarPagamento(param.idPedido()));
+            pedidoUpdated = transactionManager.runInTransaction(() -> pagamentoUseCases.finalizarPagamento(param.idPedido(), null));
         } catch (DomainArgumentException ae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, ae.getMessage());
         } catch (Exception e) {

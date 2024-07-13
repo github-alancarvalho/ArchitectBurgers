@@ -135,7 +135,7 @@ class PagamentoUseCasesTest {
         when(pagamentoRepository.findPagamentoByPedido(33)).thenReturn(null);
 
         var e = assertThrows(DomainArgumentException.class,
-                () -> pagamentoUseCases.finalizarPagamento(33)
+                () -> pagamentoUseCases.finalizarPagamento(33, "abc")
         );
         assertThat(e).hasMessageContaining("Pedido invalido=33");
     }
@@ -158,10 +158,10 @@ class PagamentoUseCasesTest {
         when(pagamentoRepository.findPagamentoByPedido(33)).thenReturn(savedPagamento);
 
         when(clock.localDateTime()).thenReturn(dateTimePagamentoFinal);
-        Pagamento expectedPagamentoFinalizado = savedPagamento.finalizar(dateTimePagamentoFinal);
+        Pagamento expectedPagamentoFinalizado = savedPagamento.finalizar(dateTimePagamentoFinal, "abc");
 
         //
-        var result = pagamentoUseCases.finalizarPagamento(33);
+        var result = pagamentoUseCases.finalizarPagamento(33, "abc");
 
         var expectedPedidoPago = Pedido.pedidoRecuperado(33, new IdCliente(25), null,
                 List.of(

@@ -99,8 +99,10 @@ class PagamentoRepositoryJdbcImplTest {
         assertThat(pagamento.status()).isEqualTo(StatusPagamento.PENDENTE);
         assertThat(pagamento.dataHoraCriacao()).isEqualTo(LocalDateTime.of(2024,5,17,14,30,12));
         assertThat(pagamento.dataHoraAtualizacao()).isEqualTo(LocalDateTime.of(2024,5,17,14,30,12));
+        assertThat(pagamento.idPedidoSistemaExterno()).isEqualTo("98-7654-321");
 
-        var finalizadoSalvar = pagamento.finalizar(LocalDateTime.of(2024,5,17,14,31,42));
+        var finalizadoSalvar = pagamento.finalizar(
+                LocalDateTime.of(2024,5,17,14,31,42), "abc-def-ghi");
 
         repository.updateStatus(finalizadoSalvar);
 
@@ -109,5 +111,6 @@ class PagamentoRepositoryJdbcImplTest {
         assertThat(aposUpdate.status()).isEqualTo(StatusPagamento.FINALIZADO);
         assertThat(aposUpdate.dataHoraCriacao()).isEqualTo(LocalDateTime.of(2024,5,17,14,30,12));
         assertThat(aposUpdate.dataHoraAtualizacao()).isEqualTo(LocalDateTime.of(2024,5,17,14,31,42));
+        assertThat(aposUpdate.idPedidoSistemaExterno()).isEqualTo("abc-def-ghi");
     }
 }

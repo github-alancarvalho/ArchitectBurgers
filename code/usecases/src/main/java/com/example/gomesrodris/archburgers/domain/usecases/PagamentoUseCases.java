@@ -67,7 +67,7 @@ public class PagamentoUseCases implements PagamentoUseCasesPort {
     }
 
     @Override
-    public Pedido finalizarPagamento(int idPedido) {
+    public Pedido finalizarPagamento(int idPedido, String newIdPedidoSistemaExterno) {
         Pedido pedido = pedidoRepository.getPedido(idPedido);
 
         if (pedido == null) {
@@ -88,11 +88,17 @@ public class PagamentoUseCases implements PagamentoUseCasesPort {
 
         LocalDateTime dataHoraPagamento = clock.localDateTime();
 
-        var pagamentoFinalizado = inicial.finalizar(dataHoraPagamento);
+        Pagamento pagamentoFinalizado;
+        if (newIdPedidoSistemaExterno != null && !newIdPedidoSistemaExterno.equals(inicial.idPedidoSistemaExterno())) {
+            pagamentoFinalizado = inicial.finalizar(dataHoraPagamento, newIdPedidoSistemaExterno);
+        } else {
+            pagamentoFinalizado = inicial.finalizar(dataHoraPagamento);
+        }
 
         var pedidoPago = pedido.confirmarPagamento(pagamentoFinalizado);
 
         pagamentoRepository.updateStatus(pagamentoFinalizado);
+
         pedidoRepository.updateStatus(pedidoPago);
 
         return pedidoPago;

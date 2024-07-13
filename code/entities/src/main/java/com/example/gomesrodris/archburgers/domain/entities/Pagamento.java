@@ -36,6 +36,11 @@ public record Pagamento(
                 valor, dataHoraCriacao, dataHora, codigoPagamentoCliente, idPedidoSistemaExterno);
     }
 
+    public Pagamento finalizar(@NotNull LocalDateTime dataHora, @NotNull String newIdSistemaExterno) {
+        return new Pagamento(id, idPedido, formaPagamento, StatusPagamento.FINALIZADO,
+                valor, dataHoraCriacao, dataHora, codigoPagamentoCliente, newIdSistemaExterno);
+    }
+
     public Pagamento withId(int newId) {
         return new Pagamento(newId, idPedido, formaPagamento, status, valor, dataHoraCriacao, dataHoraAtualizacao,
                 codigoPagamentoCliente, idPedidoSistemaExterno);
