@@ -2,15 +2,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Filter out local zones, which are not currently supported
-# with managed node groups
-# data "aws_availability_zones" "available" {
-#   filter {
-#     name   = "opt-in-status"
-#     values = ["opt-in-not-required"]
-#   }
-# }
-
 locals {
   cluster_name = "fiap-architect-burgers-eks"
 }
@@ -22,10 +13,15 @@ module "vpc" {
   name = "education-vpc"
 
   cidr = "10.0.0.0/16"
-  azs  = ["us-east-1a", "us-east-1b"]
+  azs  = ["us-east-1a", "us-east-1b", "us-east-1c"]
 
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
-  public_subnets  = ["10.0.3.0/24", "10.0.4.0/24"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
+  database_subnet_group_name = "db-subnet-group"
+  database_subnets = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
+  map_public_ip_on_launch = true
 
   enable_nat_gateway   = true
   single_nat_gateway   = true
@@ -64,7 +60,7 @@ resource "aws_security_group" "rds" {
 }
 
 resource "aws_db_parameter_group" "mydb" {
-  name   = "education"
+  name   = "burgers-db-param"
   family = "postgres16"
 
   parameter {
@@ -80,22 +76,21 @@ variable "db_password" {
   sensitive   = true
 }
 
-resource "aws_db_instance" "education" {
-  identifier             = "education"
+resource "aws_db_instance" "burgers_db" {
+  identifier             = "burgers-db"
   instance_class         = "db.t3.micro"
-  allocated_storage      = 2
+  allocated_storage      = 5
   engine                 = "postgres"
   engine_version         = "16.3"
   username               = "burger"
   password               = var.db_password
 #   db_subnet_group_name   = aws_db_subnet_group.education.name
-  db_subnet_group_name   = module.vpc.name
+  db_subnet_group_name   = module.vpc.database_subnet_group_name
   vpc_security_group_ids = [aws_security_group.rds.id]
   parameter_group_name   = aws_db_parameter_group.mydb.name
-  publicly_accessible    = true
+  publicly_accessible    = true  # Lab only, dont keep in prod
   skip_final_snapshot    = true
 
-  availability_zone = module.vpc.azs
   multi_az = true
 }
 
