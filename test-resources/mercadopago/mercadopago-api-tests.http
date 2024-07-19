@@ -27,11 +27,11 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "title": "Pedido 006",
-  "description": "Pedido 006",
-  "expiration_date": "2024-07-15T16:35:56.559-03:00",
-  "external_reference": "ord6",
-  "notification_url": "https://gomesrodris-mplabs.requestcatcher.com/payment-hooks/mercadopago",
+  "title": "Pedido 007",
+  "description": "Pedido 007",
+  "expiration_date": "2024-07-21T16:35:56.559-03:00",
+  "external_reference": "ord7",
+  "notification_url": "http://a5706cb8c60464f1bb4c47ed41ccab74-182303570.us-east-1.elb.amazonaws.com:8090/pagamento-webhook/mercado-pago",
   "total_amount": 25.82,
   "items": [
     {

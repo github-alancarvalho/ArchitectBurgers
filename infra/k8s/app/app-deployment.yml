@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: archburgers-app-container
-          image: gomesrodris/architect-burgers:0.0.3-beta
+          image: gomesrodris/architect-burgers:0.0.3
           ports:
             - containerPort: 8090
           env:
@@ -38,6 +38,32 @@ spec:
                 configMapKeyRef:
                   name: "archburgers-db-access-config"
                   key: "archburgers.datasource.dbPass"
+
+            - name: "archburgers.integration.mercadopago.apiBaseUrl"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-pagamento-services-config"
+                  key: "archburgers.integration.mercadopago.apiBaseUrl"
+            - name: "archburgers.integration.mercadopago.userId"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-pagamento-services-config"
+                  key: "archburgers.integration.mercadopago.userId"
+            - name: "archburgers.integration.mercadopago.accessToken"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-pagamento-services-config"
+                  key: "archburgers.integration.mercadopago.accessToken"
+            - name: "archburgers.integration.mercadopago.posId"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-pagamento-services-config"
+                  key: "archburgers.integration.mercadopago.posId"
+            - name: "archburgers.integration.mercadopago.notificationUrl"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-pagamento-services-config"
+                  key: "archburgers.integration.mercadopago.notificationUrl"
           readinessProbe:
             httpGet:
               port: 8090

@@ -1,13 +1,18 @@
-### ######### Etapa 1 identificação do cliente e criação de Carrinho
+# ### ### ### ### Etapa "0" - Identificação do cliente (opcional)
+# # # O serviço /cliente?cpf retorna as informações salvas do cliente.
+# # # Frontend deverá apresentar para o cliente para confirmação e guardar ID do cliente para o próximo passo
 ###
 # @name Identifica Cliente
 # Identificar cliente pelo CPF
-GET http://localhost:8090/cliente?cpf=12332112340
+GET {{baseUrl}}/cliente?cpf=12332112340
+
+# ### ### ### ### A primeira etapa é iniciar um novo carrinho de compras
+# # # Há 3 opções para iniciar o carrinho:
 
 ###
-# @name Novo carrinho cliente identificado
-# Inicializar carrinho - Opção 1 - a partir de cliente identificado
-POST http://localhost:8090/carrinho
+# @name Carrinho opção 1: Novo carrinho cliente identificado
+# Cria um novo carrinho utilizando identificação pelo ID do cliente
+POST {{baseUrl}}/carrinho
 Content-Type: application/json
 
 {
@@ -16,8 +21,9 @@ Content-Type: application/json
 
 ###
 # @name Carrinho existente cliente identificado
-# Inicializar carrinho - Opção 1.1 - a partir de cliente identificado (recuperou anterior)
-POST http://localhost:8090/carrinho
+# Nota: Se o cliente identificado solicitar a criação de um carrinho, e já existe um carrinho aberto
+#       para o mesmo, o sistema oferece o recurso de recuperar este carrinho existente. Permite continuar em caso de falha.
+POST {{baseUrl}}/carrinho
 Content-Type: application/json
 
 {
@@ -25,9 +31,10 @@ Content-Type: application/json
 }
 
 ###
-# @name Novo carrinho cliente não identificado
-# Inicializar carrinho - Opção 2 - cliente anônimo
-POST http://localhost:8090/carrinho
+# @name Carrinho opção 2 - Cliente não identificado
+# Cliente não identificado é a denominação para clientes não cadastrados na base. A criação de um carrinho de compras
+# para cliente não identificado requer apenas um nome para uso como identificação temporária
+POST {{baseUrl}}/carrinho
 Content-Type: application/json
 
 {
@@ -35,9 +42,10 @@ Content-Type: application/json
 }
 
 ###
-# @name Novo carrinho e cadastrar cliente
-# Inicializar carrinho - Opção 2 - cliente anônimo
-POST http://localhost:8090/carrinho
+# @name Carrinho opção 3 - Novo carrinho e cadastrar cliente
+# Recebe os dados completos do cliente, o pedido será feito como um Cliente Identificado e a partir da próxima compra
+# poderá usar a identificação por CPF
+POST {{baseUrl}}/carrinho
 Content-Type: application/json
 
 {
@@ -46,20 +54,23 @@ Content-Type: application/json
   "email": "maria.cliente@example.org"
 }
 
-###
-# @name Consultar carrinho
-GET http://localhost:8090/carrinho/1
-
-
-### ######### Etapa 2 seleção de itens
-###
-# @name Consulta cardápio
-GET http://localhost:8090/cardapio
-
 
 ###
-# @name Add Item to Carrinho
-POST http://localhost:8090/carrinho/3
+# ### ### ### ### Etapa 2: seleção de itens e montagem do carrinho de compras
+
+###
+# @name Consultar carrinho atual
+# # # (URL param é o ID do carrinho)
+GET {{baseUrl}}/carrinho/1
+
+###
+# @name Consulta itens do cardápio
+GET {{baseUrl}}/cardapio
+
+###
+# @name Add Item ao Carrinho
+# # # Recebe no Post o ID do item (consulta cardápio)
+POST {{baseUrl}}/carrinho/3
 Content-Type: application/json
 
 {
@@ -68,38 +79,52 @@ Content-Type: application/json
 
 ###
 # @name Excluir itens do Carrinho
-DELETE http://localhost:8090/carrinho/1/itens/1
+# # # O segundo parâmetro é o número de sequência do item no carrinho
+DELETE {{baseUrl}}/carrinho/1/itens/1
 Content-Type: application/json
 
 
 ###
 # @name Set observacoes no carrinho
-PUT http://localhost:8090/carrinho/1/obs
+PUT {{baseUrl}}/carrinho/1/obs
 Content-Type: application/json
 
 {
   "observacoes": "Muito sal na batatinha por favor"
 }
 
-### ######### Etapa 3 checkout
+###
+# ### ### ### ### Etapa 3 - checkout
+
 ###
 # @name Listar formas pagamento
-GET http://localhost:8090/pagamento/opcoes
+GET {{baseUrl}}/pagamento/opcoes
 
 ###
 # @name Criar pedido
-POST http://localhost:8090/pedidos
+# # # Esta ação irá gerar um ID de pedido, que não é igual ao ID do carrinho.
+# # # Carrinho será excluído automaticamente
+POST {{baseUrl}}/pedidos
 Content-Type: application/json
 
 {
-  "idCarrinho": 3,
+  "idCarrinho": 1,
   "formaPagamento": "MercadoPago"
 }
 
 ###
+# # # Pagamento:
+
+###
+# @name Consulta status pagamento
+GET {{baseUrl}}/pagamento/consulta/6
+
+###
+# # # Se o pagamento é local, sem integracao (DINHEIRO, CARTÃO MÁQUINA)
+# # # Confirmação abaixo feita pelo Atendente
 # @name Confirmação de pagamento
-# (pagamento interno sem integracao)
-POST http://localhost:8090/pagamento/confirmacao
+#
+POST {{baseUrl}}/pagamento/confirmacao
 Content-Type: application/json
 
 {
@@ -107,61 +132,65 @@ Content-Type: application/json
 }
 
 ###
-# @name Consulta status pagamento
-GET http://localhost:8090/pagamento/consulta/1
+# # # Se o pagamento tem integração externa..
+# Cliente consulta QRCode
+# @name Consulta QRCode pagamento
+{{baseUrl}}/pagamento/consulta/6/qrcode
 
 ###
-# @name Consulta QRCode pagamento
-http://localhost:8090/pagamento/consulta/5/qrcode
+# # # Gateway de pagamento aciona o webhook
+# # # (hooks individuais para cada serviço de pagamento)
+# @name MercadoPago webhook
+{{baseUrl}}/pagamento-webhook/mercado-pago
 
 
 ### ######### Etapa 4 Acompanhamento e preparação
 ###
 # @name Listar pedidos recebidos
-GET http://localhost:8090/pedidos?status=RECEBIDO
+GET {{baseUrl}}/pedidos?status=RECEBIDO
 
 ###
 # @name Validar pedido
-POST http://localhost:8090/pedidos/5/validar
+POST {{baseUrl}}/pedidos/5/validar
 
 ###
 # @name Cancelar pedido
-POST http://localhost:8090/pedidos/4/cancelar
+POST {{baseUrl}}/pedidos/4/cancelar
 
 ###
 # @name Listar pedidos em preparação (cozinha)
-GET http://localhost:8090/pedidos?status=PREPARACAO
+GET {{baseUrl}}/pedidos?status=PREPARACAO
 
 ###
 # @name Listar pedidos com atraso
-GET http://localhost:8090/pedidos?atraso=true
+GET {{baseUrl}}/pedidos?atraso=true
 
 ###
 # @name Atualizar pedido Pronto
-POST http://localhost:8090/pedidos/5/setPronto
+POST {{baseUrl}}/pedidos/5/setPronto
 
 ###
 # @name Finalizar pedido
-POST http://localhost:8090/pedidos/5/finalizar
+POST {{baseUrl}}/pedidos/5/finalizar
 
 
 
 ### ######### Serviços administrativos
 
 # @name Listar todos os pedidos ativos
-GET http://localhost:8090/pedidos
+GET {{baseUrl}}/pedidos
 
 ###
 # @name Listar todos clientes
-GET http://localhost:8090/clientes
+GET {{baseUrl}}/clientes
 
 ###
 # @name Listar itens de cardápio por tipo
-GET http://localhost:8090/cardapio?tipo=ACOMPANHAMENTO
+GET {{baseUrl}}/cardapio?tipo=ACOMPANHAMENTO
 
 ###
 # @name Cadastrar um item no cardápio
-POST http://localhost:8090/cardapio
+POST {{baseUrl}}/cardapio
 Content-Type: application/json
 
 {
@@ -175,7 +204,7 @@ Content-Type: application/json
 
 ###
 # @name Atualizar um item do cardápio
-PUT http://localhost:8090/cardapio/9
+PUT {{baseUrl}}/cardapio/9
 Content-Type: application/json
 
 {
@@ -189,5 +218,5 @@ Content-Type: application/json
 
 ###
 # @name Excluir um item do cardápio
-DELETE http://localhost:8090/cardapio/9
+DELETE {{baseUrl}}/cardapio/9
 

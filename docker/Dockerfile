@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-alpine as builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /build
 COPY . /build/
@@ -8,7 +8,7 @@ RUN ls ./mvnw || (echo Precondition check: docker build deve ser executado na ra
 RUN ./mvnw -DskipTests install dependency:copy-dependencies
 
 ##########################################
-FROM eclipse-temurin:21-jdk-alpine as final
+FROM eclipse-temurin:21-jdk-alpine AS final
 
 RUN adduser apprunner -D
 

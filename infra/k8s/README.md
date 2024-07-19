@@ -23,9 +23,21 @@ Deploy:
 
 ## Cloud Deployment
 
-    kubectl apply -f ./db/db-configs-cloud.yml
-    kubectl apply -f ./app/pagamento-configs.yml
-    kubectl apply -f ./app/app-deployment.yml
+Criar a infraestrutura com os dois passos abaixo:
+- Executar o setup na pasta terraform
+- Cluster EKS ainda é uma tarefa manual. Criar pelo console AWS assim como o NodeGroup, e configurar o kubectl
+
+Iniciar os elementos no cluster Kubernetes:
+
     kubectl apply -f ./app/app-service-loadbalancer.yml
+
+    # Antes do comando abaixo: Ajustar os dados de conexão no db-configs-cloud a partir da instância RDS
+    kubectl apply -f ./db/db-configs-cloud.yml
+    
+    # Antes do comando abaixo: Preencher o endpoint do LoadBalancer (kubectl get svc -> External IP) 
+    # na config do webhook em pagamento-configs
+    kubectl apply -f ./app/pagamento-configs.yml
+
+    kubectl apply -f ./app/app-deployment.yml 
     kubectl apply -f ./app/app-hpa.yml
 

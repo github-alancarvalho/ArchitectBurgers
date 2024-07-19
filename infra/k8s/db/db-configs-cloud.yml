@@ -5,7 +5,7 @@ metadata:
 data:
   "archburgers.datasource.driverClass": "org.postgresql.Driver"
   "archburgers.datasource.db_name": "archburgers"
-  "archburgers.datasource.dbUrl": "jdbc:postgresql://burgers-db.cyjki1qjih9v.us-east-1.rds.amazonaws.com/burgers-db?autoReconnect=true"
+  "archburgers.datasource.dbUrl": "jdbc:postgresql://burgers-db.cyjki1qjih9v.us-east-1.rds.amazonaws.com/postgres?autoReconnect=true"
   "archburgers.datasource.dbUser": "burger"
   "archburgers.datasource.dbPass": "Burgers2024"
 

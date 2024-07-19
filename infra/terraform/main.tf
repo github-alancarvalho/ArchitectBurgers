@@ -19,7 +19,10 @@ module "vpc" {
   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 
   database_subnet_group_name = "db-subnet-group"
-  database_subnets = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  database_subnets = ["10.0.7.0/24", "10.0.8.0/24", "10.0.9.0/24"]
+  create_database_subnet_group = true
+  create_database_subnet_route_table = true
+  create_database_internet_gateway_route = true
 
   map_public_ip_on_launch = true
 
@@ -63,6 +66,7 @@ resource "aws_db_parameter_group" "mydb" {
   name   = "burgers-db-param"
   family = "postgres16"
 
+
   parameter {
     name  = "log_connections"
     value = "1"
@@ -88,7 +92,7 @@ resource "aws_db_instance" "burgers_db" {
   db_subnet_group_name   = module.vpc.database_subnet_group_name
   vpc_security_group_ids = [aws_security_group.rds.id]
   parameter_group_name   = aws_db_parameter_group.mydb.name
-  publicly_accessible    = true  # Lab only, dont keep in prod
+  publicly_accessible    = true  # Lab only, dont keep this option in prod
   skip_final_snapshot    = true
 
   multi_az = true
