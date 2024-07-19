@@ -87,6 +87,8 @@
                     <skip>false</skip>
                     <mainClass>com.example.gomesrodris.archburgers.ArchitectBurgersApiApplication</mainClass>
 
+                    <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,address=8008,suspend=n</jvmArguments>
+
                     <environmentVariables>
                         <archburgers.datasource.driverClass>org.postgresql.Driver</archburgers.datasource.driverClass>
                         <archburgers.datasource.dbUrl>jdbc:postgresql://localhost/archburgers?autoReconnect=true</archburgers.datasource.dbUrl>
@@ -94,8 +96,8 @@
                         <archburgers.datasource.dbPass>live</archburgers.datasource.dbPass>
 
                         <archburgers.integration.mercadopago.apiBaseUrl>https://api.mercadopago.com</archburgers.integration.mercadopago.apiBaseUrl>
-                        <archburgers.integration.mercadopago.userId>1887951604</archburgers.integration.mercadopago.userId>
-                        <archburgers.integration.mercadopago.accessToken>APP_USR-5767613458207383-070419-54e1880a0f59229b939d3c662eec1496-1887951604</archburgers.integration.mercadopago.accessToken>
+                        <archburgers.integration.mercadopago.userId>1898521889</archburgers.integration.mercadopago.userId>
+                        <archburgers.integration.mercadopago.accessToken>APP_USR-5895347274256581-071317-d4d6b7289bb3a84a0edb8388342a8c3d-1898521889</archburgers.integration.mercadopago.accessToken>
                         <archburgers.integration.mercadopago.posId>LOJA1POS1</archburgers.integration.mercadopago.posId>
                         <archburgers.integration.mercadopago.notificationUrl>https://gomesrodris-mplabs.requestcatcher.com/payment-hooks/mercadopago</archburgers.integration.mercadopago.notificationUrl>
                     </environmentVariables>

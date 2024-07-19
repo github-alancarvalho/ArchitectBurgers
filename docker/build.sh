@@ -21,7 +21,7 @@ cd ..
 #	exit 1
 #fi
 
-docker build . -f docker/Dockerfile -t gomesrodris/architect-burgers:0.0.3
+docker build . -f docker/Dockerfile -t gomesrodris/architect-burgers:0.0.4
 
-docker push docker.io/gomesrodris/architect-burgers:0.0.3
+docker push docker.io/gomesrodris/architect-burgers:0.0.4
 

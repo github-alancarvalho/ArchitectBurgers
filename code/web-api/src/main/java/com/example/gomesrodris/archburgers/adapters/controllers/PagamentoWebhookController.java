@@ -26,7 +26,8 @@ public class PagamentoWebhookController {
     @Operation(summary = "Grava confirmação de pagamento para o pedido, movendo o mesmo para status RECEBIDO")
     @PostMapping("/pagamento-webhook/mercado-pago")
     public String webHookMercadoPago(
-            @RequestParam("id") String externalId, @RequestParam("data.id") String externalId2,
+            @RequestParam(value = "id", required = false) String externalId,
+            @RequestParam(value = "data.id", required = false) String externalId2,
             @RequestHeader Map<String, String> headers,
             @RequestBody Map<String, Object> data) {
 

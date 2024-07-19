@@ -27,10 +27,10 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "title": "Pedido 007",
-  "description": "Pedido 007",
+  "title": "Pedido 008",
+  "description": "Pedido 008",
   "expiration_date": "2024-07-21T16:35:56.559-03:00",
-  "external_reference": "ord7",
+  "external_reference": "ord8",
   "notification_url": "http://a5706cb8c60464f1bb4c47ed41ccab74-182303570.us-east-1.elb.amazonaws.com:8090/pagamento-webhook/mercado-pago",
   "total_amount": 25.82,
   "items": [
@@ -86,8 +86,13 @@ X-Trace-Digest-72: 2pyUdP76L7BLiOuXrHv5grT/36W6Kei4byHycnfW5wCbzW0pMWj7XthaHZIsh
 
 
 ### Passo 2 - Get pedido para obter o status
-GET https://api.mercadolibre.com/merchant_orders/20458280838
+GET https://api.mercadolibre.com/merchant_orders/20955974076
 Authorization: Bearer {{access_token}}
+
+###
+GET https://api.mercadolibre.com/merchant_orders
+Authorization: Bearer {{access_token}}
+
 
 # Result:
 # O campo no resultado "external ref" é o mesmo informado na criação
@@ -223,6 +228,13 @@ X-Trace-Digest-65: R37iIkHUNLRc0oKE6rHeT9j28vtm6qZgGjSo5+QL6HdJlsXopSD6kD6qW1CA1
 
 {"resource":"https://api.mercadolibre.com/merchant_orders/20458280838","topic":"merchant_order"}
 
+
+###
+POST http://localhost:8090/pagamento-webhook/mercado-pago?id=20941741783&topic=merchant_order HTTP/1.1
+#Accept: application/json
+Content-Type: application/json
+
+{"resource":"https://api.mercadolibre.com/merchant_orders/20941741783","topic":"merchant_order"}
 
 ### Pre requisito - Ter uma Loja e PDV criados
 ###
