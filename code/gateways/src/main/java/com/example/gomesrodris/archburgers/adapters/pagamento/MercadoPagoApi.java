@@ -130,7 +130,7 @@ public class MercadoPagoApi {
 
         String body = response.body();
 
-        if (response.statusCode() != 200 && response.statusCode() != 204) {
+        if (response.statusCode() != 200 && response.statusCode() != 201 && response.statusCode() != 204) {
             throw new RuntimeException("Error in order request: " + response + " -- " + body);
         }
 
