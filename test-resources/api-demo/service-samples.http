@@ -38,7 +38,7 @@ POST {{baseUrl}}/carrinho
 Content-Type: application/json
 
 {
-  "nomeCliente": "Cliente José"
+  "nomeCliente": "Rodrigo Silva"
 }
 
 ###
@@ -61,7 +61,7 @@ Content-Type: application/json
 ###
 # @name Consultar carrinho atual
 # # # (URL param é o ID do carrinho)
-GET {{baseUrl}}/carrinho/3
+GET {{baseUrl}}/carrinho/4
 
 ###
 # @name Consulta itens do cardápio
@@ -70,23 +70,23 @@ GET {{baseUrl}}/cardapio
 ###
 # @name Add Item ao Carrinho
 # # # Recebe no Post o ID do item (consulta cardápio)
-POST {{baseUrl}}/carrinho/3
+POST {{baseUrl}}/carrinho/5
 Content-Type: application/json
 
 {
-    "idItemCardapio": 6
+    "idItemCardapio": 8
 }
 
 ###
 # @name Excluir itens do Carrinho
 # # # O segundo parâmetro é o número de sequência do item no carrinho
-DELETE {{baseUrl}}/carrinho/4/itens/1
+DELETE {{baseUrl}}/carrinho/4/itens/3
 Content-Type: application/json
 
 
 ###
 # @name Set observacoes no carrinho
-PUT {{baseUrl}}/carrinho/1/obs
+PUT {{baseUrl}}/carrinho/5/obs
 Content-Type: application/json
 
 {
@@ -108,16 +108,17 @@ POST {{baseUrl}}/pedidos
 Content-Type: application/json
 
 {
-  "idCarrinho": 3,
+  "idCarrinho": 5,
   "formaPagamento": "MercadoPago"
 }
+
 
 ###
 # # # Pagamento:
 
 ###
 # @name Consulta status pagamento
-GET {{baseUrl}}/pagamento/consulta/8
+GET {{baseUrl}}/pagamento/consulta/10
 
 ###
 # # # Se o pagamento é local, sem integracao (DINHEIRO, CARTÃO MÁQUINA)
@@ -135,7 +136,7 @@ Content-Type: application/json
 # # # Se o pagamento tem integração externa..
 # Cliente consulta QRCode
 # @name Consulta QRCode pagamento
-{{baseUrl}}/pagamento/consulta/8/qrcode
+{{baseUrl}}/pagamento/consulta/10/qrcode
 
 ###
 # # # Gateway de pagamento aciona o webhook
@@ -156,11 +157,11 @@ GET {{baseUrl}}/pedidos?status=RECEBIDO
 
 ###
 # @name Validar pedido
-POST {{baseUrl}}/pedidos/5/validar
+POST {{baseUrl}}/pedidos/10/validar
 
 ###
 # @name Cancelar pedido
-POST {{baseUrl}}/pedidos/4/cancelar
+POST {{baseUrl}}/pedidos/10/cancelar
 
 ###
 # @name Listar pedidos em preparação (cozinha)
@@ -172,11 +173,11 @@ GET {{baseUrl}}/pedidos?atraso=true
 
 ###
 # @name Atualizar pedido Pronto
-POST {{baseUrl}}/pedidos/5/setPronto
+POST {{baseUrl}}/pedidos/10/setPronto
 
 ###
 # @name Finalizar pedido
-POST {{baseUrl}}/pedidos/5/finalizar
+POST {{baseUrl}}/pedidos/10/finalizar
 
 
 

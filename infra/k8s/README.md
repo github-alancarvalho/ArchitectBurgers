@@ -39,5 +39,9 @@ Iniciar os elementos no cluster Kubernetes:
     kubectl apply -f ./app/pagamento-configs.yml
 
     kubectl apply -f ./app/app-deployment.yml 
+
+    # Enable metrics server
+    kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
     kubectl apply -f ./app/app-hpa.yml
 
