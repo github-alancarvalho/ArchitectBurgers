@@ -18,8 +18,8 @@
     <modules>
         <module>code/entities</module>
         <module>code/usecases</module>
-        <module>code/web-api</module>
         <module>code/gateways</module>
+        <module>code/web-app</module>
     </modules>
 
     <dependencies>

@@ -14,8 +14,8 @@ RUN adduser apprunner -D
 
 RUN mkdir /app
 
-COPY --from=builder /build/code/web-api/target/architect-burgers-webapi-*.jar /app/
-COPY --from=builder /build/code/web-api/target/lib/* /app/
+COPY --from=builder /build/code/web-app/target/architect-burgers-webapi-*.jar /app/
+COPY --from=builder /build/code/web-app/target/lib/* /app/
 COPY ./docker/entrypoint.sh /app/
 
 RUN chown -R apprunner /app

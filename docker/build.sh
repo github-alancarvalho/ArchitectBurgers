@@ -12,8 +12,8 @@ cd ..
 #
 ##rm -rf temp_libs
 ##mkdir temp_libs
-##cp ../web-api/target/architect-burgers-webapi-*.jar ./temp_libs/ || exit 1
-##cp ../web-api/target/lib/* ./temp_libs/ || exit 1
+##cp ../web-app/target/architect-burgers-webapi-*.jar ./temp_libs/ || exit 1
+##cp ../web-app/target/lib/* ./temp_libs/ || exit 1
 #
 #if [ $? -ne 0 ]
 #then

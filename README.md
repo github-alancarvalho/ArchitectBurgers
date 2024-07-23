@@ -65,4 +65,4 @@ Documentação OpenAPI pura em Json: http://localhost:8090/v3/api-docs
 
 UI de documentação e execução de chamadas: http://localhost:8090/swagger-ui.html
 
-Exemplos de invocação dos serviços: web-api/src/test/samples/service-samples.http (compatível com HTTP client do IntelliJ IDEA)
+Exemplos de invocação dos serviços: web-app/src/test/samples/service-samples.http (compatível com HTTP client do IntelliJ IDEA)
