@@ -1,12 +1,13 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
+import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
-import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
+import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarCarrinhoParam;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
@@ -28,11 +29,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CarrinhoUseCasesTest {
     @Mock
-    private CarrinhoRepository carrinhoRepository;
+    private CarrinhoGateway carrinhoGateway;
     @Mock
-    private ClienteRepository clienteRepository;
+    private ClienteGateway clienteGateway;
     @Mock
-    private ItemCardapioRepository itemCardapioRepository;
+    private ItemCardapioGateway itemCardapioGateway;
 
     @Mock
     private Clock clock;
@@ -41,20 +42,20 @@ class CarrinhoUseCasesTest {
 
     @BeforeEach
     void setUp() {
-        carrinhoUseCases = new CarrinhoUseCases(carrinhoRepository, clienteRepository, itemCardapioRepository, clock);
+        carrinhoUseCases = new CarrinhoUseCases(carrinhoGateway, clienteGateway, itemCardapioGateway, clock);
     }
 
     @Test
     void criarCarrinho_clienteIdentificado_carrinhoExistente() {
-        when(carrinhoRepository.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(carrinhoSalvoCliente123);
+        when(carrinhoGateway.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(carrinhoSalvoCliente123);
 
-        when(itemCardapioRepository.findByCarrinho(88)).thenReturn(List.of(
+        when(itemCardapioGateway.findByCarrinho(88)).thenReturn(List.of(
                 new ItemPedido(1,
                         new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
                 )
         ));
 
-        var result = carrinhoUseCases.criarCarrinho(new CarrinhoUseCases.CriarCarrinhoParam(123, null, null, null));
+        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(123, null, null, null));
         assertThat(result).isEqualTo(carrinhoSalvoCliente123.withItens(List.of(
                         new ItemPedido(1,
                                 new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
@@ -65,15 +66,15 @@ class CarrinhoUseCasesTest {
 
     @Test
     void criarCarrinho_clienteIdentificado_novoCarrinho() throws Exception {
-        when(carrinhoRepository.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(null);
+        when(carrinhoGateway.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(null);
         when(clock.localDateTime()).thenReturn(dateTime);
 
-        when(carrinhoRepository.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
+        when(carrinhoGateway.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
                 carrinhoVazioCliente123.withId(99));
 
-        when(clienteRepository.getClienteById(123)).thenReturn(cliente123);
+        when(clienteGateway.getClienteById(123)).thenReturn(cliente123);
 
-        var result = carrinhoUseCases.criarCarrinho(new CarrinhoUseCases.CriarCarrinhoParam(123, null, null, null));
+        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(123, null, null, null));
         assertThat(result).isEqualTo(carrinhoVazioCliente123.withId(99));
     }
 
@@ -81,10 +82,10 @@ class CarrinhoUseCasesTest {
     void criarCarrinho_clienteNaoIdentificado_novoCarrinho() throws Exception {
         when(clock.localDateTime()).thenReturn(dateTime);
 
-        when(carrinhoRepository.salvarCarrinhoVazio(carrinhoNaoIdentificado)).thenReturn(
+        when(carrinhoGateway.salvarCarrinhoVazio(carrinhoNaoIdentificado)).thenReturn(
                 carrinhoNaoIdentificado.withId(101));
 
-        var result = carrinhoUseCases.criarCarrinho(new CarrinhoUseCases.CriarCarrinhoParam(null, "João", null, null));
+        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(null, "João", null, null));
         assertThat(result).isEqualTo(carrinhoNaoIdentificado.withId(101));
     }
 
@@ -92,12 +93,12 @@ class CarrinhoUseCasesTest {
     void criarCarrinho_cadastrarNovoCliente_novoCarrinho() throws Exception {
         when(clock.localDateTime()).thenReturn(dateTime);
 
-        when(clienteRepository.salvarCliente(clienteSemId)).thenReturn(cliente123);
+        when(clienteGateway.salvarCliente(clienteSemId)).thenReturn(cliente123);
 
-        when(carrinhoRepository.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
+        when(carrinhoGateway.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
                 carrinhoVazioCliente123.withId(102));
 
-        var result = carrinhoUseCases.criarCarrinho(new CarrinhoUseCases.CriarCarrinhoParam(null, "Cliente", "12332112340", "cliente123@example.com"));
+        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(null, "Cliente", "12332112340", "cliente123@example.com"));
         assertThat(result).isEqualTo(carrinhoVazioCliente123.withId(102));
     }
 
@@ -106,9 +107,9 @@ class CarrinhoUseCasesTest {
         Carrinho carrinhoInicial = Carrinho.carrinhoSalvoClienteIdentificado(
                 88, new IdCliente(123), null, dateTime);
 
-        when(carrinhoRepository.getCarrinho(88)).thenReturn(carrinhoInicial);
+        when(carrinhoGateway.getCarrinho(88)).thenReturn(carrinhoInicial);
 
-        when(itemCardapioRepository.findByCarrinho(88)).thenReturn(List.of(
+        when(itemCardapioGateway.findByCarrinho(88)).thenReturn(List.of(
                 new ItemPedido(1,
                         new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
                 ),
@@ -117,7 +118,7 @@ class CarrinhoUseCasesTest {
                 )
         ));
 
-        when(itemCardapioRepository.findById(1002)).thenReturn(
+        when(itemCardapioGateway.findById(1002)).thenReturn(
                 new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
         );
 
@@ -135,7 +136,7 @@ class CarrinhoUseCasesTest {
                 )
         )));
 
-        verify(carrinhoRepository).salvarItemCarrinho(newCarrinho,
+        verify(carrinhoGateway).salvarItemCarrinho(newCarrinho,
                 new ItemPedido(3,
                         new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
                 ));
@@ -146,9 +147,9 @@ class CarrinhoUseCasesTest {
         Carrinho carrinhoInicial = Carrinho.carrinhoSalvoClienteIdentificado(
                 88, new IdCliente(123), null, dateTime);
 
-        when(carrinhoRepository.getCarrinho(88)).thenReturn(carrinhoInicial);
+        when(carrinhoGateway.getCarrinho(88)).thenReturn(carrinhoInicial);
 
-        when(itemCardapioRepository.findByCarrinho(88)).thenReturn(List.of(
+        when(itemCardapioGateway.findByCarrinho(88)).thenReturn(List.of(
                 new ItemPedido(1,
                         new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
                 ),
@@ -173,11 +174,11 @@ class CarrinhoUseCasesTest {
         ));
         assertThat(updated).isEqualTo(expectedNewCarrinho);
 
-        verify(carrinhoRepository).deleteItensCarrinho(expectedNewCarrinho);
-        verify(carrinhoRepository).salvarItemCarrinho(expectedNewCarrinho, new ItemPedido(1,
+        verify(carrinhoGateway).deleteItensCarrinho(expectedNewCarrinho);
+        verify(carrinhoGateway).salvarItemCarrinho(expectedNewCarrinho, new ItemPedido(1,
                 new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
         ));
-        verify(carrinhoRepository).salvarItemCarrinho(expectedNewCarrinho, new ItemPedido(2,
+        verify(carrinhoGateway).salvarItemCarrinho(expectedNewCarrinho, new ItemPedido(2,
                 new ItemCardapio(1002, TipoItemCardapio.SOBREMESA, "Sundae", "Sundae", new ValorMonetario("9.40"))
         ));
     }

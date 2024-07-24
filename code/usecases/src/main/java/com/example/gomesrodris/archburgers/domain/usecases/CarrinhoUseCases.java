@@ -1,12 +1,12 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
+import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
-import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.ClienteRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.usecaseports.CarrinhoUseCasesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarCarrinhoParam;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
@@ -15,31 +15,30 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class CarrinhoUseCases implements CarrinhoUseCasesPort {
+public class CarrinhoUseCases {
 
-    private final CarrinhoRepository carrinhoRepository;
-    private final ClienteRepository clienteRepository;
-    private final ItemCardapioRepository itemCardapioRepository;
+    private final CarrinhoGateway carrinhoGateway;
+    private final ClienteGateway clienteGateway;
+    private final ItemCardapioGateway itemCardapioGateway;
     private final Clock clock;
 
     private final RecuperarCarrinhoPolicy recuperarCarrinhoPolicy;
     private final SalvarClientePolicy salvarClientePolicy;
 
-    public CarrinhoUseCases(CarrinhoRepository carrinhoRepository,
-                            ClienteRepository clienteRepository,
-                            ItemCardapioRepository itemCardapioRepository,
+    public CarrinhoUseCases(CarrinhoGateway carrinhoGateway,
+                            ClienteGateway clienteGateway,
+                            ItemCardapioGateway itemCardapioGateway,
                             Clock clock) {
-        this.carrinhoRepository = carrinhoRepository;
-        this.clienteRepository = clienteRepository;
-        this.itemCardapioRepository = itemCardapioRepository;
+        this.carrinhoGateway = carrinhoGateway;
+        this.clienteGateway = clienteGateway;
+        this.itemCardapioGateway = itemCardapioGateway;
         this.clock = clock;
 
         this.recuperarCarrinhoPolicy = new RecuperarCarrinhoPolicy();
         this.salvarClientePolicy = new SalvarClientePolicy();
     }
 
-    @Override
-    public Carrinho criarCarrinho(@NotNull CarrinhoUseCasesPort.CriarCarrinhoParam param) {
+    public Carrinho criarCarrinho(@NotNull CriarCarrinhoParam param) {
         boolean clienteIdentificado = param.isClienteIdentificado();
 
         param.getCpfValidado(); // Throw early if invalid
@@ -48,14 +47,14 @@ public class CarrinhoUseCases implements CarrinhoUseCasesPort {
             var carrinhoSalvo = recuperarCarrinhoPolicy.tryRecuperarCarrinho(
                     new IdCliente(Objects.requireNonNull(param.idCliente(), "Unexpected state: idCliente is null")));
             if (carrinhoSalvo != null) {
-                var itens = itemCardapioRepository.findByCarrinho(Objects.requireNonNull(carrinhoSalvo.id(), "Object from database should have ID"));
+                var itens = itemCardapioGateway.findByCarrinho(Objects.requireNonNull(carrinhoSalvo.id(), "Object from database should have ID"));
                 return carrinhoSalvo.withItens(itens);
             }
         }
 
         Carrinho newCarrinho;
         if (clienteIdentificado) {
-            var cliente = clienteRepository.getClienteById(param.idCliente());
+            var cliente = clienteGateway.getClienteById(param.idCliente());
             if (cliente == null) {
                 throw new IllegalArgumentException("Cliente invalido! " + param.idCliente());
             }
@@ -74,22 +73,21 @@ public class CarrinhoUseCases implements CarrinhoUseCasesPort {
             }
         }
 
-        return carrinhoRepository.salvarCarrinhoVazio(newCarrinho);
+        return carrinhoGateway.salvarCarrinhoVazio(newCarrinho);
     }
 
-    @Override
     public Carrinho addItem(int idCarrinho, int idItemCardapio) {
-        var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
+        var carrinho = carrinhoGateway.getCarrinho(idCarrinho);
         if (carrinho == null) {
             throw new IllegalArgumentException("Carrinho invalido! " + idCarrinho);
         }
 
-        var itemCardapio = itemCardapioRepository.findById(idItemCardapio);
+        var itemCardapio = itemCardapioGateway.findById(idItemCardapio);
         if (itemCardapio == null) {
             throw new IllegalArgumentException("Item cardapio invalido! " + idItemCardapio);
         }
 
-        var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
+        var currentItens = itemCardapioGateway.findByCarrinho(idCarrinho);
         carrinho = carrinho.withItens(currentItens);
 
         var newCarrinho = carrinho.adicionarItem(itemCardapio);
@@ -99,55 +97,52 @@ public class CarrinhoUseCases implements CarrinhoUseCasesPort {
             throw new IllegalStateException("Invalid state check! Last item should be the new. " + idItemCardapio + " - " + newItem);
         }
 
-        carrinhoRepository.salvarItemCarrinho(newCarrinho, newItem);
+        carrinhoGateway.salvarItemCarrinho(newCarrinho, newItem);
         return newCarrinho;
     }
 
-    @Override
     public Carrinho deleteItem(int idCarrinho, int numSequencia) {
-        var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
+        var carrinho = carrinhoGateway.getCarrinho(idCarrinho);
         if (carrinho == null) {
             throw new IllegalArgumentException("Carrinho invalido! " + idCarrinho);
         }
 
-        var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
+        var currentItens = itemCardapioGateway.findByCarrinho(idCarrinho);
         carrinho = carrinho.withItens(currentItens);
 
         carrinho = carrinho.deleteItem(numSequencia);
 
-        carrinhoRepository.deleteItensCarrinho(carrinho);
+        carrinhoGateway.deleteItensCarrinho(carrinho);
         for (ItemPedido item : carrinho.itens()) {
-            carrinhoRepository.salvarItemCarrinho(carrinho, item);
+            carrinhoGateway.salvarItemCarrinho(carrinho, item);
         }
 
         return carrinho;
     }
 
-    @Override
     public Carrinho setObservacoes(int idCarrinho, String textoObservacao) {
-        var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
+        var carrinho = carrinhoGateway.getCarrinho(idCarrinho);
         if (carrinho == null) {
             throw new IllegalArgumentException("Carrinho invalido! " + idCarrinho);
         }
 
         var newCarrinho = carrinho.setObservacoes(textoObservacao);
 
-        carrinhoRepository.updateObservacaoCarrinho(newCarrinho);
+        carrinhoGateway.updateObservacaoCarrinho(newCarrinho);
 
-        var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
+        var currentItens = itemCardapioGateway.findByCarrinho(idCarrinho);
         newCarrinho = newCarrinho.withItens(currentItens);
 
         return newCarrinho;
     }
 
-    @Override
     public Carrinho findCarrinho(int idCarrinho) {
-        var carrinho = carrinhoRepository.getCarrinho(idCarrinho);
+        var carrinho = carrinhoGateway.getCarrinho(idCarrinho);
         if (carrinho == null) {
             throw new IllegalArgumentException("Carrinho invalido! " + idCarrinho);
         }
 
-        var currentItens = itemCardapioRepository.findByCarrinho(idCarrinho);
+        var currentItens = itemCardapioGateway.findByCarrinho(idCarrinho);
         return carrinho.withItens(currentItens);
     }
 
@@ -157,7 +152,7 @@ public class CarrinhoUseCases implements CarrinhoUseCasesPort {
      */
     private class RecuperarCarrinhoPolicy {
         Carrinho tryRecuperarCarrinho(IdCliente idCliente) {
-            return carrinhoRepository.getCarrinhoSalvoByCliente(idCliente);
+            return carrinhoGateway.getCarrinhoSalvoByCliente(idCliente);
         }
     }
 
@@ -168,13 +163,13 @@ public class CarrinhoUseCases implements CarrinhoUseCasesPort {
         Cliente salvarClienteSeDadosCompletos(CriarCarrinhoParam param) {
             Cpf cpf = param.getCpfValidado();
             if (StringUtils.isNotEmpty(param.nomeCliente()) && StringUtils.isNotEmpty(param.email()) && cpf != null) {
-                Cliente checkExistente = clienteRepository.getClienteByCpf(cpf);
+                Cliente checkExistente = clienteGateway.getClienteByCpf(cpf);
                 if (checkExistente != null) {
                     throw new IllegalArgumentException("Cliente com CPF " + param.cpf() + " já cadastrado");
                 }
 
                 Cliente newCliente = new Cliente(null, param.nomeCliente(), cpf, param.email());
-                return clienteRepository.salvarCliente(newCliente);
+                return clienteGateway.salvarCliente(newCliente);
             } else {
                 return null;
             }

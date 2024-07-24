@@ -1,13 +1,12 @@
 package com.example.gomesrodris.archburgers.di;
 
-import com.example.gomesrodris.archburgers.adapters.pagamento.MercadoPagoApi;
 import com.example.gomesrodris.archburgers.adapters.pagamento.MercadoPagoGateway;
 import com.example.gomesrodris.archburgers.adapters.presenters.QrCodePresenter;
+import com.example.gomesrodris.archburgers.controller.*;
+import com.example.gomesrodris.archburgers.domain.datagateway.*;
 import com.example.gomesrodris.archburgers.domain.external.FormaPagamentoRegistry;
 import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
-import com.example.gomesrodris.archburgers.domain.repositories.*;
-import com.example.gomesrodris.archburgers.domain.usecaseports.*;
-import com.example.gomesrodris.archburgers.domain.usecases.*;
+import com.example.gomesrodris.archburgers.domain.usecases.PagamentoUseCases;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,13 +22,13 @@ public class DomainServiceBeans {
     }
 
     @Bean
-    public CardapioUseCasesPort cardapioUseCases(ItemCardapioRepository itemCardapioRepository) {
-        return new CardapioUseCases(itemCardapioRepository);
+    public CardapioController cardapioController(ItemCardapioGateway itemCardapioGateway) {
+        return new CardapioController(itemCardapioGateway);
     }
 
     @Bean
-    public ClienteUseCasesPort clienteUseCases(ClienteRepository clienteRepository) {
-        return new ClienteUseCases(clienteRepository);
+    public ClienteController clienteController(ClienteGateway clienteGateway) {
+        return new ClienteController(clienteGateway);
     }
 
     @Bean
@@ -40,32 +39,42 @@ public class DomainServiceBeans {
     }
 
     @Bean
-    public CarrinhoUseCasesPort carrinhoUseCases(CarrinhoRepository carrinhoRepository,
-                                                 ClienteRepository clienteRepository,
-                                                 ItemCardapioRepository itemCardapioRepository,
+    public CarrinhoController carrinhoController(CarrinhoGateway carrinhoGateway,
+                                                 ClienteGateway clienteGateway,
+                                                 ItemCardapioGateway itemCardapioGateway,
                                                  Clock clock) {
-        return new CarrinhoUseCases(carrinhoRepository, clienteRepository, itemCardapioRepository, clock);
+        return new CarrinhoController(carrinhoGateway, clienteGateway, itemCardapioGateway, clock);
     }
 
     @Bean
-    public PedidoUseCasesPort pedidoUseCases(CarrinhoRepository carrinhoRepository,
-                                             ItemCardapioRepository itemCardapioRepository,
-                                             PedidoRepository pedidoRepository,
-                                             PagamentoUseCasesPort pagamentoUseCases,
+    public PedidoController pedidoController(CarrinhoGateway carrinhoGateway,
+                                             ItemCardapioGateway itemCardapioGateway,
+                                             PedidoGateway pedidoGateway,
+                                             PagamentoUseCases pagamentoUseCases,
                                              Clock clock,
                                              PainelPedidos painelPedidos) {
-        return new PedidoUseCases(pedidoRepository, carrinhoRepository, itemCardapioRepository,
+        return new PedidoController(pedidoGateway, carrinhoGateway, itemCardapioGateway,
                 pagamentoUseCases, clock, painelPedidos);
     }
 
     @Bean
-    public PagamentoUseCasesPort pagamentoUseCases(FormaPagamentoRegistry formaPagamentoRegistry,
-                                                   PagamentoRepository pagamentoRepository,
-                                                   PedidoRepository pedidoRepository,
-                                                   ItemCardapioRepository itemCardapioRepository,
+    public PagamentoUseCases pagamentoUseCases(FormaPagamentoRegistry formaPagamentoRegistry,
+                                                 PagamentoGateway pagamentoGateway,
+                                                 PedidoGateway pedidoGateway,
+                                                 ItemCardapioGateway itemCardapioGateway,
+                                                 Clock clock) {
+        return new PagamentoUseCases(formaPagamentoRegistry, pagamentoGateway,
+                pedidoGateway, itemCardapioGateway, clock);
+    }
+
+    @Bean
+    public PagamentoController pagamentoController(FormaPagamentoRegistry formaPagamentoRegistry,
+                                                   PagamentoGateway pagamentoGateway,
+                                                   PedidoGateway pedidoGateway,
+                                                   ItemCardapioGateway itemCardapioGateway,
                                                    Clock clock) {
-        return new PagamentoUseCases(formaPagamentoRegistry, pagamentoRepository,
-                pedidoRepository, itemCardapioRepository, clock);
+        return new PagamentoController(formaPagamentoRegistry, pagamentoGateway,
+                pedidoGateway, itemCardapioGateway, clock);
     }
 
     @Bean

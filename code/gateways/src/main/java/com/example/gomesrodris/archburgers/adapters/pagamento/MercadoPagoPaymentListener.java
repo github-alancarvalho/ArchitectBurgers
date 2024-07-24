@@ -1,6 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.pagamento;
 
-import com.example.gomesrodris.archburgers.domain.usecaseports.PagamentoUseCasesPort;
+import com.example.gomesrodris.archburgers.controller.PagamentoController;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +13,11 @@ public class MercadoPagoPaymentListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(MercadoPagoPaymentListener.class);
 
     private final MercadoPagoApi mercadoPagoApi;
-    private final PagamentoUseCasesPort pagamentoUseCasesPort;
+    private final PagamentoController pagamentoController;
 
-    public MercadoPagoPaymentListener(MercadoPagoApi mercadoPagoApi, PagamentoUseCasesPort pagamentoUseCasesPort){
+    public MercadoPagoPaymentListener(MercadoPagoApi mercadoPagoApi, PagamentoController pagamentoController){
         this.mercadoPagoApi = mercadoPagoApi;
-        this.pagamentoUseCasesPort = pagamentoUseCasesPort;
+        this.pagamentoController = pagamentoController;
     }
 
     public void notificarUpdate(String urlId, Map<String, String> headers, Map<String, Object> data) {
@@ -43,7 +43,7 @@ public class MercadoPagoPaymentListener {
             throw new IllegalStateException("Invalid external_reference! " + urlId + "-" + referenceParam + " -- " + data);
         }
 
-        pagamentoUseCasesPort.finalizarPagamento(idPedido, urlId);
+        pagamentoController.finalizarPagamento(idPedido, urlId);
 
         /*
         Obs: Versão experimental do código não está realizando validação do header X-Signature para verificar autenticidade

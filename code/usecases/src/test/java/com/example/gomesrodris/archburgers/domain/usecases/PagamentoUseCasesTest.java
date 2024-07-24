@@ -1,5 +1,8 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
+import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.PagamentoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pagamento;
@@ -7,10 +10,7 @@ import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.external.FormaPagamento;
 import com.example.gomesrodris.archburgers.domain.external.FormaPagamentoRegistry;
-import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.PagamentoRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
-import com.example.gomesrodris.archburgers.domain.usecaseports.PagamentoUseCasesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseparam.DescricaoFormaPagamento;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class PagamentoUseCasesTest {
-    private PagamentoRepository pagamentoRepository;
-    private PedidoRepository pedidoRepository;
-    private ItemCardapioRepository itemCardapioRepository;
+    private PagamentoGateway pagamentoGateway;
+    private PedidoGateway pedidoGateway;
+    private ItemCardapioGateway itemCardapioGateway;
     private Clock clock;
 
     private FormaPagamento pagamentoExternoMock;
@@ -35,9 +35,9 @@ class PagamentoUseCasesTest {
 
     @BeforeEach
     void setUp() {
-        pagamentoRepository = mock(PagamentoRepository.class);
-        pedidoRepository = mock(PedidoRepository.class);
-        itemCardapioRepository = mock(ItemCardapioRepository.class);
+        pagamentoGateway = mock(PagamentoGateway.class);
+        pedidoGateway = mock(PedidoGateway.class);
+        itemCardapioGateway = mock(ItemCardapioGateway.class);
         clock = mock(Clock.class);
 
         // Using real FormaPagamentoRegistry, with mocked external impl
@@ -51,7 +51,7 @@ class PagamentoUseCasesTest {
         ));
 
         pagamentoUseCases = new PagamentoUseCases(formaPagamentoRegistry,
-                pagamentoRepository, pedidoRepository, itemCardapioRepository, clock);
+                pagamentoGateway, pedidoGateway, itemCardapioGateway, clock);
     }
 
     @Test
@@ -89,7 +89,7 @@ class PagamentoUseCasesTest {
                 null, null
         );
 
-        when(pagamentoRepository.salvarPagamento(expectedPagamento)).thenReturn(
+        when(pagamentoGateway.salvarPagamento(expectedPagamento)).thenReturn(
                 expectedPagamento.withId(22));
 
         var pagamento = pagamentoUseCases.iniciarPagamento(pedido);
@@ -122,7 +122,7 @@ class PagamentoUseCasesTest {
                 "abc-def-ghi-jkl", "987654321"
         );
 
-        when(pagamentoRepository.salvarPagamento(expectedPagamento)).thenReturn(
+        when(pagamentoGateway.salvarPagamento(expectedPagamento)).thenReturn(
                 expectedPagamento.withId(22));
 
         var pagamento = pagamentoUseCases.iniciarPagamento(pedido);
@@ -132,7 +132,7 @@ class PagamentoUseCasesTest {
 
     @Test
     void finalizarPagamento_notFound() {
-        when(pagamentoRepository.findPagamentoByPedido(33)).thenReturn(null);
+        when(pagamentoGateway.findPagamentoByPedido(33)).thenReturn(null);
 
         var e = assertThrows(DomainArgumentException.class,
                 () -> pagamentoUseCases.finalizarPagamento(33, "abc")
@@ -142,10 +142,10 @@ class PagamentoUseCasesTest {
 
     @Test
     void finalizarPagamento() {
-        when(pedidoRepository.getPedido(33)).thenReturn(Pedido.pedidoRecuperado(33, new IdCliente(25), null,
+        when(pedidoGateway.getPedido(33)).thenReturn(Pedido.pedidoRecuperado(33, new IdCliente(25), null,
                 List.of(), "", StatusPedido.PAGAMENTO,
                 IdFormaPagamento.DINHEIRO, dateTimePedido));
-        when(itemCardapioRepository.findByPedido(33)).thenReturn(List.of(
+        when(itemCardapioGateway.findByPedido(33)).thenReturn(List.of(
                 new ItemPedido(1, new ItemCardapio(9, TipoItemCardapio.LANCHE,
                         "Hamburger Duplo", "", new ValorMonetario("30.90")))
         ));
@@ -155,7 +155,7 @@ class PagamentoUseCasesTest {
                 dateTimePagamentoInicio, dateTimePagamentoInicio,
                 null, null);
 
-        when(pagamentoRepository.findPagamentoByPedido(33)).thenReturn(savedPagamento);
+        when(pagamentoGateway.findPagamentoByPedido(33)).thenReturn(savedPagamento);
 
         when(clock.localDateTime()).thenReturn(dateTimePagamentoFinal);
         Pagamento expectedPagamentoFinalizado = savedPagamento.finalizar(dateTimePagamentoFinal, "abc");
@@ -172,19 +172,19 @@ class PagamentoUseCasesTest {
 
         assertThat(result).isEqualTo(expectedPedidoPago);
 
-        verify(pagamentoRepository).updateStatus(expectedPagamentoFinalizado);
-        verify(pedidoRepository).updateStatus(expectedPedidoPago);
+        verify(pagamentoGateway).updateStatus(expectedPagamentoFinalizado);
+        verify(pedidoGateway).updateStatus(expectedPedidoPago);
     }
 
     @Test
     void listarFormasPagamento() {
         var list = pagamentoUseCases.listarFormasPagamento();
         assertThat(list).containsExactlyInAnyOrder(
-                new PagamentoUseCasesPort.DescricaoFormaPagamento(IdFormaPagamento.DINHEIRO,
+                new DescricaoFormaPagamento(IdFormaPagamento.DINHEIRO,
                         "Pagamento em dinheiro direto ao caixa"),
-                new PagamentoUseCasesPort.DescricaoFormaPagamento(IdFormaPagamento.CARTAO_MAQUINA,
+                new DescricaoFormaPagamento(IdFormaPagamento.CARTAO_MAQUINA,
                         "Pagamento na máquina da loja"),
-                new PagamentoUseCasesPort.DescricaoFormaPagamento(new IdFormaPagamento("OnlinePay"),
+                new DescricaoFormaPagamento(new IdFormaPagamento("OnlinePay"),
                         "Pagamento Online empresa externa")
         );
     }

@@ -1,5 +1,8 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
+import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.PagamentoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pagamento;
@@ -7,10 +10,7 @@ import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.external.FormaPagamento;
 import com.example.gomesrodris.archburgers.domain.external.FormaPagamentoRegistry;
-import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.PagamentoRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
-import com.example.gomesrodris.archburgers.domain.usecaseports.PagamentoUseCasesPort;
+import com.example.gomesrodris.archburgers.domain.usecaseparam.DescricaoFormaPagamento;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdFormaPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPagamento;
@@ -19,32 +19,30 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-public class PagamentoUseCases implements PagamentoUseCasesPort {
+public class PagamentoUseCases {
     private final FormaPagamentoRegistry formaPagamentoRegistry;
-    private final PagamentoRepository pagamentoRepository;
-    private final PedidoRepository pedidoRepository;
-    private final ItemCardapioRepository itemCardapioRepository;
+    private final PagamentoGateway pagamentoGateway;
+    private final PedidoGateway pedidoGateway;
+    private final ItemCardapioGateway itemCardapioGateway;
     private final Clock clock;
 
     public PagamentoUseCases(FormaPagamentoRegistry formaPagamentoRegistry,
-                             PagamentoRepository pagamentoRepository,
-                             PedidoRepository pedidoRepository,
-                             ItemCardapioRepository itemCardapioRepository,
+                             PagamentoGateway pagamentoGateway,
+                             PedidoGateway pedidoGateway,
+                             ItemCardapioGateway itemCardapioGateway,
                              Clock clock) {
         this.formaPagamentoRegistry = formaPagamentoRegistry;
-        this.pagamentoRepository = pagamentoRepository;
-        this.pedidoRepository = pedidoRepository;
-        this.itemCardapioRepository = itemCardapioRepository;
+        this.pagamentoGateway = pagamentoGateway;
+        this.pedidoGateway = pedidoGateway;
+        this.itemCardapioGateway = itemCardapioGateway;
         this.clock = clock;
     }
 
-    @Override
     public IdFormaPagamento validarFormaPagamento(String idFormaPagamento) throws DomainArgumentException {
         var formaPagamento = formaPagamentoRegistry.getFormaPagamento(new IdFormaPagamento(idFormaPagamento));
         return formaPagamento.id();
     }
 
-    @Override
     public Pagamento iniciarPagamento(Pedido pedido) {
         var formaPagamento = formaPagamentoRegistry.getFormaPagamento(pedido.formaPagamento());
 
@@ -63,24 +61,23 @@ public class PagamentoUseCases implements PagamentoUseCasesPort {
                 infoPagamentoExterno.codigoPagamentoCliente(),
                 infoPagamentoExterno.idPedidoSistemaExterno());
 
-        return pagamentoRepository.salvarPagamento(pagamento);
+        return pagamentoGateway.salvarPagamento(pagamento);
     }
 
-    @Override
     public Pedido finalizarPagamento(int idPedido, String newIdPedidoSistemaExterno) {
-        Pedido pedido = pedidoRepository.getPedido(idPedido);
+        Pedido pedido = pedidoGateway.getPedido(idPedido);
 
         if (pedido == null) {
             throw new DomainArgumentException("Pedido invalido=" + idPedido);
         }
 
-        Pagamento inicial = pagamentoRepository.findPagamentoByPedido(idPedido);
+        Pagamento inicial = pagamentoGateway.findPagamentoByPedido(idPedido);
 
         if (inicial == null) {
             throw new DomainArgumentException("Pagamento nao encontrado. Pedido=" + idPedido);
         }
 
-        pedido = pedido.withItens(itemCardapioRepository.findByPedido(idPedido));
+        pedido = pedido.withItens(itemCardapioGateway.findByPedido(idPedido));
 
         if (inicial.status() != StatusPagamento.PENDENTE) {
             throw new DomainArgumentException("Pagamento nao está Pendente. Pedido=" + idPedido);
@@ -97,22 +94,20 @@ public class PagamentoUseCases implements PagamentoUseCasesPort {
 
         var pedidoPago = pedido.confirmarPagamento(pagamentoFinalizado);
 
-        pagamentoRepository.updateStatus(pagamentoFinalizado);
+        pagamentoGateway.updateStatus(pagamentoFinalizado);
 
-        pedidoRepository.updateStatus(pedidoPago);
+        pedidoGateway.updateStatus(pedidoPago);
 
         return pedidoPago;
     }
 
-    @Override
     public List<DescricaoFormaPagamento> listarFormasPagamento() {
         return formaPagamentoRegistry.listAll()
                 .stream().map(formaPagamento -> new DescricaoFormaPagamento(formaPagamento.id(), formaPagamento.descricao()))
                 .toList();
     }
 
-    @Override
     public Pagamento consultarPagamento(int idPedido) {
-        return pagamentoRepository.findPagamentoByPedido(idPedido);
+        return pagamentoGateway.findPagamentoByPedido(idPedido);
     }
 }

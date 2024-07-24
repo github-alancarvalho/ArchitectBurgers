@@ -1,7 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
-import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
+import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,18 +18,18 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CardapioUseCasesTest {
     @Mock
-    private ItemCardapioRepository itemCardapioRepository;
+    private ItemCardapioGateway itemCardapioGateway;
 
     private CardapioUseCases cardapioUseCases;
 
     @BeforeEach
     void setUp() {
-        cardapioUseCases = new CardapioUseCases(itemCardapioRepository);
+        cardapioUseCases = new CardapioUseCases(itemCardapioGateway);
     }
 
     @Test
     void listLanches() {
-        when(itemCardapioRepository.findAll()).thenReturn(List.of(
+        when(itemCardapioGateway.findAll()).thenReturn(List.of(
                 new ItemCardapio(1, TipoItemCardapio.LANCHE, "Hamburger Vegetariano",
                         "Hamburger de ervilha com queijo prato",
                         new ValorMonetario("20.00")),

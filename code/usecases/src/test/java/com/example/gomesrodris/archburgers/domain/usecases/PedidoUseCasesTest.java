@@ -6,9 +6,10 @@ import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
-import com.example.gomesrodris.archburgers.domain.repositories.CarrinhoRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.ItemCardapioRepository;
-import com.example.gomesrodris.archburgers.domain.repositories.PedidoRepository;
+import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
+import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarPedidoParam;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,11 +29,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PedidoUseCasesTest {
     @Mock
-    private PedidoRepository pedidoRepository;
+    private PedidoGateway pedidoGateway;
     @Mock
-    private CarrinhoRepository carrinhoRepository;
+    private CarrinhoGateway carrinhoGateway;
     @Mock
-    private ItemCardapioRepository itemCardapioRepository;
+    private ItemCardapioGateway itemCardapioGateway;
     @Mock
     private PagamentoUseCases pagamentoUseCases;
     @Mock
@@ -45,7 +46,7 @@ class PedidoUseCasesTest {
     @BeforeEach
     void setUp() {
         pedidoUseCases = new PedidoUseCases(
-                pedidoRepository, carrinhoRepository, itemCardapioRepository,
+                pedidoGateway, carrinhoGateway, itemCardapioGateway,
                 pagamentoUseCases,
                 clock, painelPedidos);
     }
@@ -54,9 +55,9 @@ class PedidoUseCasesTest {
     void criarPedido_missingParam() {
         assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(null));
         assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(
-                new PedidoUseCases.CriarPedidoParam(null, "DINHEIRO")));
+                new CriarPedidoParam(null, "DINHEIRO")));
         assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(
-                new PedidoUseCases.CriarPedidoParam(12, "")));
+                new CriarPedidoParam(12, "")));
     }
 
     @Test
@@ -65,18 +66,18 @@ class PedidoUseCasesTest {
                 new DomainArgumentException("Forma de pagamento inválida: Cheque"));
 
         assertThat(assertThrows(DomainArgumentException.class, () -> pedidoUseCases.criarPedido(
-                new PedidoUseCases.CriarPedidoParam(12, "Cheque")))
+                new CriarPedidoParam(12, "Cheque")))
         ).hasMessage("Forma de pagamento inválida: Cheque");
     }
 
     @Test
     void criarPedido_ok() {
-        when(carrinhoRepository.getCarrinho(12)).thenReturn(
+        when(carrinhoGateway.getCarrinho(12)).thenReturn(
                 Carrinho.carrinhoSalvoClienteIdentificado(12, new IdCliente(25),
                         "Lanche sem cebola",
                         LocalDateTime.of(2024, 5, 18, 14, 0))
         );
-        when(itemCardapioRepository.findByCarrinho(12)).thenReturn(List.of(
+        when(itemCardapioGateway.findByCarrinho(12)).thenReturn(List.of(
                 new ItemPedido(1,
                         new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
                 ),
@@ -96,10 +97,10 @@ class PedidoUseCasesTest {
                 )
         ), "Lanche sem cebola", IdFormaPagamento.DINHEIRO, dateTime);
 
-        when(pedidoRepository.savePedido(expectedPedido)).thenReturn(expectedPedido.withId(33));
+        when(pedidoGateway.savePedido(expectedPedido)).thenReturn(expectedPedido.withId(33));
 
         var result = pedidoUseCases.criarPedido(
-                new PedidoUseCases.CriarPedidoParam(12, "DINHEIRO"));
+                new CriarPedidoParam(12, "DINHEIRO"));
 
         assertThat(result).isEqualTo(expectedPedido.withId(33));
 
@@ -112,8 +113,8 @@ class PedidoUseCasesTest {
                 List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
                 IdFormaPagamento.DINHEIRO, dateTime);
 
-        when(pedidoRepository.getPedido(42)).thenReturn(pedido);
-        when(itemCardapioRepository.findByPedido(42)).thenReturn(List.of(
+        when(pedidoGateway.getPedido(42)).thenReturn(pedido);
+        when(itemCardapioGateway.findByPedido(42)).thenReturn(List.of(
                 new ItemPedido(1,
                         new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
                 )
@@ -132,7 +133,7 @@ class PedidoUseCasesTest {
                 )
         )));
 
-        verify(pedidoRepository).updateStatus(expectedNewPedido);
+        verify(pedidoGateway).updateStatus(expectedNewPedido);
     }
 
     @Test
@@ -141,8 +142,8 @@ class PedidoUseCasesTest {
                 List.of(), "Lanche sem cebola", StatusPedido.PREPARACAO,
                 IdFormaPagamento.DINHEIRO, dateTime);
 
-        when(pedidoRepository.getPedido(45)).thenReturn(pedido);
-        when(itemCardapioRepository.findByPedido(45)).thenReturn(List.of(
+        when(pedidoGateway.getPedido(45)).thenReturn(pedido);
+        when(itemCardapioGateway.findByPedido(45)).thenReturn(List.of(
                 new ItemPedido(1,
                         new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
                 )
@@ -163,13 +164,13 @@ class PedidoUseCasesTest {
 
         assertThat(newPedido).isEqualTo(expectedNewPedidoWithItens);
 
-        verify(pedidoRepository).updateStatus(expectedNewPedido);
+        verify(pedidoGateway).updateStatus(expectedNewPedido);
         verify(painelPedidos).notificarPedidoPronto(expectedNewPedidoWithItens);
     }
 
     @Test
     void listarPedidos_byStatus() {
-        when(pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO), null)).thenReturn(List.of(
+        when(pedidoGateway.listPedidos(List.of(StatusPedido.RECEBIDO), null)).thenReturn(List.of(
                 Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,
                         IdFormaPagamento.DINHEIRO, dateTime),
@@ -200,7 +201,7 @@ class PedidoUseCasesTest {
                 2024, 5, 18, 10, 20, 28
         );
 
-        when(pedidoRepository.listPedidos(List.of(StatusPedido.RECEBIDO, StatusPedido.PREPARACAO), expectedLimitTime)).thenReturn(List.of(
+        when(pedidoGateway.listPedidos(List.of(StatusPedido.RECEBIDO, StatusPedido.PREPARACAO), expectedLimitTime)).thenReturn(List.of(
 
                 Pedido.pedidoRecuperado(42, new IdCliente(25), null,
                         List.of(), "Lanche sem cebola", StatusPedido.RECEBIDO,

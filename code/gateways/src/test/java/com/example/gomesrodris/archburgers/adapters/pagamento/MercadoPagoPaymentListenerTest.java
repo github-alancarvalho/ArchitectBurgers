@@ -1,6 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.pagamento;//import static org.junit.jupiter.api.Assertions.*;
 
-import com.example.gomesrodris.archburgers.domain.usecaseports.PagamentoUseCasesPort;
+import com.example.gomesrodris.archburgers.controller.PagamentoController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,16 +13,16 @@ import static org.mockito.Mockito.*;
 
 class MercadoPagoPaymentListenerTest {
     private MercadoPagoApi mercadoPagoApi;
-    private PagamentoUseCasesPort pagamentoUseCasesPort;
+    private PagamentoController pagamentoController;
 
     private MercadoPagoPaymentListener paymentListener;
 
     @BeforeEach
     void setUp() {
         mercadoPagoApi = mock();
-        pagamentoUseCasesPort = mock();
+        pagamentoController = mock();
 
-        paymentListener = new MercadoPagoPaymentListener(mercadoPagoApi, pagamentoUseCasesPort);
+        paymentListener = new MercadoPagoPaymentListener(mercadoPagoApi, pagamentoController);
     }
 
     @Test
@@ -38,7 +38,7 @@ class MercadoPagoPaymentListenerTest {
                 "topic", "payment"
         ));
 
-        verify(pagamentoUseCasesPort, never()).finalizarPagamento(anyInt(), anyString());
+        verify(pagamentoController, never()).finalizarPagamento(anyInt(), anyString());
     }
 
     @Test
@@ -54,6 +54,6 @@ class MercadoPagoPaymentListenerTest {
                 "topic", "paid"
         ));
 
-        verify(pagamentoUseCasesPort).finalizarPagamento(42, "999888777");
+        verify(pagamentoController).finalizarPagamento(42, "999888777");
     }
 }

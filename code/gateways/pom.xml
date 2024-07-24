@@ -13,8 +13,8 @@
     <artifactId>architect-burgers-gateways</artifactId>
     <version>${project.parent.version}</version>
 
-    <name>architect-burgers-infra</name>
-    <description>Architect Burger - Infrastructure adapters</description>
+    <name>architect-burgers-gateways</name>
+    <description>Architect Burger - Gateways and infrastructure adapters</description>
 
     <dependencies>
         <dependency>

@@ -61,7 +61,7 @@ Content-Type: application/json
 ###
 # @name Consultar carrinho atual
 # # # (URL param é o ID do carrinho)
-GET {{baseUrl}}/carrinho/4
+GET {{baseUrl}}/carrinho/5
 
 ###
 # @name Consulta itens do cardápio
@@ -70,17 +70,17 @@ GET {{baseUrl}}/cardapio
 ###
 # @name Add Item ao Carrinho
 # # # Recebe no Post o ID do item (consulta cardápio)
-POST {{baseUrl}}/carrinho/5
+POST {{baseUrl}}/carrinho/6
 Content-Type: application/json
 
 {
-    "idItemCardapio": 8
+    "idItemCardapio": 1
 }
 
 ###
 # @name Excluir itens do Carrinho
 # # # O segundo parâmetro é o número de sequência do item no carrinho
-DELETE {{baseUrl}}/carrinho/4/itens/3
+DELETE {{baseUrl}}/carrinho/5/itens/2
 Content-Type: application/json
 
 
@@ -108,8 +108,8 @@ POST {{baseUrl}}/pedidos
 Content-Type: application/json
 
 {
-  "idCarrinho": 5,
-  "formaPagamento": "MercadoPago"
+  "idCarrinho": 6,
+  "formaPagamento": "DINHEIRO"
 }
 
 
@@ -118,7 +118,7 @@ Content-Type: application/json
 
 ###
 # @name Consulta status pagamento
-GET {{baseUrl}}/pagamento/consulta/10
+GET {{baseUrl}}/pagamento/consulta/12
 
 ###
 # # # Se o pagamento é local, sem integracao (DINHEIRO, CARTÃO MÁQUINA)
@@ -129,7 +129,7 @@ POST {{baseUrl}}/pagamento/confirmacao
 Content-Type: application/json
 
 {
-  "idPedido": 5
+  "idPedido": 13
 }
 
 ###
@@ -157,11 +157,11 @@ GET {{baseUrl}}/pedidos?status=RECEBIDO
 
 ###
 # @name Validar pedido
-POST {{baseUrl}}/pedidos/10/validar
+POST {{baseUrl}}/pedidos/13/validar
 
 ###
 # @name Cancelar pedido
-POST {{baseUrl}}/pedidos/10/cancelar
+POST {{baseUrl}}/pedidos/12/cancelar
 
 ###
 # @name Listar pedidos em preparação (cozinha)
@@ -173,11 +173,11 @@ GET {{baseUrl}}/pedidos?atraso=true
 
 ###
 # @name Atualizar pedido Pronto
-POST {{baseUrl}}/pedidos/10/setPronto
+POST {{baseUrl}}/pedidos/13/setPronto
 
 ###
 # @name Finalizar pedido
-POST {{baseUrl}}/pedidos/10/finalizar
+POST {{baseUrl}}/pedidos/13/finalizar
 
 
 
