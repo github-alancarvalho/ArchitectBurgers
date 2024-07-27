@@ -19,7 +19,7 @@ services:
       timeout: 10s
 
   app:
-    image: gomesrodris/architect-burgers:0.0.3-beta
+    image: gomesrodris/architect-burgers:0.0.5
     container_name: archburgers_app
     restart: "no"
     environment:
@@ -27,6 +27,12 @@ services:
       "archburgers.datasource.dbUrl": "jdbc:postgresql://archburgers_db/archburgers?autoReconnect=true"
       "archburgers.datasource.dbUser": pguser
       "archburgers.datasource.dbPass": "216hdjkasda%jhjKaA"
+
+      "archburgers.integration.mercadopago.apiBaseUrl": "https://api.mercadopago.com"
+      "archburgers.integration.mercadopago.userId": "1898521889"
+      "archburgers.integration.mercadopago.accessToken": "APP_USR-5895347274256581-071317-d4d6b7289bb3a84a0edb8388342a8c3d-1898521889"
+      "archburgers.integration.mercadopago.posId": "LOJA1POS1"
+      "archburgers.integration.mercadopago.notificationUrl": "http://adb05a37e59fc490cb51d499977f381f-883088565.us-east-1.elb.amazonaws.com:8090/pagamento-webhook/mercado-pago"
     ports:
       - "8090:8090"
     depends_on:
