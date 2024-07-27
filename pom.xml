@@ -16,10 +16,10 @@
     </properties>
 
     <modules>
-        <module>code/entities</module>
-        <module>code/usecases</module>
-        <module>code/gateways</module>
-        <module>code/web-app</module>
+        <module>modules/entities</module>
+        <module>modules/usecases</module>
+        <module>modules/gateways</module>
+	<module>modules/web-app</module>
     </modules>
 
     <dependencies>
