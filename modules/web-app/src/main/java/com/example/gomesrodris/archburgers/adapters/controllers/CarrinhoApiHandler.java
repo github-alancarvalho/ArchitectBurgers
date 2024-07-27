@@ -4,6 +4,7 @@ import com.example.gomesrodris.archburgers.adapters.datasource.TransactionManage
 import com.example.gomesrodris.archburgers.adapters.dto.AddItemCarrinhoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoObservacoesDto;
+import com.example.gomesrodris.archburgers.adapters.presenters.CarrinhoPresenter;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.controller.CarrinhoController;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
@@ -41,7 +42,7 @@ public class CarrinhoApiHandler {
                 throw new IllegalArgumentException("Path param idCarrinho missing");
 
             var carrinho = carrinhoController.findCarrinho(idCarrinho);
-            return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
+            return WebUtils.okResponse(CarrinhoPresenter.entityToPresentationDto(carrinho));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {
@@ -71,7 +72,7 @@ public class CarrinhoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar/recuperar carrinho");
         }
 
-        return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
+        return WebUtils.okResponse(CarrinhoPresenter.entityToPresentationDto(carrinho));
     }
 
     @Operation(summary = "Adiciona um item ao carrinho")
@@ -94,7 +95,7 @@ public class CarrinhoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao adicionar item no carrinho");
         }
 
-        return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
+        return WebUtils.okResponse(CarrinhoPresenter.entityToPresentationDto(carrinho));
     }
 
     @Operation(summary = "Exclui um item do carrinho")
@@ -119,7 +120,7 @@ public class CarrinhoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao excluir item do carrinho");
         }
 
-        return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
+        return WebUtils.okResponse(CarrinhoPresenter.entityToPresentationDto(carrinho));
     }
 
     @Operation(summary = "Atribui ou atualiza o campo de observações do pedido")
@@ -141,6 +142,6 @@ public class CarrinhoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar observacoes");
         }
 
-        return WebUtils.okResponse(CarrinhoDto.fromEntity(carrinho));
+        return WebUtils.okResponse(CarrinhoPresenter.entityToPresentationDto(carrinho));
     }
 }

@@ -17,22 +17,5 @@ public record CarrinhoDto(
         Long dataHoraCarrinhoCriado
 ) {
 
-    public static CarrinhoDto fromEntity(Carrinho carrinho) {
-        List<ItemPedidoDto> dtoItens = new ArrayList<>();
-
-        for (ItemPedido itemPedido : carrinho.itens()) {
-            dtoItens.add(new ItemPedidoDto(itemPedido.numSequencia(), itemPedido.itemCardapio().id(),
-                    itemPedido.itemCardapio().tipo().name(),
-                    itemPedido.itemCardapio().nome(), itemPedido.itemCardapio().descricao(),
-                    ValorMonetarioDto.from(itemPedido.itemCardapio().valor())));
-        }
-
-        return new CarrinhoDto(carrinho.id(),
-                carrinho.idClienteIdentificado() != null ? carrinho.idClienteIdentificado().id() : null,
-                carrinho.nomeClienteNaoIdentificado(),
-                dtoItens, carrinho.observacoes(),
-                ValorMonetarioDto.from(carrinho.getValorTotal()),
-                DateUtils.toTimestamp(carrinho.dataHoraCarrinhoCriado()));
-    }
 
 }

@@ -1,5 +1,8 @@
-package com.example.gomesrodris.archburgers.adapters.dto;
+package com.example.gomesrodris.archburgers.adapters.presenters;//import static org.junit.jupiter.api.Assertions.*;
 
+import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoDto;
+import com.example.gomesrodris.archburgers.adapters.dto.ItemPedidoDto;
+import com.example.gomesrodris.archburgers.adapters.dto.ValorMonetarioDto;
 import com.example.gomesrodris.archburgers.adapters.testUtils.TestLocale;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
@@ -15,7 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CarrinhoDtoTest {
+class CarrinhoPresenterTest {
 
     @BeforeAll
     static void beforeAll() {
@@ -23,7 +26,7 @@ class CarrinhoDtoTest {
     }
 
     @Test
-    void fromEntity() {
+    void entityToPresentationDto() {
         var entity1 = Carrinho.carrinhoSalvoClienteIdentificado(123, new IdCliente(98),
                         "Não adicionar molho", LocalDateTime.of(2024, 4, 29, 15, 30))
                 .withItens(List.of(
@@ -35,7 +38,7 @@ class CarrinhoDtoTest {
                         )
                 ));
 
-        var dto = CarrinhoDto.fromEntity(entity1);
+        var dto = CarrinhoPresenter.entityToPresentationDto(entity1);
 
         List<ItemPedidoDto> dtoItens = List.of(
                 new ItemPedidoDto(1, 2, "LANCHE", "Cheese Burger",

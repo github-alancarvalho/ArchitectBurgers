@@ -16,22 +16,5 @@ public record PedidoDto(
         ValorMonetarioDto valorTotal,
         Long dataHoraCarrinhoCriado
 ) {
-    public static PedidoDto fromEntity(Pedido pedido) {
-        List<ItemPedidoDto> dtoItens = pedido.itens().stream().map(
-                        itemPedido -> new ItemPedidoDto(itemPedido.numSequencia(),
-                                itemPedido.itemCardapio().id(), itemPedido.itemCardapio().tipo().name(),
-                                itemPedido.itemCardapio().nome(), itemPedido.itemCardapio().descricao(),
-                                ValorMonetarioDto.from(itemPedido.itemCardapio().valor())))
-                .toList();
 
-        return new PedidoDto(pedido.id(),
-                pedido.idClienteIdentificado() != null ? pedido.idClienteIdentificado().id() : null,
-                pedido.nomeClienteNaoIdentificado(),
-                dtoItens,
-                pedido.observacoes(),
-                pedido.status().name(),
-                pedido.formaPagamento().codigo(),
-                ValorMonetarioDto.from(pedido.getValorTotal()),
-                DateUtils.toTimestamp(pedido.dataHoraPedido()));
-    }
 }

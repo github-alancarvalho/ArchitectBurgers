@@ -2,6 +2,7 @@ package com.example.gomesrodris.archburgers.adapters.controllers;
 
 import com.example.gomesrodris.archburgers.adapters.datasource.TransactionManager;
 import com.example.gomesrodris.archburgers.adapters.dto.PedidoDto;
+import com.example.gomesrodris.archburgers.adapters.presenters.PedidoPresenter;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.controller.PedidoController;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
@@ -47,7 +48,7 @@ public class PedidoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar pedido");
         }
 
-        return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
+        return WebUtils.okResponse(PedidoPresenter.entityToPresentationDto(pedido));
     }
 
     @Operation(summary = "Lista os pedidos conforme critério informado",
@@ -82,7 +83,7 @@ public class PedidoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao listar pedidos");
         }
 
-        return WebUtils.okResponse(result.stream().map(PedidoDto::fromEntity).toList());
+        return WebUtils.okResponse(result.stream().map(PedidoPresenter::entityToPresentationDto).toList());
     }
 
     @PostMapping(path = "/pedidos/{idPedido}/validar")
@@ -97,7 +98,7 @@ public class PedidoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar pedido");
         }
 
-        return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
+        return WebUtils.okResponse(PedidoPresenter.entityToPresentationDto(pedido));
     }
 
     @PostMapping(path = "/pedidos/{idPedido}/cancelar")
@@ -112,7 +113,7 @@ public class PedidoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar pedido");
         }
 
-        return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
+        return WebUtils.okResponse(PedidoPresenter.entityToPresentationDto(pedido));
     }
 
     @PostMapping(path = "/pedidos/{idPedido}/setPronto")
@@ -127,7 +128,7 @@ public class PedidoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar pedido");
         }
 
-        return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
+        return WebUtils.okResponse(PedidoPresenter.entityToPresentationDto(pedido));
     }
 
     @PostMapping(path = "/pedidos/{idPedido}/finalizar")
@@ -142,6 +143,6 @@ public class PedidoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao atualizar pedido");
         }
 
-        return WebUtils.okResponse(PedidoDto.fromEntity(pedido));
+        return WebUtils.okResponse(PedidoPresenter.entityToPresentationDto(pedido));
     }
 }

@@ -15,17 +15,4 @@ public record PagamentoDto(
         String idPedidoSistemaExterno
 ) {
 
-    public static PagamentoDto fromEntity(Pagamento pagamento) {
-        return new PagamentoDto(
-                pagamento.id(),
-                pagamento.idPedido(),
-                pagamento.formaPagamento().codigo(),
-                pagamento.status().name(),
-                ValorMonetarioDto.from(pagamento.valor()),
-                DateUtils.toTimestamp(pagamento.dataHoraCriacao()),
-                DateUtils.toTimestamp(pagamento.dataHoraAtualizacao()),
-                pagamento.codigoPagamentoCliente(),
-                pagamento.idPedidoSistemaExterno()
-        );
-    }
 }

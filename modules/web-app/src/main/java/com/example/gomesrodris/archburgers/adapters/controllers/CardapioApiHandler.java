@@ -2,6 +2,7 @@ package com.example.gomesrodris.archburgers.adapters.controllers;
 
 import com.example.gomesrodris.archburgers.adapters.dto.GenericOperationResponse;
 import com.example.gomesrodris.archburgers.adapters.dto.ItemCardapioDto;
+import com.example.gomesrodris.archburgers.adapters.presenters.ItemCardapioPresenter;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.controller.CardapioController;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
@@ -44,7 +45,7 @@ public class CardapioApiHandler {
 
         List<ItemCardapio> result = cardapioController.listarItensCardapio(filtroTipo);
 
-        return WebUtils.okResponse(result.stream().map(ItemCardapioDto::fromEntity).toList());
+        return WebUtils.okResponse(result.stream().map(ItemCardapioPresenter::entityToPresentationDto).toList());
     }
 
     @Operation(summary = "Grava um novo item no cardápio",
@@ -59,7 +60,7 @@ public class CardapioApiHandler {
                 throw new IllegalArgumentException("Novo objeto não pode ter um ID");
 
             var saved = cardapioController.salvarItemCardapio(item);
-            return WebUtils.okResponse(ItemCardapioDto.fromEntity(saved));
+            return WebUtils.okResponse(ItemCardapioPresenter.entityToPresentationDto(saved));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {
@@ -81,7 +82,7 @@ public class CardapioApiHandler {
             ItemCardapio item = itemCardapioDto.toEntity().withId(idItemCardapio);
 
             var saved = cardapioController.salvarItemCardapio(item);
-            return WebUtils.okResponse(ItemCardapioDto.fromEntity(saved));
+            return WebUtils.okResponse(ItemCardapioPresenter.entityToPresentationDto(saved));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {

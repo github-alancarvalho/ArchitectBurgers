@@ -13,16 +13,6 @@ public record ItemCardapioDto(
         String descricao,
         ValorMonetarioDto valor
 ) {
-    public static ItemCardapioDto fromEntity(ItemCardapio itemCardapio) {
-        return new ItemCardapioDto(
-                itemCardapio.id(),
-                itemCardapio.tipo().name(),
-                itemCardapio.nome(),
-                itemCardapio.descricao(),
-                ValorMonetarioDto.from(itemCardapio.valor())
-        );
-    }
-
     public @NotNull ItemCardapio toEntity() {
         if (StringUtils.isEmpty(tipo) || StringUtils.isEmpty(nome) || StringUtils.isEmpty(descricao)
                 || valor == null || StringUtils.isEmpty(valor.raw())) {

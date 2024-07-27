@@ -4,6 +4,8 @@ import com.example.gomesrodris.archburgers.adapters.datasource.TransactionManage
 import com.example.gomesrodris.archburgers.adapters.dto.ConfirmacaoPagamentoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.PagamentoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.PedidoDto;
+import com.example.gomesrodris.archburgers.adapters.presenters.PagamentoPresenter;
+import com.example.gomesrodris.archburgers.adapters.presenters.PedidoPresenter;
 import com.example.gomesrodris.archburgers.adapters.presenters.QrCodePresenter;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.controller.PagamentoController;
@@ -62,7 +64,7 @@ public class PagamentoApiHandler {
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao salvar confirmacao de pagamento");
         }
 
-        return WebUtils.okResponse(PedidoDto.fromEntity(pedidoUpdated));
+        return WebUtils.okResponse(PedidoPresenter.entityToPresentationDto(pedidoUpdated));
     }
 
     @GetMapping("/pagamento/consulta/{idPedido}")
@@ -74,7 +76,7 @@ public class PagamentoApiHandler {
                 return WebUtils.errorResponse(HttpStatus.NOT_FOUND, "Pagamento para Pedido [" + idPedidoParam + "] não encontrado");
             }
 
-            return WebUtils.okResponse(PagamentoDto.fromEntity(pagamento));
+            return WebUtils.okResponse(PagamentoPresenter.entityToPresentationDto(pagamento));
 
         } catch (DomainArgumentException ae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, ae.getMessage());

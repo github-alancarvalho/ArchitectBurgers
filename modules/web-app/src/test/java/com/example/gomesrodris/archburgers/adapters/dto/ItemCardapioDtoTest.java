@@ -18,17 +18,6 @@ class ItemCardapioDtoTest {
     }
 
     @Test
-    void fromEntity() {
-        var dto = ItemCardapioDto.fromEntity(new ItemCardapio(123,
-                TipoItemCardapio.LANCHE, "Cheeseburger", "Hambúrguer com queijo", new ValorMonetario("25.99")));
-
-        assertThat(dto).isEqualTo(new ItemCardapioDto(
-                123, "LANCHE", "Cheeseburger", "Hambúrguer com queijo",
-                new ValorMonetarioDto("25.99", "R$ 25,99")
-        ));
-    }
-
-    @Test
     void toEntity() {
         var entity = new ItemCardapioDto(
                 123, "LANCHE", "Cheeseburger", "Hambúrguer com queijo",
